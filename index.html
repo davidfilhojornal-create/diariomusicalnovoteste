@@ -337,6 +337,12 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
       <select id="seedArtist" class="seed-select"><option value="">Escolha um artista...</option></select>
       <select id="seedTrack" class="seed-select"><option value="">Escolha uma faixa...</option></select>
     </div>
+    <div class="filter-bar" style="margin-top:12px">
+      <input class="search" id="tagFilter" placeholder="filtrar por tag Last.fm — ex.: hardcore, samba, grime">
+      <button class="link-btn" id="applyTag">aplicar tag</button>
+      <button class="link-btn" id="clearTag">limpar</button>
+      <span class="muted" id="tagStatus"></span>
+    </div>
   </div>
 
   <div class="section">
@@ -535,12 +541,29 @@ const DB_NAME="radar-musical";
 const DB_VERSION=6;
 const PAGE_SIZE=200;
 const COOLDOWN_DAYS=21;
-const $=id=>document.getElementById(id);
+/* Se um id sumir do HTML, devolve um elemento fantasma em vez de null.
+   Assim uma referência órfã vira só um aviso no console, e não a morte
+   de todo o resto do script (que foi o que aconteceu com applyTag). */
+const GHOST_WARNED=new Set();
+function ghostElement(id){
+  if(!GHOST_WARNED.has(id)){GHOST_WARNED.add(id);console.warn(`[radar] elemento #${id} não existe no HTML — ignorando.`)}
+  const ghost={
+    id,textContent:"",innerHTML:"",value:"",href:"",checked:false,disabled:false,dataset:{},
+    style:{},classList:{add(){},remove(){},toggle(){},contains(){return false}},
+    appendChild(){},removeChild(){},setAttribute(){},removeAttribute(){},
+    getAttribute(){return null},addEventListener(){},removeEventListener(){},
+    focus(){},blur(){},click(){},scrollIntoView(){},getContext(){return null},
+    querySelector(){return null},querySelectorAll(){return[]},
+    getBoundingClientRect(){return{width:0,height:0,top:0,left:0,right:0,bottom:0}}
+  };
+  return new Proxy(ghost,{get:(t,p)=>p in t?t[p]:undefined,set:()=>true});
+}
+const $=id=>document.getElementById(id)||ghostElement(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 const fmt=n=>new Intl.NumberFormat("pt-BR").format(Number(n)||0);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
 const now=()=>Math.floor(Date.now()/1000);
 
 let db=null;
@@ -720,11 +743,12 @@ async function buildSeeds(){
 }
 async function similarCached(name,limit=18){
   const key=norm(name),cached=await get("similar",key);
-  if(cached?.items?.length)return cached.items.slice(0,limit);
+  if(cached?.items?.length && cached.items.length>=limit)return cached.items.slice(0,limit);
   const d=await lastfm("artist.getSimilar",{artist:name,limit,autocorrect:1});
   const items=(Array.isArray(d.similarartists?.artist)?d.similarartists.artist:[d.similarartists?.artist].filter(Boolean))
     .map(x=>({name:x.name,match:Number(x.match)||0}));
-  await put("similar",{key,name,items,savedAt:Date.now()});return items;
+  await put("similar",{key,name,items,savedAt:Date.now()});
+  return items.slice(0,limit);
 }
 async function tagInfo(name){
   const key=norm(name),c=await get("tags",key);if(c?.tags?.length)return c.tags;
@@ -869,6 +893,7 @@ async function renderOneYear(){
 
 /* ----- DISCOVERY LAB ----- */
 const radarConfig={mode:"discover",match:82,risk:28,nostalgia:24,diversity:55,seedMode:"blend"};
+let discoveryCache={key:"",data:null,at:0};
 
 async function populateRadarSeeds(){
   const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays);
@@ -885,7 +910,16 @@ function setRadarControlLabels(){
   $("radarControlSummary").textContent=d[radarConfig.mode];
 }
 
-async function computeDiscoveryLab(){
+async function computeDiscoveryLab(force=false){
+  const cacheKey=JSON.stringify({
+    mode:radarConfig.mode,match:radarConfig.match,risk:radarConfig.risk,
+    nostalgia:radarConfig.nostalgia,diversity:radarConfig.diversity,
+    seedMode:radarConfig.seedMode,artist:$("seedArtist").value,track:$("seedTrack").value,
+    tag:state.tag
+  });
+  if(!force && discoveryCache.key===cacheKey && Date.now()-discoveryCache.at<120000 && discoveryCache.data){
+    return discoveryCache.data;
+  }
   const artists=await all("artists"),tracks=await all("tracks"),suggestions=await all("suggestions");
   const map=new Map(artists.map(x=>[x.key,x])),recentCut=now()-14*86400;
   const recent=artists.filter(x=>x.lastPlayed>=recentCut).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,8);
@@ -931,7 +965,9 @@ async function computeDiscoveryLab(){
 
   const blocked=new Set(suggestions.filter(x=>["known","rejected"].includes(x.status)).map(x=>norm(x.name)));
   const cooldown=new Set(suggestions.filter(x=>x.cooldownUntil>Date.now()).map(x=>norm(x.name)));
-  return results.filter(x=>!blocked.has(norm(x.name))&&!cooldown.has(norm(x.name))).sort((a,b)=>b.score-a.score);
+  const finalResults=results.filter(x=>!blocked.has(norm(x.name))&&!cooldown.has(norm(x.name))).sort((a,b)=>b.score-a.score);
+  discoveryCache={key:cacheKey,data:finalResults,at:Date.now()};
+  return finalResults;
 }
 
 function labCard(x,i,label){
@@ -940,8 +976,8 @@ function labCard(x,i,label){
   return `<article class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="badge ${x.category==="loose"?"loose":"new"}" style="margin-top:5px">${esc(label)}</div><div class="lab-copy">${why} ${x.plays?`Você já ouviu ${x.plays} vezes; ${absent}`:absent}</div><div class="metric-line"><span>match</span><div class="bar"><i style="width:${Math.round(x.similarity*100)}%"></i></div><span>${Math.round(x.similarity*100)}</span></div><div class="story-actions"><button class="link-btn lab-action primary" data-name="${esc(x.name)}" data-action="waiting">quero ouvir</button><button class="link-btn lab-action" data-name="${esc(x.name)}" data-action="rejected">não é pra mim</button><button class="link-btn artist-open" data-artist="${esc(x.name)}">abrir ficha</button></div></div><div class="lab-metrics">${Math.round(x.potential*100)} potencial<br>${x.risk} risco<br>${x.seeds.length} pontes</div></div></article>`;
 }
 
-async function renderDiscoveryLab(){
-  const data=await computeDiscoveryLab();
+async function renderDiscoveryLab(force=false){
+  const data=await computeDiscoveryLab(force);
   const should=data.filter(x=>x.category==="new").sort((a,b)=>b.potential-a.potential).slice(0,4);
   const near=data.filter(x=>x.category==="loose").sort((a,b)=>(b.similarity*.7+b.absence*.3)-(a.similarity*.7+a.absence*.3)).slice(0,4);
   const risk=data.filter(x=>x.category==="new").sort((a,b)=>b.risk-a.risk).slice(0,4);
@@ -988,12 +1024,13 @@ async function runMix(){
 }
 
 async function discoverHiddenBridges(){
-  const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays).slice(0,10),direct=new Set(artists.map(x=>x.key)),bridges=new Map();
+  const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays).slice(0,6);
+  const direct=new Set(artists.map(x=>x.key)),bridges=new Map();
   for(const a of artists){
-    let one=[];try{one=await similarCached(a.name,12)}catch{}
-    for(const b of one){
+    let one=[];try{one=await similarCached(a.name,8)}catch{}
+    for(const b of one.slice(0,6)){
       if(direct.has(norm(b.name)))continue;
-      let two=[];try{two=await similarCached(b.name,12)}catch{}
+      let two=[];try{two=await similarCached(b.name,8)}catch{}
       for(const c of two){
         if(!direct.has(norm(c.name)))continue;
         const k=norm(b.name),score=(b.match+c.match)/2,old=bridges.get(k);
@@ -1005,7 +1042,6 @@ async function discoverHiddenBridges(){
   $("bridgeResult").innerHTML=list.length?list.map((x,i)=>`<div class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.middle)}">${esc(x.middle)}</div><div class="lab-copy">${esc(x.from)} → este artista → ${esc(x.to)}</div></div><div class="lab-metrics">${Math.round(x.score*100)} ponte</div></div></div>`).join(""):`<div class="empty"><strong>nenhuma ponte escondida.</strong></div>`;
   document.querySelectorAll("#bridgeResult .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
 }
-
 async function buildDiscoveryChains(){
   const rows=(await all("suggestions")).filter(x=>x.status==="heard"||x.status==="waiting").filter(x=>x.seeds?.length).slice(-8).reverse();
   $("discoveryChains").innerHTML=rows.length?rows.map(x=>`<div class="chain"><span class="chain-node">${esc(x.seeds[0])}</span>${x.seeds.slice(1,3).map(v=>`<span class="chain-arrow">→</span><span class="chain-node">${esc(v)}</span>`).join("")}<span class="chain-arrow">→</span><span class="chain-node" style="color:var(--accent)">${esc(x.name)}</span></div>`).join(""):`<div class="empty"><strong>nenhuma cadeia ainda.</strong>Quando você ouvir uma descoberta, ela começa a aparecer aqui.</div>`;
@@ -1102,8 +1138,26 @@ function renderChallenges(){
 
 /* ----- artist sheet + Spotify visual enrichment ----- */
 function artistImageURL(){return null}
+async function refreshSpotifyToken(){
+  const s=state.spotify;
+  if(!s?.refreshToken||!s?.clientId)return false;
+  try{
+    const body=new URLSearchParams({client_id:s.clientId,grant_type:"refresh_token",refresh_token:s.refreshToken});
+    const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+    if(!r.ok)return false;
+    const d=await r.json();
+    state.spotify={...s,accessToken:d.access_token,refreshToken:d.refresh_token||s.refreshToken,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};
+    await meta("spotify",state.spotify);
+    return true;
+  }catch{return false}
+}
 async function spotifyApi(path){
-  if(!state.spotify?.accessToken||Date.now()>state.spotify.expiresAt)return null;
+  if(!state.spotify?.accessToken)return null;
+  /* renova 60s antes de expirar, senão o módulo morre calado depois de 1h */
+  if(Date.now()>state.spotify.expiresAt-60000){
+    const ok=await refreshSpotifyToken();
+    if(!ok)return null;
+  }
   const r=await fetch("https://api.spotify.com/v1"+path,{headers:{Authorization:"Bearer "+state.spotify.accessToken}});
   if(r.status===204)return null;if(!r.ok)throw new Error("Spotify HTTP "+r.status);return r.json();
 }
@@ -1252,13 +1306,22 @@ document.querySelectorAll(".radar-mode").forEach(btn=>btn.onclick=async()=>{
 });
 [
   ["matchRange","matchValue","match"],["riskRange","riskValue","risk"],["nostalgiaRange","nostalgiaValue","nostalgia"],["diversityRange","diversityValue","diversity"]
-].forEach(([a,b,c])=>$(a).oninput=()=>{radarConfig[c]=Number($(a).value);$(b).textContent=radarConfig[c]});
-document.querySelectorAll(".seed-chip").forEach(btn=>btn.onclick=()=>{radarConfig.seedMode=btn.dataset.seedMode;document.querySelectorAll(".seed-chip").forEach(x=>x.classList.toggle("active",x===btn))});
-$("recalculateRadar").onclick=async()=>{await renderDiscoveryLab();await buildDiscoveryChains();toast("laboratório recalculado.")};
+].forEach(([a,b,c])=>$(a).oninput=()=>{radarConfig[c]=Number($(a).value);discoveryCache.key="";$(b).textContent=radarConfig[c]});
+document.querySelectorAll(".seed-chip").forEach(btn=>btn.onclick=()=>{radarConfig.seedMode=btn.dataset.seedMode;discoveryCache.key="";document.querySelectorAll(".seed-chip").forEach(x=>x.classList.toggle("active",x===btn))});
+$("applyTag").onclick=async()=>{state.tag=$("tagFilter").value.trim();discoveryCache.key="";$("tagStatus").textContent=state.tag?`filtrando por “${state.tag}”`:"";await renderDiscoveryLab(true)};
+$("clearTag").onclick=async()=>{state.tag="";discoveryCache.key="";$("tagFilter").value="";$("tagStatus").textContent="";await renderDiscoveryLab(true)};
+$("recalculateRadar").onclick=async()=>{await renderDiscoveryLab(true);await buildDiscoveryChains();toast("laboratório recalculado.")};
 $("runMix").onclick=runMix;
 $("discoverBridges").onclick=async()=>{$("bridgeResult").innerHTML='<div class="shimmer"></div>';await discoverHiddenBridges()};
 
 /* ----- nav / event binding ----- */
+function runDiagnostics(){
+  const ids=[...document.querySelectorAll("[id]")].map(x=>x.id);
+  const required=["view-home","view-radar","view-rescue","view-route","view-map","view-archive","view-settings","connectLastfm","syncNow","connectSpotify","archiveContent","radarList","shouldKnow","nearFavorite","riskPicks","discoveryChains","waitingRail"];
+  const missing=required.filter(id=>!ids.includes(id));
+  if(missing.length)console.warn("[radar] IDs ausentes:",missing);
+  return {missing};
+}
 function showView(name){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   $("view-"+name).classList.add("active");
@@ -1276,13 +1339,7 @@ $("newRadar").onclick=async()=>{
   if(!state.user)return $("connectLastfm").click();
   try{await calculateRadar(true);await renderRadar();toast("nova rodada pronta.")}catch(e){toast(e.message)}
 };
-document.querySelectorAll("[data-radius]").forEach(btn=>btn.onclick=async()=>{
-  state.radius=btn.dataset.radius;document.querySelectorAll("[data-radius]").forEach(x=>x.classList.toggle("active",x===btn));$("radiusDescription").textContent=RADIUS[state.radius].desc;
-  if(state.user){await calculateRadar(true);await renderRadar()}
-});
 document.querySelectorAll("[data-rfilter]").forEach(btn=>btn.onclick=async()=>{state.radarFilter=btn.dataset.rfilter;document.querySelectorAll("[data-rfilter]").forEach(x=>x.classList.toggle("active",x===btn));await renderRadar()});
-$("applyTag").onclick=async()=>{state.tag=$("tagFilter").value.trim();$("tagStatus").textContent=state.tag?`filtrando por “${state.tag}”`:"";if(state.user){await calculateRadar(true);await renderRadar()}};
-$("clearTag").onclick=async()=>{state.tag="";$("tagFilter").value="";$("tagStatus").textContent="";if(state.user){await calculateRadar(true);await renderRadar()}};
 document.querySelectorAll("[data-depth]").forEach(btn=>btn.onclick=()=>{state.routeDepth=Number(btn.dataset.depth);document.querySelectorAll("[data-depth]").forEach(x=>x.classList.toggle("active",x===btn))});
 $("findRoute").onclick=async()=>{const a=$("routeStart").value.trim(),b=$("routeEnd").value.trim();$("routeStatus").textContent="procurando pontes...";$("routeResult").innerHTML='<div class="shimmer"></div>';try{const r=await findRoute(a,b,state.routeDepth);renderRoute(r);$("routeStatus").textContent=r?`${r.nodes.length-1} passos encontrados.`:""}catch(e){toast(e.message);$("routeStatus").textContent=""}};
 $("randomRoute").onclick=async()=>{const a=await all("artists");if(a.length<2)return;let x=a[Math.floor(Math.random()*a.length)],y=a[Math.floor(Math.random()*a.length)];while(y.key===x.key)y=a[Math.floor(Math.random()*a.length)];$("routeStart").value=x.name;$("routeEnd").value=y.name;$("findRoute").click()};
@@ -1299,24 +1356,31 @@ $("startLogin").onclick=async()=>{
   try{
     const user=await validateUser(username),switched=await switchUser(user.name);state.user=user.name;$("userLabel").textContent=user.name;$("lastfmStatus").textContent="conectado como "+user.name;
     const existing=await all("scrobbles");await syncHistory(user.name,switched||!existing.length,Number(user.playcount||0),switched||!existing.length);
-    await calculateRadar(false);await renderAll();$("loginModal").classList.remove("show");
+    discoveryCache.key="";await calculateRadar(false);await renderAll();$("loginModal").classList.remove("show");
   }catch(e){$("loginError").innerHTML=`<p style="color:var(--danger)">${esc(e.message)}</p>`}
 };
 $("usernameInput").onkeydown=e=>{if(e.key==="Enter")$("startLogin").click()};
-$("syncNow").onclick=async()=>{if(!state.user)return $("connectLastfm").click();try{await syncHistory(state.user,false,0,false);await calculateRadar(false);await renderAll()}catch(e){}};
+$("syncNow").onclick=async()=>{if(!state.user)return $("connectLastfm").click();try{await syncHistory(state.user,false,0,false);discoveryCache.key="";await calculateRadar(false);await renderAll()}catch(e){}};
 $("connectSpotify").onclick=async()=>{try{await connectSpotify()}catch(e){toast(e.message)}};
 $("exportData").onclick=exportBackup;
 $("importData").onclick=()=>$("importFile").click();
-$("importFile").onchange=async e=>{try{await importBackup(e.target.files[0])}catch(err){toast("backup inválido.")}};
+$("importFile").onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{await importBackup(f)}catch(err){console.error(err);toast("backup inválido.")}};
 $("clearData").onclick=async()=>{if(!confirm("Apagar todo o diário local deste navegador?"))return;for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags"])await clearStore(s);location.reload()};
 
 async function health(){
-  const [s,a,t]=await Promise.all([all("scrobbles"),all("artists"),all("tracks")]);
-  $("healthStats").textContent=`${fmt(s.length)} scrobbles · ${fmt(a.length)} artistas · ${fmt(t.length)} faixas · IndexedDB local.`;
+  try{
+    const [s,a,t]=await Promise.all([all("scrobbles"),all("artists"),all("tracks")]);
+    $("healthStats").textContent=`${fmt(s.length)} scrobbles · ${fmt(a.length)} artistas · ${fmt(t.length)} faixas · IndexedDB local.`;
+  }catch(e){
+    $("healthStats").textContent="não foi possível ler o banco local agora.";
+    console.warn(e);
+  }
 }
 async function renderAll(){
   await renderHome();await renderRadar();await renderRescue();await renderArchive();renderChallenges();await health();
 }
+window.addEventListener("error",e=>{console.error("[radar] erro global:",e.error||e.message);toast("O Radar encontrou um erro. Veja o Console para o detalhe.")});
+window.addEventListener("unhandledrejection",e=>{console.error("[radar] promessa rejeitada:",e.reason);toast("Uma operação não conseguiu terminar. O restante do Radar continua disponível.")});
 (async()=>{
   try{
     await openDB();
@@ -1324,17 +1388,17 @@ async function renderAll(){
     const savedRadius=await meta("radarRadius");if(savedRadius&&RADIUS[savedRadius])state.radius=savedRadius;
     const savedTag=await meta("radarTag");if(savedTag)state.tag=savedTag;
     $("spotifyClientId").value=SPOTIFY_CLIENT_ID;
+    if(state.tag){$("tagFilter").value=state.tag;$("tagStatus").textContent=`filtrando por “${state.tag}”`;}
     try{await spotifyCallback()}catch(e){toast(e.message)}
     state.user=await meta("username");
     if(state.user){
       $("userLabel").textContent=state.user;$("lastfmStatus").textContent="conectado como "+state.user;
       /* cache-first: pinta agora e sincroniza silenciosamente depois */
       await renderAll();
-      try{await syncHistory(state.user,false,0,false);await calculateRadar(false);await renderAll()}catch(e){}
+      try{await syncHistory(state.user,false,0,false);discoveryCache.key="";await calculateRadar(false);await renderAll()}catch(e){}
     }else await renderAll();
-    $("radiusDescription").textContent=RADIUS[state.radius].desc;
-    if(state.tag){$("tagFilter").value=state.tag;$("tagStatus").textContent=`filtrando por “${state.tag}”`}
     $("spotifyRedirect").textContent="Redirect URI: "+location.origin+location.pathname;
+    runDiagnostics();
     await renderSpotify();
     if(state.spotify?.accessToken)setInterval(renderSpotify,30000);
   }catch(e){console.error(e);toast("Não foi possível iniciar o Radar.")}
