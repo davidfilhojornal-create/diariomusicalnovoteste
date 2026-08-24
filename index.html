@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#09090b">
+<meta name="theme-color" content="#09090b">\n<link rel="manifest" href="manifest.json" id="appManifest">\n<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="description" content="Radar Musical — um arquivo vivo da sua vida musical.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -203,80 +203,23 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
 
 .now-playing-stat{min-height:270px}.now-playing-live[hidden],.now-playing-empty[hidden]{display:none}.now-playing-live{display:grid;grid-template-columns:112px 1fr;gap:18px;align-items:start}.now-playing-cover-link{display:block;width:112px;height:112px;border-radius:2px;overflow:hidden;background:#151518;border:1px solid #ffffff0d}.now-playing-cover{width:100%;height:100%;display:block;object-fit:cover}.now-playing-main{min-width:0}.now-playing-track{display:block;font:700 clamp(25px,3.1vw,38px)/1.02 "Space Grotesk";letter-spacing:-.06em;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.now-playing-artist{display:block;margin-top:7px;font:600 13px "Space Grotesk";color:var(--text)}.now-playing-album{display:block;margin-top:4px;font-size:11px;color:var(--muted)}.now-playing-track:hover,.now-playing-artist:hover,.now-playing-album:hover{text-decoration:underline;text-underline-offset:4px}.now-playing-progress{margin-top:22px}.now-playing-progress-top{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font:400 9px "DM Mono";color:var(--muted)}#nowPlayingState{text-align:center;text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}.now-playing-progress-bar{height:3px;background:#242428;margin-top:8px;overflow:hidden}.now-playing-progress-bar i{display:block;width:0;height:100%;background:var(--accent);transition:width .4s linear}.now-playing-empty .link-btn{margin-top:12px;padding-left:0}@media(max-width:700px){.now-playing-live{grid-template-columns:86px 1fr;gap:13px}.now-playing-cover-link{width:86px;height:86px}.now-playing-track{font-size:24px}}
 
-/* ===== ARQUIVO VIVO — VISUAL POLISH ===== */
-:root{--ease:cubic-bezier(.22,.61,.36,1)}
-body{
-  background:
-    radial-gradient(circle at 86% 0%,rgba(217,255,63,.025),transparent 28%),
-    radial-gradient(circle at 8% 20%,rgba(255,255,255,.016),transparent 24%),
-    var(--bg);
-}
-body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.022;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
-  mix-blend-mode:screen;
-}
-.header{background:linear-gradient(180deg,rgba(8,8,10,.98),rgba(8,8,10,.8))}
-.nav button{position:relative;transition:color .2s var(--ease),background .2s var(--ease)}
-.nav button.active:after{content:"";position:absolute;left:8px;right:8px;bottom:-7px;height:2px;background:var(--accent);transform-origin:left;animation:navLine .35s var(--ease) both}
-@keyframes navLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.view.active{animation:pageIn .42s var(--ease) both}
-.hero-title:after{content:"";display:block;width:68px;height:2px;background:var(--accent);margin-top:18px;transform-origin:left;animation:growX .7s .16s var(--ease) both}
-@keyframes growX{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
-.kicker i{box-shadow:0 0 0 0 rgba(217,255,63,.45);animation:pulseDot 2.2s ease-out infinite}
-@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(217,255,63,.45)}70%{box-shadow:0 0 0 8px rgba(217,255,63,0)}100%{box-shadow:0 0 0 0 rgba(217,255,63,0)}}
-.stat{position:relative;overflow:hidden}
-.stat:before{content:"";position:absolute;top:-1px;left:0;width:28px;height:1px;background:var(--accent);opacity:.7}
-.stat-number{animation:softRise .6s .08s var(--ease) both}
-@keyframes softRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.now-playing-stat{min-height:292px}
-.now-playing-live{display:grid;grid-template-columns:112px 1fr;gap:18px;align-items:start;position:relative;isolation:isolate}
-.now-playing-live:before{content:"";position:absolute;left:-45px;top:-45px;width:220px;height:220px;background:rgba(217,255,63,.07);filter:blur(45px);border-radius:50%;z-index:-1}
-.now-playing-live[hidden],.now-playing-empty[hidden]{display:none}
-.now-playing-cover-link{display:block;width:112px;height:112px;border-radius:2px;overflow:hidden;background:#151518;border:1px solid #ffffff0d;box-shadow:0 10px 35px rgba(0,0,0,.28);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.now-playing-cover-link:hover{transform:translateY(-3px) scale(1.015);box-shadow:0 16px 45px rgba(0,0,0,.4)}
-.now-playing-cover{width:100%;height:100%;object-fit:cover;display:block}
-.now-playing-track{display:block;font:700 clamp(25px,3.1vw,38px)/1.02 "Space Grotesk";letter-spacing:-.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s,transform .2s var(--ease)}
-.now-playing-track:hover,.now-playing-artist:hover,.now-playing-album:hover{text-decoration:underline;text-underline-offset:4px}
-.now-playing-artist{display:block;margin-top:7px;font:600 13px "Space Grotesk";color:var(--text)}
-.now-playing-album{display:block;margin-top:4px;font-size:11px;color:var(--muted)}
-.now-playing-status-line{margin-top:10px;font:400 9px "DM Mono";color:var(--muted)}
-.now-playing-progress{margin-top:18px}
-.now-playing-progress-top{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font:400 9px "DM Mono";color:var(--muted)}
-.now-playing-progress-top #nowPlayingState{text-align:center;text-transform:uppercase;letter-spacing:.13em;color:var(--accent)}
-.now-playing-progress-bar{height:3px;background:linear-gradient(90deg,#1b1b1e,#2a2a2e);margin-top:8px;overflow:hidden}
-.now-playing-progress-bar i{display:block;width:0;height:100%;background:var(--accent);box-shadow:0 0 14px rgba(217,255,63,.25);transition:width .4s linear}
-.now-playing-live.np-refresh .now-playing-cover-link{animation:coverEnter .38s var(--ease) both}
-.now-playing-live.np-refresh .now-playing-track{animation:textEnter .32s var(--ease) both}
-@keyframes coverEnter{from{opacity:.5;transform:translateY(5px) scale(.985)}to{opacity:1;transform:none}}
-@keyframes textEnter{from{opacity:.45;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media(max-width:700px){.now-playing-live{grid-template-columns:86px 1fr;gap:13px}.now-playing-cover-link{width:86px;height:86px}.now-playing-track{font-size:24px}}
-
-.section{margin-top:78px}
-.section-head h2{position:relative}
-.section-head h2:before{content:"";display:inline-block;width:20px;height:2px;background:var(--accent);vertical-align:middle;margin-right:9px;opacity:.75}
-.section-head .link-btn{transition:transform .2s var(--ease),color .2s var(--ease)}
-.section-head .link-btn:hover{transform:translateX(3px)}
-.recent-card{transition:transform .3s var(--ease),border-color .3s var(--ease);box-shadow:0 4px 25px rgba(0,0,0,.12)}
-.recent-card:hover{transform:translateY(-5px);border-color:#d9ff3f30}
-.recent-card:hover .recent-card-track{color:var(--accent)}
-.story{position:relative;transition:padding .3s var(--ease)}
-.story:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .35s var(--ease)}
-.story:hover{padding-left:16px}.story:hover:before{transform:scaleY(1)}.story:hover .story-name{color:var(--accent)}
-.radar-mode,.seed-chip,.filter,.control-card{transition:all .23s var(--ease)}
-.radar-mode:hover,.control-card:hover{transform:translateY(-2px)}
-.lab-card{position:relative;transition:padding .28s var(--ease),background .28s var(--ease)}
-.lab-card:after{content:"";position:absolute;right:0;top:19px;width:0;height:1px;background:var(--accent);transition:width .35s var(--ease)}
-.lab-card:hover{padding-left:10px;background:linear-gradient(90deg,#ffffff02,transparent)}
-.lab-card:hover:after{width:34px}.lab-card:hover .lab-name{color:var(--accent)}
-.route-step,.archive-row,.timeline-row,.wait-row{transition:padding .25s var(--ease),background .25s var(--ease)}
-.route-step:hover,.archive-row:hover,.timeline-row:hover,.wait-row:hover{padding-left:10px;background:#ffffff02}
-.route-step:hover .route-name,.archive-row:hover .archive-name,.wait-row:hover .wait-name{color:var(--accent)}
-.canvas-wrap{background:radial-gradient(circle at center,rgba(217,255,63,.02),transparent 42%),#060609}
-.modal-bg.show .modal{animation:modalIn .28s var(--ease) both}
-@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
-.focus-mode .header{opacity:.35}.focus-mode .kicker{opacity:.35}.focus-mode .hero-title{font-size:clamp(68px,11vw,128px)}
-.focus-mode .header{opacity:.35}.focus-mode .kicker{opacity:.35}.focus-mode .hero-title{font-size:clamp(68px,11vw,128px)}
+.context-switch{display:flex;gap:6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px 0}
+.context-switch button{border:0;background:transparent;color:var(--muted);font:400 9px "DM Mono";padding:7px 9px;text-transform:uppercase;letter-spacing:.08em}
+.context-switch button.active{color:var(--accent);background:#ffffff03}
+.daily-ritual{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;display:grid;grid-template-columns:1fr auto;gap:20px}
+.daily-ritual-kicker{font:500 9px "DM Mono";letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.daily-ritual-title{font:700 clamp(28px,4vw,48px)/.98 "Space Grotesk";letter-spacing:-.065em;margin-top:8px}
+.daily-ritual-copy{font-size:11px;line-height:1.7;color:var(--muted);max-width:720px;margin-top:9px}
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.memory-item{padding:17px 13px;border-right:1px solid var(--line)}.memory-item:last-child{border-right:0}
+.memory-value{font:700 31px "Space Grotesk";letter-spacing:-.06em}.memory-label{font:9px "DM Mono";color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+.month-story{border-top:1px solid var(--line);padding-top:18px}.month-story-title{font:700 34px "Space Grotesk";letter-spacing:-.06em}.month-story-copy{font-size:11px;color:var(--muted);line-height:1.7;margin-top:8px;max-width:740px}
+.context-row{border-top:1px solid var(--line);padding:12px 0;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.context-row-name{font:600 15px "Space Grotesk"}.context-row-copy{font:10px "DM Mono";color:var(--muted);margin-top:3px}
+.context-controls{display:flex;gap:6px}.context-controls button{border:1px solid var(--line);background:transparent;color:var(--muted);font:400 9px "DM Mono";padding:6px 7px}.context-controls button.active{color:var(--accent);border-color:#d9ff3f33}
+.context-status{font:10px "DM Mono";color:var(--muted);margin-top:6px}
+.pwa-note{font:10px "DM Mono";color:var(--muted);padding:10px 0;border-top:1px dashed var(--line)}
+@media(max-width:780px){.daily-ritual{grid-template-columns:1fr}.memory-grid{grid-template-columns:1fr 1fr}.memory-item:nth-child(2){border-right:0}.memory-item:nth-child(3),.memory-item:nth-child(4){border-top:1px solid var(--line)}.context-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -290,7 +233,7 @@ body:before{
       <button data-nav="radar">Radar</button>
       <button data-nav="rescue">Resgate</button>
       <button data-nav="route">Rota</button>
-      <button data-nav="map">Mapa</button>
+      <button >Mapa</button>
       <button data-nav="archive">Arquivo</button>
       <button data-nav="settings">Config.</button>
     </nav>
@@ -324,7 +267,7 @@ body:before{
         <div class="now-playing-main">
           <a id="nowPlayingTrackLink" class="now-playing-track" target="_blank" rel="noopener">—</a>
           <a id="nowPlayingArtistLink" class="now-playing-artist" target="_blank" rel="noopener">—</a>
-          <a id="nowPlayingAlbumLink" class="now-playing-album" target="_blank" rel="noopener">—</a><div class="now-playing-status-line" id="nowPlayingSource">spotify · ao vivo</div>
+          <a id="nowPlayingAlbumLink" class="now-playing-album" target="_blank" rel="noopener">—</a>
           <div class="now-playing-progress"><div class="now-playing-progress-top"><span id="nowPlayingElapsed">0:00</span><span id="nowPlayingState">pausado</span><span id="nowPlayingDuration">0:00</span></div><div class="now-playing-progress-bar"><i id="nowPlayingProgressFill"></i></div></div>
         </div>
       </div>
@@ -336,16 +279,27 @@ body:before{
     </div>
   </div>
 
-  <section class="section">
+  <section class="section"><div class="section-head"><div><div class="ey" style="margin-bottom:7px">hoje</div><h2>ritual do radar</h2></div></div><div class="daily-ritual" id="dailyRitual"></div></section>
+<section class="section">
     <div class="section-head">
       <div><div class="ey" style="margin-bottom:7px">rotação recente · last.fm</div><h2>as últimas coisas</h2></div>
-      <div style="display:flex;gap:10px"><button class="link-btn" id="shuffleRecent">embaralhar</button><button class="link-btn" id="focusMode">foco</button></div>
+      <button class="link-btn" id="shuffleRecent">embaralhar</button>
     </div>
     <div class="recent-carousel-wrap" id="recentCarouselWrap">
       <div class="recent-carousel-track" id="recentCarouselTrack"></div>
     </div>
     <div class="muted" id="recentCarouselStatus" style="margin-top:9px">as últimas 10 escutas do seu diário</div>
   </section>
+  <section class="section" style="margin-top:24px">
+    <div class="section-head"><div><div class="ey">contexto do arquivo</div><h2>o que é seu de verdade?</h2></div></div>
+    <div class="context-switch" id="contextSwitch">
+      <button class="active" data-context="personal">pessoal</button>
+      <button data-context="work">trabalho</button>
+      <button data-context="both">ambos</button>
+    </div>
+    <div class="context-status" id="contextStatus">o Radar usa o contexto para sementes e estatísticas.</div>
+  </section>
+
 
   <section class="section">
     <div class="section-head">
@@ -353,6 +307,12 @@ body:before{
       <button class="link-btn" id="newRadar">nova rodada</button>
     </div>
     <div id="homeRadar"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div><h2>memória recente</h2><p>o que mudou na sua escuta</p></div></div>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <div class="month-story" id="monthStory"></div>
   </section>
 
   <section class="section">
@@ -435,10 +395,7 @@ body:before{
     <div id="mixResult" class="mix-result"></div>
   </div>
 
-  <div class="section">
-    <div class="section-head"><div><h2>pontes ocultas</h2><p>artistas a dois graus do seu núcleo</p></div><button class="link-btn" id="discoverBridges">explorar</button></div>
-    <div id="bridgeResult"></div>
-  </div>
+  
 
   <div class="section"><div class="section-head"><div><h2>você deveria já ter ouvido isso</h2><p>alta afinidade, zero plays</p></div></div><div id="shouldKnow"></div></div>
   <div class="section"><div class="section-head"><div><h2>quase favorito</h2><p>poucos plays, alta afinidade, longa ausência</p></div></div><div id="nearFavorite"></div></div>
@@ -447,6 +404,23 @@ body:before{
   <div class="section"><div class="section-head"><div><h2>o radar acerta?</h2><p>suas decisões viram métricas pessoais de curadoria</p></div></div><div class="dash" id="radarStats"></div></div>
   <div class="section"><div class="section-head"><div><h2>fila de descoberta</h2><p>quando você ouvir alguém daqui, o arquivo fecha o ciclo sozinho</p></div></div><div id="waitingRail"></div></div>
 
+
+  <div class="section">
+    <div class="section-head"><div><h2>aposta de hoje</h2><p>uma descoberta em destaque. o resto espera.</p></div><button class="link-btn primary" id="refreshHeroDiscovery">trocar aposta</button></div>
+    <div class="discovery-today" id="discoveryHero"></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div><h2>tipo de descoberta</h2><p>filtre a mesma matéria-prima sem trocar de motor</p></div></div>
+    <div class="discovery-taxonomy" id="discoveryTaxonomy">
+      <button class="active" data-tax="all">tudo</button>
+      <button data-tax="safe">segura</button>
+      <button data-tax="bridge">ponte</button>
+      <button data-tax="risk">risco</button>
+      <button data-tax="rescue">resgate</button>
+    </div>
+  </div>
+  <div class="section"><div class="section-head"><div><h2>o Radar aprendeu</h2><p>padrões extraídos das suas escutas e decisões</p></div></div><div id="radarLearned"></div></div>
+  <div class="section"><div class="section-head"><div><h2>qualidade da curadoria</h2><p>o que já sabemos sobre o comportamento do Radar</p></div></div><div class="discovery-grid" id="discoveryQuality"></div></div>
   <div class="section">
     <div class="section-head"><div><h2>radar clássico</h2><p>as seis sugestões da leva diária</p></div><button class="link-btn primary" id="classicRadar">atualizar leva</button></div>
     <div class="filter-bar">
@@ -493,20 +467,6 @@ body:before{
     </div>
     <div id="routeStatus" class="muted"></div>
     <div id="routeResult" style="margin-top:22px"></div>
-  </div>
-</section>
-
-<section id="view-map" class="view">
-  <div class="ey">constelação</div>
-  <h1 class="hero-title">seu céu.</h1>
-  <p class="hero-lede">Cada artista é um ponto. Tamanho é play. Linhas são similaridade. As regiões mais densas são os lugares onde sua escuta mora.</p>
-  <div class="section">
-    <div class="section-head"><div><h2>mapa estelar</h2><p id="mapStatus">pronto para desenhar</p></div><button class="link-btn primary" id="buildMap">desenhar</button></div>
-    <div class="canvas-wrap">
-      <canvas id="starMap"></canvas>
-      <div class="canvas-overlay">ARQUIVO / CONSTELAÇÃO</div>
-      <div class="canvas-hint">arraste · aproxime · explore</div>
-    </div>
   </div>
 </section>
 
@@ -584,7 +544,7 @@ body:before{
     <div class="section-head"><div><h2>desafios</h2><p>pequenas missões para sair do piloto automático</p></div></div>
     <div id="challenges"></div>
   </div>
-</section>
+<div class="section"><div class="section-head"><div><h2>contexto musical</h2><p>separe pessoal e trabalho.</p></div></div><div id="contextManager"></div><div class="sync-status" id="syncStatusGlobal"></div><div class="pwa-note">o contexto muda o Radar; o histórico continua no Last.fm.</div></div></section>
 
 </div>
 </main>
@@ -623,9 +583,21 @@ const SPOTIFY_CLIENT_ID="5455d9b625984362b357f0a08d348051";
 const LASTFM_API="https://ws.audioscrobbler.com/2.0/";
 const DB_NAME="radar-musical";
 const PAGE_SIZE=200;
-const REQUIRED_STORES={meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",suggestions:"key",similar:"key",tags:"key"};
+const REQUIRED_STORES={meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",suggestions:"key",similar:"key",tags:"key",aliases:"key",exposure:"key",contexts:"key",aggregates:"key",syncQueue:"key"};
 const COOLDOWN_DAYS=21;
-const $=id=>document.getElementById(id);
+const SIMILAR_TTL=30*86400000;
+const TAG_TTL=45*86400000;
+const ghostNode=new Proxy({}, {get(_t,p){
+  if(p==="classList"||p==="style"||p==="dataset")return ghostNode;
+  if(["add","remove","toggle","contains"].includes(p))return()=>false;
+  if(["addEventListener","removeEventListener","click","focus","blur","select","scrollIntoView","appendChild","remove","insertAdjacentHTML"].includes(p))return()=>{};
+  if(p==="querySelectorAll")return()=>[];
+  if(p==="querySelector")return()=>null;
+  if(p==="getBoundingClientRect")return()=>({top:0,left:0,right:0,bottom:0,width:0,height:0});
+  if(p==="children"||p==="childNodes"||p==="options")return[];
+  return "";
+},set(){return true}});
+const $=id=>document.getElementById(id)||ghostNode;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 const fmt=n=>new Intl.NumberFormat("pt-BR").format(Number(n)||0);
@@ -821,20 +793,26 @@ async function buildSeeds(){
 }
 async function similarCached(name,limit=18){
   const key=norm(name),cached=await get("similar",key);
-  if(cached?.items?.length)return cached.items.slice(0,limit);
-  const d=await lastfm("artist.getSimilar",{artist:name,limit,autocorrect:1});
-  const items=(Array.isArray(d.similarartists?.artist)?d.similarartists.artist:[d.similarartists?.artist].filter(Boolean))
-    .map(x=>({name:x.name,match:Number(x.match)||0}));
-  await put("similar",{key,name,items,savedAt:Date.now()});return items;
+  if(cached?.items?.length&&Date.now()-Number(cached.savedAt||0)<SIMILAR_TTL)return cached.items.slice(0,limit);
+  try{
+    const d=await lastfm("artist.getSimilar",{artist:name,limit:Math.max(24,limit),autocorrect:1});
+    const raw=Array.isArray(d.similarartists?.artist)?d.similarartists.artist:[d.similarartists?.artist].filter(Boolean);
+    const items=raw.map((x,i)=>{const p=raw.length<=1?0:i/(raw.length-1);return{name:x.name,match:Number(x.match)||0,rank:i,rankScore:Math.max(0,1-Math.pow(p,.72))}});
+    await put("similar",{key,name,items,savedAt:Date.now()});
+    return items.slice(0,limit);
+  }catch{return[]}
 }
+
 async function tagInfo(name){
-  const key=norm(name),c=await get("tags",key);if(c?.tags?.length)return c.tags;
+  const key=norm(name),c=await get("tags",key);
+  if(c?.tags?.length&&Date.now()-Number(c.savedAt||0)<TAG_TTL)return c.tags;
   try{
     const d=await lastfm("artist.getInfo",{artist:name,autocorrect:1}),tags=d.artist?.tags?.tag||[];
     const list=(Array.isArray(tags)?tags:[]).map(x=>norm(x.name)).filter(Boolean);
     await put("tags",{key,name,tags:list,savedAt:Date.now()});return list;
   }catch{return[]}
 }
+
 async function trackSimilarForSeeds(seeds,candidates,allTracks){
   for(const seed of seeds.slice(0,6)){
     const mine=allTracks.filter(t=>norm(t.artist)===norm(seed.name)).sort((a,b)=>b.plays-a.plays).slice(0,2);
@@ -853,57 +831,143 @@ async function trackSimilarForSeeds(seeds,candidates,allTracks){
     }
   }
 }
+
+async function getArtistContextMap(){
+  return new Map((await all("contexts")).map(x=>[x.key,x.context||"personal"]));
+}
+async function filterArtistsForDiscovery(artists){
+  const ctx=await getArtistContextMap();
+  if(activeContext==="both")return artists;
+  return artists.filter(a=>(ctx.get(a.key)||"personal")===activeContext);
+}
+async function buildDiscoverySeeds(mode="blend",artistName="",trackKey=""){
+  const allArtists=await all("artists"),artists=await filterArtistsForDiscovery(allArtists),tracks=await all("tracks"),cut=now()-14*86400;
+  const recent=artists.filter(x=>x.lastPlayed>=cut).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,8);
+  const pillars=[...artists].sort((a,b)=>b.plays-a.plays).slice(0,20);
+  const past=[...artists].sort((a,b)=>a.lastPlayed-b.lastPlayed).slice(0,10);
+  const pool=artists.filter(x=>!recent.some(r=>r.key===x.key)&&!past.slice(0,6).some(p=>p.key===x.key));
+  const surprise=[...pool].sort(()=>Math.random()-.5).slice(0,2);
+  let seeds=[];
+  if(mode==="recent")seeds=recent;
+  else if(mode==="pillars")seeds=pillars.slice(0,8);
+  else if(mode==="past")seeds=past;
+  else if(mode==="artist"){const a=artists.find(x=>norm(x.name)===norm(artistName));if(a)seeds=[a]}
+  else if(mode==="track"){const tr=tracks.find(x=>x.key===trackKey);if(tr)seeds=[artists.find(a=>a.key===norm(tr.artist))||{key:norm(tr.artist),name:tr.artist,plays:tr.plays,lastPlayed:tr.lastPlayed}]}
+  else seeds=[...recent,...pillars.slice(0,8),...surprise];
+  return[...new Map(seeds.filter(Boolean).map(x=>[x.key,x])).values()].slice(0,12)
+}
+
+async function buildDiscoveryEngine(options={}){
+  const mode=options.mode||"discover",radius=options.radius||state.radius||"mid";
+  const allArtists=await all("artists"),artists=await filterArtistsForDiscovery(allArtists),history=new Map(artists.map(x=>[x.key,x]));
+  const suggestions=await all("suggestions"),blocked=new Set(suggestions.filter(x=>["known","rejected","waiting","heard"].includes(x.status)).map(x=>norm(x.name)));
+  const rejected=suggestions.filter(x=>x.status==="rejected");
+  const tracks=await all("tracks"),seeds=await buildDiscoverySeeds(options.seedMode||"blend",options.artistName||"",options.trackKey||"");
+  const candidates=new Map();
+
+  for(const seed of seeds){
+    const arr=await similarCached(seed.name,24);
+    for(const item of arr){
+      const k=norm(item.name);if(k===norm(seed.name)||blocked.has(k))continue;
+      const v=candidates.get(k)||{name:item.name,rankScores:[],seeds:[],depths:[],trackScores:[]};
+      v.rankScores.push(item.rankScore??0);v.depths.push(1);if(!v.seeds.includes(seed.name))v.seeds.push(seed.name);candidates.set(k,v);
+    }
+  }
+
+  const strong=[...candidates.values()].sort((a,b)=>{
+    const sa=a.rankScores.reduce((x,y)=>x+y,0)+a.seeds.length*.25;
+    const sb=b.rankScores.reduce((x,y)=>x+y,0)+b.seeds.length*.25;
+    return sb-sa;
+  }).slice(0,mode==="detour"||mode==="cross"?10:6);
+
+  for(const c of strong){
+    const arr=await similarCached(c.name,10);
+    for(const item of arr.slice(0,8)){
+      const k=norm(item.name);if(blocked.has(k))continue;
+      const v=candidates.get(k)||{name:item.name,rankScores:[],seeds:[],depths:[],trackScores:[]};
+      v.rankScores.push((item.rankScore??0)*.72);v.depths.push(2);if(!v.seeds.includes(c.name))v.seeds.push(c.name);candidates.set(k,v);
+    }
+  }
+
+  for(const seed of seeds.slice(0,6)){
+    const own=tracks.filter(t=>norm(t.artist)===norm(seed.name)).sort((a,b)=>b.plays-a.plays).slice(0,2);
+    for(const tr of own){
+      try{
+        const d=await lastfm("track.getSimilar",{artist:tr.artist,track:tr.track,limit:8,autocorrect:1});
+        const arr=Array.isArray(d.similartracks?.track)?d.similartracks.track:[d.similartracks?.track].filter(Boolean);
+        for(const [i,item] of arr.entries()){
+          const artist=item.artist?.name;if(!artist)continue;const k=norm(artist);if(blocked.has(k))continue;
+          const v=candidates.get(k)||{name:artist,rankScores:[],seeds:[],depths:[],trackScores:[]};
+          const p=arr.length<=1?0:i/(arr.length-1);
+          v.trackScores.push(Math.max(0,1-Math.pow(p,.72))*.9);if(!v.seeds.includes(seed.name))v.seeds.push(seed.name);candidates.set(k,v);
+        }
+      }catch{}
+      await sleep(70);
+    }
+  }
+
+  const positive=new Map(),negative=new Map();
+  for(const a of artists.slice().sort((a,b)=>b.plays-a.plays).slice(0,40)){
+    for(const t of await tagInfo(a.name))positive.set(t,(positive.get(t)||0)+Math.log2(a.plays+1));
+  }
+  for(const r of rejected.slice(-30))for(const t of await tagInfo(r.name))negative.set(t,(negative.get(t)||0)+1);
+  const maxPos=Math.max(1,...positive.values()),maxNeg=Math.max(1,...negative.values());
+  const minRadius=RADIUS[radius]?.min||.45,items=[];
+
+  for(const c of candidates.values()){
+    const h=history.get(norm(c.name)),plays=h?.plays||0;
+    const loose=Boolean(h&&plays>=1&&plays<=4&&h.lastPlayed&&now()-h.lastPlayed>45*86400);
+    const recentActive=Boolean(h?.lastPlayed&&h.lastPlayed>=now()-30*86400);
+    if(h&&(plays>=5||recentActive)&&!loose)continue;
+
+    const vals=[...(c.rankScores||[]),...(c.trackScores||[])];if(!vals.length)continue;
+    const affinity=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const consensus=Math.min(1,c.seeds.length/4),depth2=Math.min(1,(c.depths||[]).filter(x=>x===2).length/3);
+    const novelty=h?Math.min(1,(5-plays)/5):1;
+    const absence=h?.lastPlayed?Math.min(1,(now()-h.lastPlayed)/(365*86400)):1;
+    const listeners=Number(h?.listeners||0),obscurity=listeners?1-Math.min(1,listeners/1000000):.5;
+    const tags=await tagInfo(c.name);
+    const pos=tags.length?tags.reduce((a,t)=>a+(positive.get(t)||0),0)/tags.length/maxPos:0;
+    const neg=tags.length?tags.reduce((a,t)=>a+(negative.get(t)||0),0)/tags.length/maxNeg:0;
+    const exposure=await getExposure(norm(c.name));
+    const risk=Math.min(1,(1-affinity)*.55+novelty*.25+obscurity*.2);
+    let score=affinity*.40+consensus*.20+pos*.15+novelty*.10+obscurity*.08+depth2*.07;
+    if(mode==="rescue")score=affinity*.45+absence*.30+pos*.15+consensus*.10;
+    if(mode==="detour")score=affinity*.30+(1-affinity)*.28+consensus*.18+depth2*.14+obscurity*.10;
+    if(mode==="cross")score=affinity*.36+consensus*.28+pos*.20+depth2*.10+obscurity*.06;
+    score+=(Number(radarConfig.risk||0)/100)*risk*.10+(Number(radarConfig.nostalgia||0)/100)*absence*.06+(Number(radarConfig.diversity||0)/100)*consensus*.06;
+    score*=Math.max(.55,1-neg*.35);
+    score-=Math.min(.25,(exposure?.shown||0)*.05);
+
+    const affinityFloor=Math.max(minRadius,Math.min(.9,(Number(radarConfig.match||65)/100)*.75));
+    if(!loose&&affinity<affinityFloor)continue;
+    items.push({key:norm(c.name),name:h?.name||c.name,category:loose?"loose":"new",plays,score,affinity,consensus,depth2,novelty,absence,obscurity,risk,bridgeCount:c.seeds.length,seeds:c.seeds,tagPositive:pos,tagNegative:neg,exposure:exposure?.shown||0});
+  }
+  items.sort((a,b)=>b.score-a.score);
+  return{items,seeds,settings:{mode,radius}}
+}
+
 async function calculateRadar(force=false){
   const old=await all("suggestions"),date=await meta("radarDate");
   if(!force&&date===today()&&old.some(x=>x.status==="alive"))return;
-  const history=new Map((await all("artists")).map(x=>[x.key,x]));
-  const tracks=await all("tracks"),seeds=await buildSeeds(),candidates=new Map();
-  for(const seed of seeds){
-    try{
-      const arr=await similarCached(seed.name,14);
-      for(const item of arr){
-        const k=norm(item.name),c=candidates.get(k)||{name:item.name,artistScores:[],trackScores:[],seeds:[],seedWeight:0};
-        c.artistScores.push(item.match);c.seedWeight+=seed.weight;if(!c.seeds.includes(seed.name))c.seeds.push(seed.name);candidates.set(k,c);
-      }
-    }catch{}
-    await sleep(100);
-  }
-  await trackSimilarForSeeds(seeds,candidates,tracks);
-  const blocked=new Set(old.filter(x=>["known","rejected"].includes(x.status)).map(x=>norm(x.name)));
-  const ranked=[],nowMs=Date.now(),min=RADIUS[state.radius].min;
-  for(const c of candidates.values()){
-    const k=norm(c.name);if(blocked.has(k))continue;
-    const prior=old.find(x=>norm(x.name)===k);
-    if(prior?.status==="waiting"||prior?.status==="heard")continue;
-    if(prior?.cooldownUntil&&prior.cooldownUntil>nowMs)continue;
-    const h=history.get(k),plays=h?.plays||0,category=h?(plays>=1&&plays<=4?"loose":null):"new";if(!category)continue;
-    const artistSim=c.artistScores.length?Math.max(...c.artistScores):0;
-    const trackSim=c.trackScores.length?Math.max(...c.trackScores):0;
-    const similarity=Math.max(artistSim,trackSim*.95);
-    if(similarity<min)continue;
-    const diversity=Math.min(1,c.seeds.length/3),origin=Math.min(1,c.seedWeight/Math.max(1,c.seeds.length));
-    const score=similarity*65+diversity*25+origin*10;
-    ranked.push({key:k,name:c.name,category,plays,score,similarity,seeds:c.seeds,status:"alive",createdAt:nowMs});
-  }
+  const engine=await buildDiscoveryEngine({mode:"discover",radius:state.radius||"mid"});
+  let items=engine.items;
   if(state.tag){
-    const filtered=[];
-    for(const x of ranked){const tags=await tagInfo(x.name);if(tags.includes(norm(state.tag)))filtered.push(x)}
-    ranked.splice(0,ranked.length,...filtered);
+    const tag=norm(state.tag);
+    items=[];
+    for(const x of engine.items)if((await tagInfo(x.name)).includes(tag))items.push(x);
   }
-  const loose=ranked.filter(x=>x.category==="loose").sort((a,b)=>b.score-a.score);
-  const fresh=ranked.filter(x=>x.category==="new").sort((a,b)=>b.score-a.score);
-  const chosen=[...loose.slice(0,3),...fresh.slice(0,3)];
-  for(const x of old){
-    if(x.status==="alive"){x.status="expired";x.cooldownUntil=nowMs+COOLDOWN_DAYS*86400000;await put("suggestions",x)}
+  const chosen=[],seen=new Set();
+  for(const x of items){
+    if(seen.has(norm(x.name)))continue;seen.add(norm(x.name));chosen.push({...x,status:"alive",createdAt:Date.now()});if(chosen.length>=6)break;
   }
-  for(const x of chosen){
-    const existing=await get("suggestions",x.key);
-    if(existing&&["waiting","known","rejected","heard"].includes(existing.status))continue;
-    await put("suggestions",x);
-  }
-  await meta("radarDate",today());await meta("radarRadius",state.radius);await meta("radarTag",state.tag);
+  for(const x of old)if(x.status==="alive"){x.status="expired";x.cooldownUntil=Date.now()+COOLDOWN_DAYS*86400000;await put("suggestions",x)}
+  for(const x of chosen)await put("suggestions",x);
+  const exp=[];
+  for(const x of chosen){const e=await getExposure(x.key);e.shown=(e.shown||0)+1;e.lastShown=Date.now();exp.push(e)}
+  await bulkPut("exposure",exp);
+  await meta("radarDate",today());await meta("radarRadius",state.radius||"mid");await meta("radarTag",state.tag||"");
 }
-
 /* ----- month portrait / profile / timeline ----- */
 function animatedNumber(el,target){
   const n=Number(target)||0,start=Number(el.dataset.value||0);el.dataset.value=n;
@@ -970,6 +1034,8 @@ async function renderOneYear(){
 
 /* ----- DISCOVERY LAB ----- */
 const radarConfig={mode:"discover",match:82,risk:28,nostalgia:24,diversity:55,seedMode:"blend"};
+let discoveryTax="all";
+let activeContext="personal";
 
 async function populateRadarSeeds(){
   const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays);
@@ -987,72 +1053,94 @@ function setRadarControlLabels(){
 }
 
 async function computeDiscoveryLab(){
-  const artists=await all("artists"),tracks=await all("tracks"),suggestions=await all("suggestions");
-  const map=new Map(artists.map(x=>[x.key,x])),recentCut=now()-14*86400;
-  const recent=artists.filter(x=>x.lastPlayed>=recentCut).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,8);
-  const pillars=[...artists].sort((a,b)=>b.plays-a.plays).slice(0,8);
-  let seeds=[...recent,...pillars];
-  if(radarConfig.seedMode==="recent")seeds=recent;
-  if(radarConfig.seedMode==="pillars")seeds=pillars;
-  if(radarConfig.seedMode==="past")seeds=[...artists].sort((a,b)=>a.lastPlayed-b.lastPlayed).slice(0,8);
-  if(radarConfig.seedMode==="artist"&&$("seedArtist").value)seeds=[artists.find(x=>norm(x.name)===norm($("seedArtist").value))].filter(Boolean);
-  if(radarConfig.seedMode==="track"&&$("seedTrack").value){const tr=tracks.find(x=>x.key===$("seedTrack").value);if(tr)seeds=[map.get(norm(tr.artist))||{name:tr.artist,key:norm(tr.artist),plays:tr.plays,lastPlayed:tr.lastPlayed}]}
-  seeds=[...new Map(seeds.filter(Boolean).map(x=>[x.key,x])).values()];
-  if(!seeds.length)return[];
-
-  const candidates=new Map();
-  for(const seed of seeds.slice(0,10)){
-    try{
-      const arr=await similarCached(seed.name,20);
-      for(const item of arr){
-        const k=norm(item.name);if(k===norm(seed.name))continue;
-        const c=candidates.get(k)||{name:item.name,sims:[],seeds:[]};
-        c.sims.push(item.match);if(!c.seeds.includes(seed.name))c.seeds.push(seed.name);candidates.set(k,c);
-      }
-    }catch{}
-  }
-
-  const results=[];
-  for(const c of candidates.values()){
-    const h=map.get(norm(c.name)),plays=h?.plays||0;
-    const category=h?(plays>=1&&plays<=4?"loose":null):"new";if(!category)continue;
-    const sim=Math.max(...c.sims),avg=c.sims.reduce((a,b)=>a+b,0)/c.sims.length,diversity=Math.min(1,c.seeds.length/4);
-    const absence=h?.lastPlayed?Math.min(1,(now()-h.lastPlayed)/(365*86400)):1;
-    const novelty=h?Math.min(1,(5-plays)/5):1;
-    const mode=radarConfig.mode;
-    let score;
-    if(mode==="detour")score=sim*.35+diversity*.25+(1-sim)*.3+(radarConfig.risk/100)*.1;
-    else if(mode==="cross")score=avg*.40+diversity*.40+(radarConfig.diversity/100)*.20;
-    else if(mode==="rescue")score=sim*.45+absence*.35+novelty*.20;
-    else score=sim*.65+diversity*.20+(radarConfig.risk/100)*.05+((radarConfig.nostalgia/100)*absence*.10);
-    const risk=Math.min(100,Math.round((1-sim)*55+novelty*25+diversity*20));
-    const potential=Math.min(1,sim*.45+novelty*.25+diversity*.2+absence*.1);
-    results.push({key:c.name.toLowerCase(),name:c.name,category,plays,h,similarity:sim,average:avg,diversity,seeds:c.seeds,score,potential,risk,absence});
-  }
-
-  const blocked=new Set(suggestions.filter(x=>["known","rejected"].includes(x.status)).map(x=>norm(x.name)));
-  const cooldown=new Set(suggestions.filter(x=>x.cooldownUntil>Date.now()).map(x=>norm(x.name)));
-  return results.filter(x=>!blocked.has(norm(x.name))&&!cooldown.has(norm(x.name))).sort((a,b)=>b.score-a.score);
+  const mode=radarConfig.mode==="rescue"?"rescue":radarConfig.mode==="detour"?"detour":radarConfig.mode==="cross"?"cross":"discover";
+  return buildDiscoveryEngine({mode,radius:state.radius||"mid",seedMode:radarConfig.seedMode||"blend",artistName:$("seedArtist")?.value||"",trackKey:$("seedTrack")?.value||""});
 }
 
+
+async function classifyDiscoveryItem(x){
+  if(x.category==="loose")return "rescue";
+  if(x.risk>=.68)return "risk";
+  if(x.consensus>=.5||x.depth2>=.34)return "bridge";
+  return "safe";
+}
+async function buildDiscoveryEvidence(item){
+  const tags=await tagInfo(item.name),reasons=[];
+  if(item.seeds?.length)reasons.push(item.seeds.length>1?`apareceu no cruzamento de ${item.seeds.slice(0,4).join(", ")}`:`apareceu a partir de ${item.seeds[0]}`);
+  if(item.consensus>=.5)reasons.push("voltou por mais de uma vizinhança");
+  if(item.depth2>0)reasons.push("também apareceu em segundo grau");
+  if(item.tagPositive>.2)reasons.push("conversa com tags do seu núcleo");
+  if(item.obscurity>.65)reasons.push("é uma escolha menos óbvia dessa região");
+  if(item.category==="loose")reasons.push("você já ouviu, mas ficou muito tempo sem voltar");
+  return{reason:reasons.join("; ")+".",tags:tags.slice(0,5)};
+}
+async function getDiscoveryStats(){
+  const rows=await all("suggestions"),heard=rows.filter(x=>x.status==="heard").length,rejected=rows.filter(x=>x.status==="rejected").length,waiting=rows.filter(x=>x.status==="waiting").length,decided=heard+rejected;
+  return{heard,rejected,waiting,decided,total:rows.length,hit:decided?heard/decided:0};
+}
+async function buildLearningSummary(){
+  const artists=await all("artists"),suggestions=await all("suggestions"),rejected=suggestions.filter(x=>x.status==="rejected").slice(-40),positive=new Map(),negative=new Map();
+  for(const a of artists.slice().sort((x,y)=>y.plays-x.plays).slice(0,40))for(const t of await tagInfo(a.name))positive.set(t,(positive.get(t)||0)+Math.log2(a.plays+1));
+  for(const r of rejected)for(const t of await tagInfo(r.name))negative.set(t,(negative.get(t)||0)+1);
+  const topPos=[...positive.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3),topNeg=[...negative.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3),heard=suggestions.filter(x=>x.status==="heard").length,rows=[];
+  if(topPos.length)rows.push({key:"funciona",copy:`Seu núcleo está especialmente concentrado em ${topPos.map(x=>x[0]).join(", ")}.`,value:`${topPos.length} sinais`});
+  if(topNeg.length)rows.push({key:"evita",copy:`Suas rejeições já criaram uma penalidade em torno de ${topNeg.map(x=>x[0]).join(", ")}.`,value:`${rejected.length} rejeições`});
+  rows.push(heard?{key:"acerto",copy:`O Radar já tem ${heard} descoberta(s) que você efetivamente ouviu.`,value:`${Math.round(heard/Math.max(1,heard+rejected)*100)}%`}:{key:"começo",copy:"Ainda falta o Radar acumular alguns acertos reais. Ouvir uma recomendação é o dado mais valioso.",value:"fase inicial"});
+  const recent=artists.filter(x=>x.lastPlayed>=now()-14*86400).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,3);
+  if(recent.length)rows.push({key:"agora",copy:`Sua janela recente está puxando ${recent.map(x=>x.name).join(", ")} para o radar.`,value:"últimos 14 dias"});
+  return rows;
+}
+async function renderDiscoveryHero(data){
+  const hero=data.slice().sort((a,b)=>b.score-a.score)[0];
+  if(!hero){$("discoveryHero").innerHTML=`<div class="empty"><strong>nenhuma aposta forte o bastante.</strong>O Radar prefere silêncio a enchimento.</div>`;return}
+  const ev=await buildDiscoveryEvidence(hero);
+  $("discoveryHero").innerHTML=`<div class="hero-candidate"><div class="hero-candidate-index">01</div><div>
+    <div class="hero-candidate-name artist-open" data-artist="${esc(hero.name)}" style="cursor:pointer">${esc(hero.name)}</div>
+    <div class="hero-candidate-copy">${esc(ev.reason)}</div>
+    <div class="reason-rail"><span class="reason-pill accent">${Math.round(hero.score*100)} score</span><span class="reason-pill">${Math.round(hero.affinity*100)} afinidade</span><span class="reason-pill">${hero.seeds?.length||0} pontes</span>${ev.tags.slice(0,3).map(t=>`<span class="reason-pill">${esc(t)}</span>`).join("")}</div>
+    <div class="story-actions"><button class="link-btn lab-action primary" data-name="${esc(hero.name)}" data-action="waiting">quero ouvir</button><button class="link-btn lab-action" data-name="${esc(hero.name)}" data-action="rejected">não é pra mim</button><button class="link-btn artist-open" data-artist="${esc(hero.name)}">abrir ficha</button><a class="link-btn" target="_blank" rel="noopener" href="https://open.spotify.com/search/${encodeURIComponent(hero.name)}">spotify ↗</a></div>
+  </div><div class="hero-candidate-score">${Math.round(hero.risk*100)} risco<br>${Math.round(hero.tagPositive*100)} perfil</div></div>`;
+  document.querySelectorAll("#discoveryHero .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+  document.querySelectorAll("#discoveryHero .lab-action").forEach(btn=>bindSingleLabAction(btn));
+}
+async function bindSingleLabAction(btn){
+  btn.onclick=async()=>{
+    const key=norm(btn.dataset.name),rows=await all("suggestions");let rec=rows.find(x=>norm(x.name)===key);
+    if(!rec)rec={key,name:btn.dataset.name,status:"alive",createdAt:Date.now(),seeds:[]};
+    rec.status=btn.dataset.action;rec.decisionAt=Date.now();if(rec.status==="waiting")rec.waitingAt=Date.now();if(rec.status==="rejected")rec.rejectedAt=Date.now();
+    await put("suggestions",rec);const e=await getExposure(key);e.lastDecision=Date.now();await put("exposure",e);toast(rec.status==="waiting"?"guardado na fila.":"marcado.");await renderDiscoveryLab();
+  };
+}
+async function renderRadarLearning(){
+  const rows=await buildLearningSummary();
+  $("radarLearned").innerHTML=`<div class="learned-list">${rows.map(x=>`<div class="learned-row"><div class="learned-key">${esc(x.key)}</div><div class="learned-copy">${esc(x.copy)}</div><div class="learned-value">${esc(x.value)}</div></div>`).join("")}</div>`;
+}
+async function renderDiscoveryQuality(stats){
+  const last=await meta("lastSync"),syncLabel=last?new Date(last).toLocaleDateString("pt-BR"):"—";
+  $("discoveryQuality").innerHTML=[[stats.hit?Math.round(stats.hit*100)+"%":"—","taxa de acerto"],[fmt(stats.waiting),"na fila"],[syncLabel,"última sincronização"]].map(x=>`<div class="stat-box"><div class="big">${x[0]}</div><div class="small">${x[1]}</div></div>`).join("");
+}
 function labCard(x,i,label){
   const why=x.seeds.length>=3?`apareceu por ${x.seeds.length} caminhos: ${x.seeds.slice(0,4).map(esc).join(", ")}.`:`apareceu pela ponte com ${x.seeds.slice(0,3).map(esc).join(", ")}.`;
   const absent=x.h?.lastPlayed?`última escuta há ${Math.max(1,Math.floor((now()-x.h.lastPlayed)/86400))} dias.`:"zero plays no arquivo.";
-  return `<article class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="badge ${x.category==="loose"?"loose":"new"}" style="margin-top:5px">${esc(label)}</div><div class="lab-copy">${why} ${x.plays?`Você já ouviu ${x.plays} vezes; ${absent}`:absent}</div><div class="metric-line"><span>match</span><div class="bar"><i style="width:${Math.round(x.similarity*100)}%"></i></div><span>${Math.round(x.similarity*100)}</span></div><div class="story-actions"><button class="link-btn lab-action primary" data-name="${esc(x.name)}" data-action="waiting">quero ouvir</button><button class="link-btn lab-action" data-name="${esc(x.name)}" data-action="rejected">não é pra mim</button><button class="link-btn artist-open" data-artist="${esc(x.name)}">abrir ficha</button></div></div><div class="lab-metrics">${Math.round(x.potential*100)} potencial<br>${x.risk} risco<br>${x.seeds.length} pontes</div></div></article>`;
+  return `<article class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="badge ${x.category==="loose"?"loose":"new"}" style="margin-top:5px">${esc(label)}</div><div class="lab-copy">${why} ${x.plays?`Você já ouviu ${x.plays} vezes; ${absent}`:absent}</div><div class="metric-line"><span>match</span><div class="bar"><i style="width:${Math.round(x.affinity*100)}%"></i></div><span>${Math.round(x.affinity*100)}</span></div><div class="story-actions"><button class="link-btn lab-action primary" data-name="${esc(x.name)}" data-action="waiting">quero ouvir</button><button class="link-btn lab-action" data-name="${esc(x.name)}" data-action="rejected">não é pra mim</button><button class="link-btn artist-open" data-artist="${esc(x.name)}">abrir ficha</button></div></div><div class="lab-metrics">${Math.round(x.score*100)} potencial<br>${x.risk} risco<br>${x.seeds.length} pontes</div></div></article>`;
 }
 
 async function renderDiscoveryLab(){
-  const data=await computeDiscoveryLab();
-  const should=data.filter(x=>x.category==="new").sort((a,b)=>b.potential-a.potential).slice(0,4);
-  const near=data.filter(x=>x.category==="loose").sort((a,b)=>(b.similarity*.7+b.absence*.3)-(a.similarity*.7+a.absence*.3)).slice(0,4);
-  const risk=data.filter(x=>x.category==="new").sort((a,b)=>b.risk-a.risk).slice(0,4);
+  const lab=await computeDiscoveryLab();
+  let data=await Promise.all(lab.items.map(async x=>({...x,taxonomy:await classifyDiscoveryItem(x)})));
+  if(discoveryTax!=="all")data=data.filter(x=>x.taxonomy===discoveryTax);
+  const used=new Set(),takeDistinct=(arr,n)=>arr.filter(x=>{const k=norm(x.name);if(used.has(k))return false;used.add(k);return true}).slice(0,n);
+  const should=takeDistinct(data.filter(x=>x.category==="new").sort((a,b)=>b.score-a.score),4);
+  const near=takeDistinct(data.filter(x=>x.category==="loose").sort((a,b)=>(b.affinity*.7+b.absence*.3)-(a.affinity*.7+a.absence*.3)),4);
+  const risk=takeDistinct(data.filter(x=>x.taxonomy==="risk"&&x.category==="new").sort((a,b)=>b.risk-a.risk),4);
+
   $("shouldKnow").innerHTML=should.length?should.map((x,i)=>labCard(x,i,"você deveria já ter ouvido")).join(""):`<div class="empty"><strong>nenhum buraco evidente.</strong>O Radar não vai inventar uma dívida.</div>`;
   $("nearFavorite").innerHTML=near.length?near.map((x,i)=>labCard(x,i,"quase favorito")).join(""):`<div class="empty"><strong>nenhum quase favorito.</strong>Talvez seja hora de resgatar alguém.</div>`;
-  $("riskPicks").innerHTML=risk.length?risk.map((x,i)=>labCard(x,i,"risco")).join(""):`<div class="empty"><strong>risco demais.</strong>O mapa não encontrou uma boa aposta.</div>`;
+  $("riskPicks").innerHTML=risk.length?risk.map((x,i)=>labCard(x,i,"risco")).join(""):`<div class="empty"><strong>nenhum risco convincente.</strong>O Radar prefere silêncio a enchimento.</div>`;
 
-  const allS=await all("suggestions"),heard=allS.filter(x=>x.status==="heard").length,rejected=allS.filter(x=>x.status==="rejected").length,waiting=allS.filter(x=>x.status==="waiting").length,dec=heard+rejected;
-  $("radarStats").innerHTML=[[dec?Math.round(heard/dec*100)+"%":"—","taxa de acerto"],[fmt(heard),"descobertas ouvidas"],[fmt(waiting),"na fila"],[fmt(rejected),"rejeitadas"]].map(x=>`<div class="dash-item"><div class="dash-value">${x[0]}</div><div class="dash-label">${x[1]}</div></div>`).join("");
-  await bindLabActions();await renderWaitingRail();
+  const stats=await getDiscoveryStats();
+  $("radarStats").innerHTML=[[stats.hit?Math.round(stats.hit*100)+"%":"—","taxa de acerto"],[fmt(stats.heard),"descobertas ouvidas"],[fmt(stats.waiting),"na fila"],[fmt(stats.rejected),"rejeitadas"]].map(x=>`<div class="dash-item"><div class="dash-value">${x[0]}</div><div class="dash-label">${x[1]}</div></div>`).join("");
+  await renderDiscoveryHero(data);await renderRadarLearning();await renderDiscoveryQuality(stats);await bindLabActions();await renderWaitingRail();
 }
 
 async function bindLabActions(){
@@ -1088,24 +1176,6 @@ async function runMix(){
   document.querySelectorAll("#mixResult .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
 }
 
-async function discoverHiddenBridges(){
-  const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays).slice(0,10),direct=new Set(artists.map(x=>x.key)),bridges=new Map();
-  for(const a of artists){
-    let one=[];try{one=await similarCached(a.name,12)}catch{}
-    for(const b of one){
-      if(direct.has(norm(b.name)))continue;
-      let two=[];try{two=await similarCached(b.name,12)}catch{}
-      for(const c of two){
-        if(!direct.has(norm(c.name)))continue;
-        const k=norm(b.name),score=(b.match+c.match)/2,old=bridges.get(k);
-        if(!old||score>old.score)bridges.set(k,{middle:b.name,from:a.name,to:c.name,score});
-      }
-    }
-  }
-  const list=[...bridges.values()].sort((a,b)=>b.score-a.score).slice(0,8);
-  $("bridgeResult").innerHTML=list.length?list.map((x,i)=>`<div class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.middle)}">${esc(x.middle)}</div><div class="lab-copy">${esc(x.from)} → este artista → ${esc(x.to)}</div></div><div class="lab-metrics">${Math.round(x.score*100)} ponte</div></div></div>`).join(""):`<div class="empty"><strong>nenhuma ponte escondida.</strong></div>`;
-  document.querySelectorAll("#bridgeResult .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
-}
 
 async function buildDiscoveryChains(){
   const rows=(await all("suggestions")).filter(x=>x.status==="heard"||x.status==="waiting").filter(x=>x.seeds?.length).slice(-8).reverse();
@@ -1130,7 +1200,7 @@ async function renderRecentCarousel(shuffle=false){
   const items=await recentItems(shuffle);
   if(!items.length){$("recentCarouselTrack").innerHTML="";$("recentCarouselStatus").textContent="seu diário ainda não tem escutas recentes.";return}
   $("recentCarouselTrack").innerHTML=items.map(recentCard).join("")+items.map(recentCard).join("");
-  $("recentCarouselTrack").style.animationDuration=Math.max(24,Math.min(38,items.length*3.2))+"s";$("recentCarouselStatus").textContent=`${items.length} escutas recentes · arraste no celular · clique para abrir no Spotify`;
+  $("recentCarouselTrack").style.animationDuration=Math.max(24,Math.min(38,items.length*3.2))+"s";
   $("recentCarouselStatus").textContent=`${items.length} escutas recentes · clique em uma capa para abrir no Spotify`;
 }
 function storyHTML(s,i){
@@ -1155,14 +1225,68 @@ async function renderRadar(){
   await bindStories();
   $("radarDate").textContent=await meta("radarDate")||"nenhuma rodada";
 }
-async function renderHome(){
+
+async function getArtistContext(key){return(await get("contexts",key))||{key,context:"personal"}}
+async function setArtistContext(name,context){
+  const key=norm(name);await put("contexts",{key,name,context,updatedAt:Date.now()});await enqueueSync({type:"context",key,name,context,updatedAt:Date.now()});
+}
+async function loadContextMap(){return new Map((await all("contexts")).map(x=>[x.key,x]))}
+async function filteredArtistsByContext(){
+  const artists=await all("artists"),map=await loadContextMap();
+  return artists.filter(a=>activeContext==="both"||(map.get(a.key)?.context||"personal")===activeContext)
+}
+async function updateContextSwitch(){
+  document.querySelectorAll("#contextSwitch button").forEach(b=>b.classList.toggle("active",b.dataset.context===activeContext));
+  if($("contextStatus"))$("contextStatus").textContent=activeContext==="personal"?"sementes e estatísticas focadas no que você ouve por prazer.":activeContext==="work"?"escuta profissional separada do Radar pessoal.":"visão combinada.";
+}
+async function renderDailyRitual(){
+  const artists=await filteredArtistsByContext(),suggestions=await all("suggestions"),loose=artists.filter(x=>x.plays>=1&&x.plays<=4&&x.lastPlayed&&now()-x.lastPlayed>45*86400),waiting=suggestions.filter(x=>x.status==="waiting"),heard=suggestions.filter(x=>x.status==="heard");
+  let k="o próximo gesto",title="descubra uma coisa nova.",copy="Escolha uma aposta no Radar. Se você realmente ouvir, ela entra na memória do sistema.",target="radar";
+  if(waiting.length){k="a fila chama";title=`${fmt(waiting.length)} descoberta${waiting.length>1?"s":""} esperando.`;copy="Você já decidiu que quer ouvir. Agora basta deixar a escuta acontecer.";}
+  else if(loose.length){k="arqueologia";title=`${fmt(loose.length)} ponta${loose.length>1?"s":""} solta${loose.length>1?"s":""} elegível${loose.length>1?"eis":""}.`;copy="Há música que já passou por você e ficou esquecida.";target="rescue";}
+  else if(!heard.length){k="primeiro dia";title="crie a primeira descoberta.";copy="O Radar fica mais inteligente quando você vive uma recomendação."}
+  $("dailyRitual").innerHTML=`<div><div class="daily-ritual-kicker">${esc(k)}</div><div class="daily-ritual-title">${esc(title)}</div><div class="daily-ritual-copy">${esc(copy)}</div></div><button class="link-btn primary" id="ritualAction">${target==="rescue"?"abrir resgate":"abrir radar"} ↗</button>`;
+  $("ritualAction").onclick=()=>document.querySelector(`[data-nav="${target}"]`)?.click();
+}
+async function renderMemoryRecent(){
+  const artists=await filteredArtistsByContext(),sc=await all("scrobbles"),monthStart=new Date(new Date().getFullYear(),new Date().getMonth(),1).getTime(),monthSc=sc.filter(x=>x.timestamp>=monthStart),active=artists.filter(x=>x.lastPlayed>=now()-30*86400),loose=artists.filter(x=>x.plays>=1&&x.plays<=4&&x.lastPlayed&&now()-x.lastPlayed>45*86400),newA=artists.filter(x=>x.firstPlayed>=monthStart),top=artists.slice().sort((a,b)=>b.plays-a.plays)[0];
+  $("memoryGrid").innerHTML=[[newA.length,"artistas novos no mês"],[monthSc.length,"scrobbles no mês"],[active.length,"artistas ativos"],[loose.length,"pontas soltas"]].map(x=>`<div class="memory-item"><div class="memory-value">${fmt(x[0])}</div><div class="memory-label">${x[1]}</div></div>`).join("");
+  $("monthStory").innerHTML=`<div class="month-story-title">${top?esc(top.name):"seu arquivo"}</div><div class="month-story-copy">${top?`continua sendo a presença mais forte deste contexto.`:"Ainda falta histórico suficiente para contar uma história."}</div>`;
+  await put("aggregates",{key:"memory:"+activeContext,savedAt:Date.now(),context:activeContext,newArtists:newA.length,monthScrobbles:monthSc.length,activeArtists:active.length,looseArtists:loose.length,top:top?.name||"—"});
+}
+async function renderContextManager(){
+  const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays).slice(0,40),map=await loadContextMap();
+  $("contextManager").innerHTML=artists.map(a=>{const c=map.get(a.key)?.context||"personal";return`<div class="context-row"><div><div class="context-row-name">${esc(a.name)}</div><div class="context-row-copy">${fmt(a.plays)} plays</div></div><div class="context-controls">${["personal","work","both"].map(v=>`<button data-context-set="${v}" data-artist="${esc(a.name)}" class="${c===v?"active":""}">${v==="personal"?"pessoal":v==="work"?"trabalho":"ambos"}</button>`).join("")}</div></div>`}).join("");
+}
+async function enqueueSync(payload){
+  try{
+    const stableKey=`${payload?.type||"event"}:${payload?.key||""}`;
+    const existing=(await all("syncQueue")).sort((a,b)=>b.createdAt-a.createdAt).find(x=>x.stableKey===stableKey);
+    const row={key:existing?.key||crypto.randomUUID(),stableKey,payload,createdAt:Date.now()};
+    await put("syncQueue",row);
+    const rows=(await all("syncQueue")).sort((a,b)=>b.createdAt-a.createdAt);
+    for(const old of rows.slice(200))await clearStoreItem("syncQueue",old.key);
+  }catch{}
+}
+async function flushDecisionSync(){
+  const pending=await all("syncQueue");
+  if($("syncStatusGlobal"))$("syncStatusGlobal").textContent=pending.length
+    ?`${pending.length} mudança(s) guardadas localmente. sincronização entre dispositivos ainda não está conectada.`
+    :"nenhuma mudança pendente.";
+}
+function installPWA(){
+  if(location.protocol==="file:")return;
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(e=>console.warn("PWA:",e));
+  }
+}async function renderHome(){
   const sc=(await all("scrobbles")).sort((a,b)=>b.timestamp-a.timestamp),artists=await all("artists");
   animateSafe($("totalPlays"),sc.length);$("totalArtists").textContent=fmt(artists.length)+" artistas";
   $("homeState").textContent=state.user?`last.fm / ${state.user}`:"aguardando Last.fm";
   await renderNowPlaying();
   await renderRecentCarousel();
   const p=await monthlyPortrait();animatedNumber($("monthNew"),p.newArtists);animatedNumber($("monthScrobbles"),p.scrobbles);$("monthTop").textContent=p.top;$("monthTopPlays").textContent=p.top==="—"?"maior presença do mês":`${fmt(p.topPlays)} plays no mês`;
-  await renderOneYear();await renderProfile();await renderHeatmap();await renderTimeline();
+  await renderOneYear();await renderProfile();await renderHeatmap();await renderTimeline();await updateContextSwitch();await renderDailyRitual();await renderMemoryRecent();await flushDecisionSync();
 }
 function animateSafe(el,n){animatedNumber(el,n)}
 async function renderRescue(){
@@ -1177,14 +1301,14 @@ async function renderArchive(){
   const q=norm($("archiveSearch").value);let rows=[];
   if(state.archiveMode==="artists"){
     rows=(await all("artists")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.name).includes(q));
-    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,1000).map(x=>`<div class="archive-row"><div><div class="archive-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="archive-sub">última vez ${new Date(x.lastPlayed*1000).toLocaleDateString("pt-BR")}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;
-    $("archiveNotice").textContent=rows.length>1000?"Mostrando 1.000. Use a busca para encontrar o restante.":"";
+    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,3000).map(x=>`<div class="archive-row"><div><div class="archive-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="archive-sub">última vez ${new Date(x.lastPlayed*1000).toLocaleDateString("pt-BR")}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;
+    $("archiveNotice").textContent=rows.length>3000?"Mostrando os primeiros 3.000. Use a busca para encontrar o restante.":"";
   }else if(state.archiveMode==="albums"){
     rows=(await all("albums")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.album).includes(q)||norm(x.artist).includes(q));
-    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,1000).map(x=>`<div class="archive-row"><div><div class="archive-name">${esc(x.album)}</div><div class="archive-sub">${esc(x.artist)}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;$("archiveNotice").textContent=rows.length>1000?"Mostrando 1.000. Use a busca para encontrar o restante.":"";
+    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,3000).map(x=>`<div class="archive-row"><div><div class="archive-name">${esc(x.album)}</div><div class="archive-sub">${esc(x.artist)}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;$("archiveNotice").textContent=rows.length>3000?"Mostrando os primeiros 3.000. Use a busca para encontrar o restante.":"";
   }else if(state.archiveMode==="tracks"){
     rows=(await all("tracks")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.track).includes(q)||norm(x.artist).includes(q)||norm(x.album).includes(q));
-    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,1000).map(x=>`<div class="archive-row"><div><div class="archive-name">${esc(x.track)}</div><div class="archive-sub">${esc(x.artist)}${x.album?" · "+esc(x.album):""}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;$("archiveNotice").textContent=rows.length>1000?"Mostrando 1.000. Use a busca para encontrar o restante.":"";
+    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,3000).map(x=>`<div class="archive-row"><div><div class="archive-name">${esc(x.track)}</div><div class="archive-sub">${esc(x.artist)}${x.album?" · "+esc(x.album):""}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;$("archiveNotice").textContent=rows.length>3000?"Mostrando os primeiros 3.000. Use a busca para encontrar o restante.":"";
   }else{
     const sess=await sessions();
     $("archiveContent").innerHTML=sess.map(x=>`<div class="timeline-row"><div class="timeline-date">${new Date(x.start*1000).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})}</div><div><div class="timeline-artists">${[...x.artists].slice(0,12).map(a=>`<span>${esc(a)}</span>`).join(" · ")}</div><div class="muted" style="margin-top:6px">${x.tracks.length} faixas · ${Math.round((x.last-x.start)/60)} min</div></div></div>`).join("")||`<div class="empty"><strong>sem sessões.</strong></div>`;
@@ -1192,19 +1316,21 @@ async function renderArchive(){
   }
   document.querySelectorAll("#archiveContent .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
 }
-function renderChallenges(){
-  const challenges=[
-    ["fora da bolha","ouça um artista de território novo esta semana.","Abra o Radar e leve alguém para a fila de espera."],
-    ["ressurreição","volte para 3 pontas soltas.","O Resgate já sabe quem está esperando."],
-    ["distância","encontre um caminho de pelo menos 4 passos.","Rota → dois artistas → aumente o desafio."],
-    ["álbum inacabado","complete um disco que você parou no meio.","O Arquivo mostra os álbuns; a segunda metade é sua."]
-  ];
-  $("challenges").innerHTML=challenges.map((c,i)=>`<div class="challenge"><div><strong>${c[0]}</strong><p>${c[1]}</p><p>${c[2]}</p></div><div class="plays">${String(i+1).padStart(2,"0")}</div></div>`).join("");
+async function renderChallenges(){
+  const [artists,suggestions]=await Promise.all([all("artists"),all("suggestions")]);
+  const loose=artists.filter(x=>x.plays>=1&&x.plays<=4&&now()-x.lastPlayed>45*86400);
+  const waiting=suggestions.filter(x=>x.status==="waiting"),heard=suggestions.filter(x=>x.status==="heard");
+  const items=[];
+  if(loose.length)items.push(["ressurreição",`${fmt(loose.length)} pontas soltas elegíveis.`,"resgate uma hoje."]);
+  if(waiting.length)items.push(["fila",`${fmt(waiting.length)} descoberta(s) esperando.`,"ouça alguém da fila."]);
+  if(!heard.length)items.push(["fora da bolha","Nenhuma descoberta foi efetivamente ouvida ainda.","aceite uma aposta."]);
+  else items.push(["cadeia",`${fmt(heard.length)} descoberta(s) foram realmente ouvidas.`,"continue uma cadeia."]);
+  $("challenges").innerHTML=items.slice(0,4).map((c,i)=>`<div class="challenge"><div><strong>${esc(c[0])}</strong><p>${esc(c[1])}</p><p>${esc(c[2])}</p></div><div class="plays">${String(i+1).padStart(2,"0")}</div></div>`).join("");
 }
 
 /* ----- artist sheet + Spotify visual enrichment ----- */
 function artistImageURL(){return null}
-
+let nowPlayingState={item:null,progressMs:0,durationMs:0,isPlaying:false,lastPoll:0};
 async function refreshSpotifyToken(){
   if(!state.spotify?.refreshToken)return false;
   const clientId=state.spotify.clientId||SPOTIFY_CLIENT_ID;
@@ -1221,123 +1347,53 @@ async function ensureSpotifyToken(){
   if(Date.now()<Number(state.spotify.expiresAt||0)-60000)return true;
   return refreshSpotifyToken();
 }
-let nowPlayingState={item:null,progressMs:0,durationMs:0,isPlaying:false,lastPoll:0};
-
-async function refreshSpotifyToken(){
-  if(!state.spotify?.refreshToken)return false;
-  const clientId=state.spotify.clientId||SPOTIFY_CLIENT_ID;
-  const body=new URLSearchParams({grant_type:"refresh_token",refresh_token:state.spotify.refreshToken,client_id:clientId});
-  const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
-  const d=await r.json();
-  if(!r.ok){
-    if(d.error==="invalid_grant"){
-      state.spotify=null;
-      await meta("spotify",null);
-      if($("spotifyStatus"))$("spotifyStatus").textContent="sessão expirada. reconecte o Spotify.";
-      clearNowPlaying("reconecte o Spotify para continuar.");
-      return false;
-    }
-    throw new Error(d.error_description||"Spotify não conseguiu renovar a sessão.");
-  }
-  state.spotify.accessToken=d.access_token;
-  state.spotify.expiresAt=Date.now()+Number(d.expires_in||3600)*1000;
-  if(d.refresh_token)state.spotify.refreshToken=d.refresh_token;
-  await meta("spotify",state.spotify);
-  return true;
-}
-async function ensureSpotifyToken(){
-  if(!state.spotify?.accessToken)return false;
-  if(Date.now()<Number(state.spotify.expiresAt||0)-60000)return true;
-  return refreshSpotifyToken();
-}
 async function spotifyApi(path,options={}){
   if(!await ensureSpotifyToken())return null;
-  const call=()=>fetch("https://api.spotify.com/v1"+path,{...options,headers:{...(options.headers||{}),Authorization:"Bearer "+state.spotify.accessToken}});
-  let r=await call();
-  if(r.status===401&&await refreshSpotifyToken())r=await call();
-  if(r.status===204)return null;
-  if(!r.ok)throw new Error("Spotify HTTP "+r.status);
-  return r.json();
+  const call=()=>fetch('https://api.spotify.com/v1'+path,{...options,headers:{...(options.headers||{}),Authorization:'Bearer '+state.spotify.accessToken}});
+  let r=await call();if(r.status===401&&await refreshSpotifyToken())r=await call();
+  if(r.status===204)return null;if(!r.ok)throw new Error('Spotify HTTP '+r.status);return r.json();
 }
-function fmtMs(ms){const t=Math.max(0,Math.floor(ms/1000));return Math.floor(t/60)+":"+String(t%60).padStart(2,"0")}
+function fmtMs(ms){const t=Math.max(0,Math.floor(ms/1000));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
 function clearNowPlaying(message){
-  if(!$("nowPlayingHeroEmpty")||!$("nowPlayingHeroLive"))return;
-  $("nowPlayingHeroEmpty").hidden=false;
-  $("nowPlayingHeroLive").hidden=true;
-  $("nowPlayingHeroEmpty").querySelector(".stat-number").textContent="—";
-  $("nowPlayingHeroEmpty").querySelector(".stat-label").textContent=message;
+  $('nowPlayingHeroEmpty').hidden=false;$('nowPlayingHeroLive').hidden=true;
+  $('nowPlayingHeroEmpty').querySelector('.stat-number').textContent='—';$('nowPlayingHeroEmpty').querySelector('.stat-label').textContent=message;
 }
 function updateNowPlayingProgress(){
-  if(!nowPlayingState.item||!$("nowPlayingElapsed"))return;
-  let p=nowPlayingState.progressMs;
-  if(nowPlayingState.isPlaying)p=Math.min(nowPlayingState.durationMs,p+Date.now()-nowPlayingState.lastPoll);
-  $("nowPlayingElapsed").textContent=fmtMs(p);
-  $("nowPlayingDuration").textContent=fmtMs(nowPlayingState.durationMs);
-  $("nowPlayingState").textContent=nowPlayingState.isPlaying?"tocando":"pausado";
-  $("nowPlayingProgressFill").style.width=(nowPlayingState.durationMs?Math.min(100,p/nowPlayingState.durationMs*100):0)+"%";
+  if(!nowPlayingState.item)return;
+  let p=nowPlayingState.progressMs;if(nowPlayingState.isPlaying)p=Math.min(nowPlayingState.durationMs,p+Date.now()-nowPlayingState.lastPoll);
+  $('nowPlayingElapsed').textContent=fmtMs(p);$('nowPlayingDuration').textContent=fmtMs(nowPlayingState.durationMs);$('nowPlayingState').textContent=nowPlayingState.isPlaying?'tocando':'pausado';
+  $('nowPlayingProgressFill').style.width=(nowPlayingState.durationMs?Math.min(100,p/nowPlayingState.durationMs*100):0)+'%';
 }
 async function renderNowPlaying(){
-  if(!state.spotify?.accessToken){clearNowPlaying("conecte o Spotify para ver a escuta ao vivo.");return}
+  if(!state.spotify?.accessToken){clearNowPlaying('conecte o Spotify para ver a escuta ao vivo.');return;}
   try{
-    const d=await spotifyApi("/me/player/currently-playing");
-    if(!d?.item||d.currently_playing_type!=="track"){
-      nowPlayingState={item:null,progressMs:0,durationMs:0,isPlaying:false,lastPoll:Date.now()};
-      clearNowPlaying("nada tocando agora.");
-      return;
-    }
-    const t=d.item,a=t.artists?.[0]||{};
-    const trackUrl=t.external_urls?.spotify||"https://open.spotify.com/track/"+t.id;
-    const artistUrl=a.external_urls?.spotify||"https://open.spotify.com/artist/"+a.id;
-    const albumUrl=t.album?.external_urls?.spotify||("https://open.spotify.com/album/"+(t.album?.id||""));
+    const d=await spotifyApi('/me/player/currently-playing');
+    if(!d?.item||d.currently_playing_type!=='track'){nowPlayingState={item:null};clearNowPlaying('nada tocando agora.');return;}
+    const t=d.item,a=t.artists?.[0]||{},trackUrl=t.external_urls?.spotify||'https://open.spotify.com/track/'+t.id,artistUrl=a.external_urls?.spotify||'https://open.spotify.com/artist/'+a.id,albumUrl=t.album?.external_urls?.spotify||'https://open.spotify.com/album/'+t.album?.id;
     nowPlayingState={item:t,progressMs:Number(d.progress_ms||0),durationMs:Number(t.duration_ms||0),isPlaying:Boolean(d.is_playing),lastPoll:Date.now()};
-    $("nowPlayingHeroEmpty").hidden=true;
-    $("nowPlayingHeroLive").hidden=false;
-    $("nowPlayingHeroLive").classList.remove("np-refresh");
-    requestAnimationFrame(()=>requestAnimationFrame(()=>$("nowPlayingHeroLive")?.classList.add("np-refresh")));
-    $("nowPlayingCover").src=t.album?.images?.[0]?.url||"";
-    $("nowPlayingCover").alt="Capa de "+(t.album?.name||"");
-    $("nowPlayingCoverLink").href=trackUrl;
-    $("nowPlayingTrackLink").href=trackUrl;
-    $("nowPlayingArtistLink").href=artistUrl;
-    $("nowPlayingAlbumLink").href=albumUrl;
-    $("nowPlayingTrackLink").textContent=t.name||"—";
-    $("nowPlayingArtistLink").textContent=a.name||"—";
-    $("nowPlayingAlbumLink").textContent=t.album?.name||"—";
-    updateNowPlayingProgress();
-  }catch(e){console.warn("Spotify currently-playing",e)}
+    $('nowPlayingHeroEmpty').hidden=true;$('nowPlayingHeroLive').hidden=false;
+    $('nowPlayingCover').src=t.album?.images?.[0]?.url||'';$('nowPlayingCover').alt='Capa de '+(t.album?.name||'');$('nowPlayingCoverLink').href=trackUrl;$('nowPlayingTrackLink').href=trackUrl;$('nowPlayingArtistLink').href=artistUrl;$('nowPlayingAlbumLink').href=albumUrl;
+    $('nowPlayingTrackLink').textContent=t.name||'—';$('nowPlayingArtistLink').textContent=a.name||'—';$('nowPlayingAlbumLink').textContent=t.album?.name||'—';updateNowPlayingProgress();
+  }catch(e){console.warn('Spotify currently-playing',e)}
 }
 async function connectSpotify(){
-  if(location.protocol==="file:"){toast("Spotify precisa de HTTPS/localhost. O resto do Radar continua funcionando.");return}
-  const clientId=$("spotifyClientId").value.trim()||SPOTIFY_CLIENT_ID;
-  await meta("spotifyClientId",clientId);
+  if(location.protocol==='file:'){toast('Spotify precisa de HTTPS/localhost. O resto do Radar continua funcionando.');return;}
+  const clientId=$('spotifyClientId').value.trim()||SPOTIFY_CLIENT_ID;await meta('spotifyClientId',clientId);
   const verifier=randomString(),challenge=base64url(await sha256(verifier)),stateToken=randomString(24),redirect=location.origin+location.pathname;
-  sessionStorage.setItem("sp_verifier",verifier);
-  sessionStorage.setItem("sp_state",stateToken);
-  const url=new URL("https://accounts.spotify.com/authorize");
-  url.search=new URLSearchParams({response_type:"code",client_id:clientId,scope:"user-read-currently-playing user-read-playback-state user-read-private",code_challenge_method:"S256",code_challenge:challenge,redirect_uri:redirect,state:stateToken});
-  location.href=url.toString();
+  sessionStorage.setItem('sp_verifier',verifier);sessionStorage.setItem('sp_state',stateToken);
+  const url=new URL('https://accounts.spotify.com/authorize');url.search=new URLSearchParams({response_type:'code',client_id:clientId,scope:'user-read-currently-playing user-read-playback-state user-read-private',code_challenge_method:'S256',code_challenge:challenge,redirect_uri:redirect,state:stateToken});location.href=url.toString();
 }
 async function spotifyCallback(){
-  const p=new URLSearchParams(location.search),code=p.get("code");
-  if(!code)return;
-  const clientId=await meta("spotifyClientId")||SPOTIFY_CLIENT_ID;
-  const verifier=sessionStorage.getItem("sp_verifier"),saved=sessionStorage.getItem("sp_state");
-  if(!verifier||saved!==p.get("state"))throw new Error("Autorização Spotify inválida.");
-  const redirect=location.origin+location.pathname;
-  const body=new URLSearchParams({client_id:clientId,grant_type:"authorization_code",code,redirect_uri:redirect,code_verifier:verifier});
-  const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
-  const d=await r.json();
-  if(!r.ok)throw new Error(d.error_description||"Spotify recusou a autorização.");
-  state.spotify={clientId,accessToken:d.access_token,refreshToken:d.refresh_token||null,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};
-  await meta("spotify",state.spotify);
-  history.replaceState({},document.title,location.pathname);
-  sessionStorage.removeItem("sp_verifier");sessionStorage.removeItem("sp_state");
+  const p=new URLSearchParams(location.search),code=p.get('code');if(!code)return;
+  const clientId=await meta('spotifyClientId')||SPOTIFY_CLIENT_ID,verifier=sessionStorage.getItem('sp_verifier'),saved=sessionStorage.getItem('sp_state');if(!verifier||saved!==p.get('state'))throw new Error('Autorização Spotify inválida.');
+  const redirect=location.origin+location.pathname,body=new URLSearchParams({client_id:clientId,grant_type:'authorization_code',code,redirect_uri:redirect,code_verifier:verifier});
+  const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body}),d=await r.json();if(!r.ok)throw new Error(d.error_description||'Spotify recusou a autorização.');
+  state.spotify={clientId,accessToken:d.access_token,refreshToken:d.refresh_token||null,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};await meta('spotify',state.spotify);history.replaceState({},document.title,location.pathname);sessionStorage.removeItem('sp_verifier');sessionStorage.removeItem('sp_state');
 }
 async function renderSpotify(){
-  $("spotifyRedirect").textContent="Redirect URI: "+location.origin+location.pathname;
-  $("spotifyStatus").textContent=state.spotify?.accessToken?"conectado. histórico continua no Last.fm.":"desligado.";
-  await renderNowPlaying();
+  $('spotifyRedirect').textContent='Redirect URI: '+location.origin+location.pathname;$('spotifyStatus').textContent=state.spotify?.accessToken?'conectado. histórico continua no Last.fm.':'desligado.';await renderNowPlaying();
 }
+
 
 /* ----- backup ----- */
 async function exportBackup(){
@@ -1363,8 +1419,19 @@ document.querySelectorAll(".radar-mode").forEach(btn=>btn.onclick=async()=>{
 document.querySelectorAll(".seed-chip").forEach(btn=>btn.onclick=()=>{radarConfig.seedMode=btn.dataset.seedMode;document.querySelectorAll(".seed-chip").forEach(x=>x.classList.toggle("active",x===btn))});
 $("recalculateRadar").onclick=async()=>{await renderDiscoveryLab();await buildDiscoveryChains();toast("laboratório recalculado.")};
 $("runMix").onclick=runMix;
-$("discoverBridges").onclick=async()=>{$("bridgeResult").innerHTML='<div class="shimmer"></div>';await discoverHiddenBridges()};
 
+
+
+document.querySelectorAll("[data-tax]").forEach(btn=>btn.onclick=async()=>{
+  discoveryTax=btn.dataset.tax;
+  document.querySelectorAll("[data-tax]").forEach(x=>x.classList.toggle("active",x===btn));
+  await renderDiscoveryLab();
+});
+$("refreshHeroDiscovery").onclick=async()=>{
+  const lab=await computeDiscoveryLab();
+  const data=await Promise.all(lab.items.map(async x=>({...x,taxonomy:await classifyDiscoveryItem(x)})));
+  await renderDiscoveryHero(data);await bindLabActions();toast("nova aposta calculada.");
+};
 /* ----- nav / event binding ----- */
 function showView(name){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
@@ -1374,7 +1441,6 @@ function showView(name){
 document.querySelectorAll("[data-nav]").forEach(btn=>btn.onclick=async()=>{
   showView(btn.dataset.nav);
   if(btn.dataset.nav==="route")await populateArtistOptions();
-  if(btn.dataset.nav==="map"&&mapArtists.length)renderMap();
   if(btn.dataset.nav==="radar"){await populateRadarSeeds();await renderDiscoveryLab();await buildDiscoveryChains();}
   if(btn.dataset.nav==="archive")await renderArchive();
   if(btn.dataset.nav==="rescue")await renderRescue();
@@ -1386,9 +1452,7 @@ $("newRadar").onclick=async()=>{
 document.querySelectorAll("[data-rfilter]").forEach(btn=>btn.onclick=async()=>{state.radarFilter=btn.dataset.rfilter;document.querySelectorAll("[data-rfilter]").forEach(x=>x.classList.toggle("active",x===btn));await renderRadar()});
 document.querySelectorAll("[data-depth]").forEach(btn=>btn.onclick=()=>{state.routeDepth=Number(btn.dataset.depth);document.querySelectorAll("[data-depth]").forEach(x=>x.classList.toggle("active",x===btn))});
 $("findRoute").onclick=async()=>{const a=$("routeStart").value.trim(),b=$("routeEnd").value.trim();$("routeStatus").textContent="procurando pontes...";$("routeResult").innerHTML='<div class="shimmer"></div>';try{const r=await findRoute(a,b,state.routeDepth);renderRoute(r);$("routeStatus").textContent=r?`${r.nodes.length-1} passos encontrados.`:""}catch(e){toast(e.message);$("routeStatus").textContent=""}};
-$("randomRoute").onclick=async()=>{const a=await all("artists");if(a.length<2)return;let x=a[Math.floor(Math.random()*a.length)],y=a[Math.floor(Math.random()*a.length)];while(y.key===x.key)y=a[Math.floor(Math.random()*a.length)];$("routeStart").value=x.name;$("routeEnd").value=y.name;$("findRoute").click()};
-$("buildMap").onclick=buildMap;
-$("shuffleRecent").onclick=()=>renderRecentCarousel(true);$("focusMode")?.addEventListener("click",()=>{document.body.classList.toggle("focus-mode");$("focusMode").textContent=document.body.classList.contains("focus-mode")?"sair do foco":"foco"});
+$("randomRoute").onclick=async()=>{const a=await all("artists");if(a.length<2)return;let x=a[Math.floor(Math.random()*a.length)],y=a[Math.floor(Math.random()*a.length)];while(y.key===x.key)y=a[Math.floor(Math.random()*a.length)];$("routeStart").value=x.name;$("routeEnd").value=y.name;$("findRoute").click()};$("shuffleRecent").onclick=()=>renderRecentCarousel(true);
 $("rescueShuffle").onclick=async()=>{const a=await all("artists"),loose=a.filter(x=>x.plays>=1&&x.plays<=4);if(!loose.length)return;const x=loose[Math.floor(Math.random()*loose.length)];await openArtist(x.name)};
 let archiveTimer;
 document.querySelectorAll("[data-amode]").forEach(btn=>btn.onclick=async()=>{state.archiveMode=btn.dataset.amode;document.querySelectorAll("[data-amode]").forEach(x=>x.classList.toggle("active",x===btn));await renderArchive()});
@@ -1420,20 +1484,67 @@ $("reopenStorage").onclick=async()=>{
 };
 $("clearData").onclick=async()=>{if(!confirm("Apagar todo o diário local deste navegador?"))return;for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags"])await clearStore(s);location.reload()};
 
+async function clearStoreItem(store,key){
+  if(!db)return;
+  return new Promise((resolve,reject)=>{
+    try{
+      const tx=db.transaction(store,"readwrite");
+      tx.objectStore(store).delete(key);
+      tx.oncomplete=()=>resolve();
+      tx.onerror=()=>reject(tx.error);
+    }catch(e){reject(e)}
+  });
+}
 async function health(){
   const [s,a,t]=await Promise.all([all("scrobbles"),all("artists"),all("tracks")]);
   $("healthStats").textContent=`${fmt(s.length)} scrobbles · ${fmt(a.length)} artistas · ${fmt(t.length)} faixas · IndexedDB local.`;
 }
-async function renderAll(){
-  await renderHome();await renderRadar();await renderRescue();await renderArchive();renderChallenges();await health();
+async function runDiagnostics(){
+  const checks=[];
+  try{await openDB();checks.push(["IndexedDB",true])}catch(e){checks.push(["IndexedDB",false,String(e.message||e)])}
+  checks.push(["Last.fm",Boolean(LASTFM_API_KEY)]);
+  checks.push(["Spotify",Boolean(SPOTIFY_CLIENT_ID)]);
+  const ids=[...new Set([...s.matchAll(/\\$\\(["\\\']([^"\\\']+)["\\\']\\)/g)].map(m=>m[1]))];
+  const missing=ids.filter(id=>!document.getElementById(id));
+  checks.push(["UI IDs",missing.length===0,missing]);
+  checks.push(["PWA manifest",Boolean(document.querySelector('link[rel="manifest"]'))]);
+  checks.push(["service worker","serviceWorker" in navigator]);
+  checks.push(["Mapa removido",!document.getElementById("view-map")&&!document.querySelector('[data-nav="map"]')]);
+  const result={at:Date.now(),checks,missingIds:missing};
+  await meta("diagnostics",result);
+  return result;
+}async function safeRenderStep(name,fn){
+  try{await fn();return true}catch(e){
+    console.error("Radar step failed:",name,e);
+    try{
+      const errors=(await get("aggregates","renderErrors"))||{key:"renderErrors",items:[]};
+      errors.items=[...(errors.items||[]),{name,message:String(e.message||e),at:Date.now()}].slice(-20);
+      await put("aggregates",errors);
+    }catch{}
+    return false;
+  }
 }
-(async()=>{
+async function renderAll(){
+  await safeRenderStep("Home",renderHome);
+  await safeRenderStep("Radar",renderRadar);
+  await safeRenderStep("Resgate",renderRescue);
+  await safeRenderStep("Arquivo",renderArchive);
+  await safeRenderStep("Sementes",populateRadarSeeds);
+  await safeRenderStep("Controles do Radar",setRadarControlLabels);
+  await safeRenderStep("Laboratório",renderDiscoveryLab);
+  await safeRenderStep("Cadeias",buildDiscoveryChains);
+  await safeRenderStep("Desafios",renderChallenges);
+  await safeRenderStep("Contexto",renderContextManager);
+  await safeRenderStep("Saúde",health);
+  await safeRenderStep("PWA",installPWA);
+  await safeRenderStep("Diagnóstico",runDiagnostics);
+}(async()=>{
   try{
     await openDB();
     const saved=await meta("spotify");if(saved)state.spotify=saved;
     const savedRadius=await meta("radarRadius");if(savedRadius&&RADIUS[savedRadius])state.radius=savedRadius;
     const savedTag=await meta("radarTag");if(savedTag)state.tag=savedTag;
-    $("spotifyClientId").value=SPOTIFY_CLIENT_ID;
+    $("spotifyClientId").value=await meta("spotifyClientId")||SPOTIFY_CLIENT_ID;
     try{await spotifyCallback()}catch(e){toast(e.message)}
     state.user=await meta("username");
     if(state.user){
@@ -1444,7 +1555,14 @@ async function renderAll(){
     }else await renderAll();
     $("spotifyRedirect").textContent="Redirect URI: "+location.origin+location.pathname;
     await renderSpotify();
-    if(state.spotify?.accessToken){setInterval(renderNowPlaying,5000);setInterval(updateNowPlayingProgress,1000);}
+    let spotifyPollTimer=null,spotifyClockTimer=null;
+function startSpotifyPolling(){
+  clearInterval(spotifyPollTimer);clearInterval(spotifyClockTimer);
+  spotifyPollTimer=setInterval(()=>{if(document.visibilityState==="visible")renderNowPlaying();},12000);
+  spotifyClockTimer=setInterval(()=>{if(document.visibilityState==="visible")updateNowPlayingProgress();},1000);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")renderNowPlaying().catch(()=>{});});
+}
+if(state.spotify?.accessToken)startSpotifyPolling();
   }catch(e){
     console.error(e);
     toast(e.message||"Não foi possível iniciar o Radar.");
