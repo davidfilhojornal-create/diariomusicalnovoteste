@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09090b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<title>Radar Musical</title>
+<style>
+
+:root{--bg:#09090b;--text:#f2f1ed;--muted:#85858d;--accent:#d9ff3f;--line:#242428;--danger:#ff6b6b;--warm:#ffbd62}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:14px "DM Sans",system-ui,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.shell{width:min(1080px,calc(100% - 28px));margin:auto}
+.header{position:sticky;top:0;z-index:20;background:#09090bdd;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff0a}
+.head{height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font:700 18px "Space Grotesk",sans-serif;letter-spacing:-.06em;display:flex;align-items:center;gap:9px}
+.logo-dot{width:22px;height:22px;border-radius:50%;background:var(--accent);position:relative}
+.logo-dot:after{content:"";position:absolute;width:6px;height:6px;background:var(--bg);border-radius:50%;left:8px;top:8px}
+nav{display:flex;gap:2px;overflow:auto}
+nav button,.filter,.btn{border:0;background:transparent;color:var(--muted);padding:7px 9px;border-radius:7px}
+nav button.active,.filter.active{color:var(--text);background:#ffffff08}
+nav button:hover,.filter:hover,.btn:hover{color:var(--text)}
+.user{font-size:11px;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+main{padding:52px 0 90px}
+.view{display:none}
+.view.active{display:block;animation:viewIn .28s ease both}
+@keyframes viewIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.ey{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
+h1,h2,h3{font-family:"Space Grotesk",sans-serif}
+.title{font:700 clamp(54px,9vw,94px)/.88 "Space Grotesk",sans-serif;letter-spacing:-.075em;margin:0}
+.sub{max-width:650px;color:var(--muted);line-height:1.65;margin:18px 0 0}
+.hero{display:grid;grid-template-columns:1.5fr .8fr;gap:38px;margin-top:48px}
+.stat{border-top:1px solid var(--line);padding-top:17px}
+.big{font:700 clamp(34px,5vw,60px)/1 "Space Grotesk",sans-serif;letter-spacing:-.07em}
+.muted{color:var(--muted);font-size:12px}
+.section{margin-top:54px}
+.sh{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:16px}
+.sh h2{font-size:21px;letter-spacing:-.045em;margin:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 34px}
+.suggest{border-top:1px solid var(--line);padding:24px 0;opacity:0;animation:rise .35s ease forwards}
+.suggest:last-child{border-bottom:1px solid var(--line)}
+.top{display:flex;justify-content:space-between;gap:12px}
+.name{font:700 clamp(25px,3vw,34px)/1 "Space Grotesk",sans-serif;letter-spacing:-.055em}
+.name:hover{text-decoration:underline;text-underline-offset:4px}
+.badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;height:max-content;padding:5px 0}
+.badge.new{color:var(--accent)}
+.badge.loose{color:var(--warm)}
+.bridge{font-size:12px;line-height:1.6;color:#bdbdc2;border-left:1px solid var(--accent);padding-left:11px;margin:18px 0}
+.bridge b{color:var(--text);font-weight:600}
+.score{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px}
+.bar{height:2px;flex:1;background:#242428;overflow:hidden}
+.fill{height:100%;background:var(--accent)}
+.actions{display:flex;gap:13px;margin-top:14px;opacity:.35;transition:opacity .2s}
+.suggest:hover .actions,.suggest:focus-within .actions{opacity:1}
+.actions .btn{text-decoration:underline;text-underline-offset:3px;padding:0}
+.primary{color:var(--accent)!important}
+.spotify-link{display:block;margin-top:8px;color:var(--muted);font-size:11px;text-decoration:underline;text-underline-offset:3px}
+.filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:17px}
+.search{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:13px 3px;color:var(--text);outline:0}
+.search:focus{border-color:#55555b}
+.track{display:grid;grid-template-columns:45px 1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #ffffff0a}
+.cover{width:45px;height:45px;border-radius:3px;background:#17171a;object-fit:cover}
+.track b{font-size:12px}
+.track small{display:block;color:var(--muted);margin-top:3px}
+.archive{border-top:1px solid var(--line)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:14px 3px;border-bottom:1px solid #ffffff0b}
+.row small{color:var(--muted);display:block;margin-top:3px}
+.plays{color:var(--accent);font-size:11px;font-weight:700;white-space:nowrap}
+.empty{padding:55px 10px;border-top:1px solid var(--line);color:var(--muted)}
+.empty b{display:block;color:var(--text);margin-bottom:6px}
+.btn{text-align:center;font-size:12px}
+.cardless{border-top:1px solid var(--line);padding:22px 0}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:45px 55px}
+.setting h3{margin:0 0 7px;font-size:17px}
+.setting p{margin:0 0 13px}
+.modalbg{display:none;position:fixed;inset:0;background:#000b;backdrop-filter:blur(8px);z-index:100;align-items:center;justify-content:center;padding:18px}
+.modalbg.show{display:flex}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--bg);border:1px solid var(--line);padding:25px}
+.modal h2{font-size:29px;letter-spacing:-.05em;margin:0 0 12px}
+.modal p{color:var(--muted);font-size:12px;line-height:1.6}
+.field label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:700;margin:18px 0 6px}
+.field input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:11px 2px;color:var(--text);outline:0}
+.modalfoot{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+.progress{height:3px;background:#242428;margin-top:25px;overflow:hidden}
+.progress div{height:100%;width:0;background:var(--accent);transition:width .2s}
+.toast{position:fixed;bottom:17px;right:17px;z-index:200;background:var(--text);color:var(--bg);padding:11px 14px;font-size:12px;font-weight:700;opacity:0;transform:translateY(8px);transition:.25s}
+.toast.show{opacity:1;transform:none}
+.skeleton{height:80px;border-top:1px solid var(--line);background:linear-gradient(90deg,transparent 25%,#ffffff06 50%,transparent 75%);background-size:200% 100%;animation:shimmer 1s infinite}
+@media(max-width:760px){
+ .shell{width:min(100% - 22px,1080px)}
+ .head{height:58px}
+ nav{max-width:62vw}
+ nav button{font-size:11px;padding:7px 6px}
+ .user{display:none}
+ main{padding-top:40px}
+ .hero,.grid,.settings{grid-template-columns:1fr}
+ .hero{gap:24px}
+ .grid{display:block}
+ .actions{opacity:1}
+ .section{margin-top:42px}
+}
+</style>
+</head>
+<body>
+<header class="header"><div class="shell head">
+<div class="logo"><span class="logo-dot"></span>radar</div>
+<nav>
+<button class="active" data-view="home">Início</button>
+<button data-view="radar">Radar</button>
+<button data-view="rescue">Resgate</button>
+<button data-view="archive">Arquivo</button>
+<button data-view="settings">Config.</button>
+</nav>
+<div class="user" id="user">offline</div>
+</div></header>
+
+<main><div class="shell">
+
+<section id="home" class="view active">
+<div class="ey">diário musical</div>
+<h1 class="title">o que está<br>soando.</h1>
+<p class="sub">Seu histórico vira memória. O que você esqueceu vira ponta solta. O que nunca entrou na sua história vira território novo.</p>
+<div class="hero">
+<div class="stat"><div class="ey">último scrobble</div><div class="big" id="lastTrack">—</div><div class="muted" id="lastArtist">Conecte seu Last.fm</div></div>
+<div class="stat"><div class="ey">arquivo</div><div class="big" id="totalPlays">0</div><div class="muted" id="totalArtists">0 artistas</div></div>
+</div>
+<div class="section"><div class="sh"><div><h2>Radar de hoje</h2><span class="muted" id="radarDate">nenhuma rodada</span></div><button class="btn primary" id="newRadar">Nova rodada</button></div><div id="homeRadar" class="grid"></div></div>
+<div class="section">
+<div class="sh"><div><h2>Retrato do mês</h2><span class="muted">últimos 30 dias</span></div></div>
+<div class="settings" style="grid-template-columns:repeat(3,1fr);gap:28px" id="monthlyPortrait">
+<div class="stat"><div class="ey">artistas novos</div><div class="big" id="monthNew">0</div></div>
+<div class="stat"><div class="ey">maior descoberta</div><div class="big" id="monthTop" style="font-size:28px">—</div><div class="muted" id="monthTopPlays"></div></div>
+<div class="stat"><div class="ey">scrobbles</div><div class="big" id="monthScrobbles">0</div></div>
+</div>
+</div>
+<div class="section"><div class="sh"><h2>Ouvido recentemente</h2></div><div id="recent"></div></div>
+</section>
+
+<section id="radar" class="view">
+<div class="ey">descoberta</div><h1 class="title">radar.</h1>
+<p class="sub">A afinidade real manda. Ponta solta e território novo ocupam suas próprias vagas.</p>
+<div class="section"><div class="filters">
+<button class="filter active" data-filter="all">Tudo</button><button class="filter" data-filter="new">Território novo</button><button class="filter" data-filter="loose">Ponta solta</button><button class="filter" data-filter="waiting">Lista de espera</button>
+</div><div id="radarList" class="grid"></div></div>
+</section>
+
+<section id="rescue" class="view">
+<div class="ey">resgate</div><h1 class="title">ponta<br>solta.</h1>
+<p class="sub">Artistas que você ouviu de 1 a 4 vezes e nunca mais voltou. Ordenados pelo tempo que ficaram para trás.</p>
+<div class="section"><div id="rescueList"></div></div>
+</section>
+
+<section id="archive" class="view">
+<div class="ey">memória</div><h1 class="title">arquivo.</h1>
+<p class="sub">Uma faixa aparece uma vez. O contador registra quantas vezes ela voltou.</p>
+<div class="section"><input class="search" id="search" placeholder="Buscar artista, álbum ou faixa..."></div>
+<div class="section"><div class="filters"><button class="filter active" data-archive="artists">Artistas</button><button class="filter" data-archive="albums">Álbuns</button><button class="filter" data-archive="tracks">Faixas</button></div><div id="archiveContent"></div><div class="muted" id="archiveNotice" style="margin-top:12px"></div></div>
+</section>
+
+<section id="settings" class="view">
+<div class="ey">controle</div><h1 class="title">config.</h1>
+<p class="sub">Last.fm é a fonte do histórico. Spotify é opcional e nunca substitui seu diário.</p>
+<div class="section settings">
+<div class="setting"><h3>Last.fm</h3><p class="muted">Baixe o histórico completo e sincronize apenas o que chegou depois.</p><button class="btn primary" id="connectLastfm">Conectar Last.fm</button><p class="muted" id="lastfmStatus">Não conectado.</p></div>
+<div class="setting"><h3>Sincronização</h3><p class="muted">O marcador é salvo a cada página para poder continuar de onde parou.</p><button class="btn" id="syncNow">Sincronizar agora</button><p class="muted" id="syncStatus">Nunca sincronizado.</p></div>
+<div class="setting"><h3>Spotify</h3><p class="muted">Somente recursos opcionais: foto, perfil e ouvindo agora. Nunca é fonte do histórico.</p><button class="btn" id="connectSpotify">Conectar Spotify</button><p class="muted" id="spotifyStatus">Desligado.</p><div class="muted" id="nowPlaying"></div></div>
+<div class="setting"><h3>Dados locais</h3><p class="muted">Apaga o arquivo deste navegador. Seu Last.fm não é alterado.</p><button class="btn" id="clearData">Apagar dados locais</button></div>
+</div>
+</section>
+
+</div></main>
+
+<div class="modalbg" id="loginModal"><div class="modal">
+<div class="ey">last.fm</div><h2>Seu usuário.</h2><p>Digite seu usuário do Last.fm. Na primeira vez, o Radar baixa o histórico inteiro. Depois, a sincronização é incremental.</p>
+<div class="field"><label>Usuário</label><input id="usernameInput" placeholder="seuusuario"></div>
+<div id="loginError"></div><div class="modalfoot"><button class="btn" id="cancelLogin">Cancelar</button><button class="btn primary" id="startLogin">Começar</button></div>
+</div></div>
+
+<div class="modalbg" id="syncModal"><div class="modal">
+<div class="ey">sincronização</div><h2>Seu diário está vindo.</h2><p id="syncText">Preparando...</p><div class="progress"><div id="progress"></div></div><p class="muted" id="syncCounter">0 de 0</p>
+</div></div>
+
+<div class="modalbg" id="artistModal"><div class="modal">
+<div class="ey">ficha do artista</div><h2 id="artistName">Artista</h2><p id="artistBio">Carregando...</p>
+<div id="artistTags" class="filters"></div>
+<div class="cardless"><h3>Suas faixas</h3><div id="artistTracks"></div></div>
+<div class="cardless"><h3>Ponte</h3><p id="artistBridge"></p></div>
+<div class="modalfoot"><button class="btn" id="closeArtist">Fechar</button><a class="btn primary" id="artistSpotify" target="_blank" rel="noopener">Spotify ↗</a></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================
+   RADAR MUSICAL — CONFIG
+   ========================= */
+const LASTFM_API_KEY="aff32c07f20e1d2391061d3c70cdc111";
+const LASTFM_API="https://ws.audioscrobbler.com/2.0/";
+const DB_NAME="radar-musical";
+const DB_VERSION=3;
+const PAGE_SIZE=200;
+const COOLDOWN_DAYS=21;
+
+let db=null;
+const state={user:null,radarFilter:"all",archiveMode:"artists",spotify:null};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const fmt=n=>new Intl.NumberFormat("pt-BR").format(Number(n)||0);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const today=()=>new Date().toISOString().slice(0,10);
+const now=()=>Math.floor(Date.now()/1000);
+
+function toast(text){const t=$("toast");t.textContent=text;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),2800)}
+
+function openDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(DB_NAME,DB_VERSION);
+  req.onupgradeneeded=e=>{
+   const d=e.target.result;
+   const stores={
+    meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",suggestions:"key"
+   };
+   for(const [name,key] of Object.entries(stores)){
+    if(!d.objectStoreNames.contains(name)){
+     const s=d.createObjectStore(name,{keyPath:key});
+     if(name==="artists")s.createIndex("plays","plays");
+    }
+   }
+  };
+  req.onsuccess=()=>{db=req.result;resolve()};
+  req.onerror=()=>reject(req.error);
+ });
+}
+function get(store,key){return new Promise((resolve,reject)=>{const r=db.transaction(store).objectStore(store).get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+function all(store){return new Promise((resolve,reject)=>{const r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)})}
+function keys(store){return new Promise((resolve,reject)=>{const r=db.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)})}
+function put(store,value){return new Promise((resolve,reject)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).put(value);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
+function bulkPut(store,values){
+ if(!values.length)return Promise.resolve();
+ return new Promise((resolve,reject)=>{
+  const t=db.transaction(store,"readwrite"),s=t.objectStore(store);
+  values.forEach(v=>s.put(v));t.oncomplete=resolve;t.onerror=()=>reject(t.error);
+ });
+}
+function clearStore(store){return new Promise((resolve,reject)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).clear();t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
+async function meta(key,value){
+ if(arguments.length===2)return put("meta",{key,value});
+ const x=await get("meta",key);return x?.value??null;
+}
+
+async function lastfm(method,params={}){
+ const q=new URLSearchParams({method,api_key:LASTFM_API_KEY,format:"json",...params});
+ const r=await fetch(LASTFM_API+"?"+q);
+ if(!r.ok)throw new Error("Last.fm respondeu HTTP "+r.status);
+ const d=await r.json();
+ if(d.error)throw new Error(d.message||"Erro da API do Last.fm");
+ return d;
+}
+
+function rawToScrobble(raw){
+ if(!raw?.artist||!raw?.name||raw["@attr"]?.nowplaying==="true")return null;
+ const timestamp=Number(raw.date?.uts||0);if(!timestamp)return null;
+ const artist=raw.artist.name||raw.artist;
+ return {
+  id:`${timestamp}|${norm(artist)}|${norm(raw.name)}`,
+  timestamp,
+  artist,
+  album:raw.album?.["#text"]||"",
+  track:raw.name,
+  image:raw.image?.find(x=>x.size==="extralarge")?.["#text"]||""
+ };
+}
+
+/* O processamento de uma página acontece em memória.
+   Depois há uma gravação em lote por store, em vez de transações por scrobble. */
+async function processPage(raws,known,artists,albums,tracks){
+ const scrobbles=[],touchedArtistKeys=new Set(),touchedAlbumKeys=new Set(),touchedTrackKeys=new Set();
+ const touchedArtists=[];
+ for(const raw of raws){
+  const x=rawToScrobble(raw);
+  if(!x||known.has(x.id))continue;
+  known.add(x.id);scrobbles.push(x);
+
+  const ak=norm(x.artist);
+  let a=artists.get(ak);
+  if(!a)a={key:ak,name:x.artist,plays:0,firstPlayed:x.timestamp,lastPlayed:x.timestamp};
+  a.plays++;a.lastPlayed=Math.max(a.lastPlayed,x.timestamp);a.firstPlayed=Math.min(a.firstPlayed,x.timestamp);
+  artists.set(ak,a);
+  touchedArtistKeys.add(ak);
+  touchedArtists.push(x.artist);
+
+  if(x.album){
+   const k=ak+"|"+norm(x.album);let al=albums.get(k);
+   if(!al)al={key:k,artist:x.artist,album:x.album,plays:0,lastPlayed:x.timestamp};
+   al.plays++;al.lastPlayed=Math.max(al.lastPlayed,x.timestamp);albums.set(k,al);
+   touchedAlbumKeys.add(k);
+  }
+
+  const tk=ak+"|"+norm(x.track);let tr=tracks.get(tk);
+  if(!tr)tr={key:tk,artist:x.artist,track:x.track,album:x.album,image:x.image,plays:0,lastPlayed:x.timestamp};
+  tr.plays++;tr.lastPlayed=Math.max(tr.lastPlayed,x.timestamp);if(!tr.image)tr.image=x.image;
+  tracks.set(tk,tr);touchedTrackKeys.add(tk);
+ }
+
+ const changedArtists=[...touchedArtistKeys].map(k=>artists.get(k));
+ const changedAlbums=[...touchedAlbumKeys].map(k=>albums.get(k));
+ const changedTracks=[...touchedTrackKeys].map(k=>tracks.get(k));
+
+ await Promise.all([
+  bulkPut("scrobbles",scrobbles),
+  bulkPut("artists",changedArtists),
+  bulkPut("albums",changedAlbums),
+  bulkPut("tracks",changedTracks)
+ ]);
+ return {count:scrobbles.length,touchedArtists:[...new Set(touchedArtists)]};
+}
+function showSync(show){$("syncModal").classList.toggle("show",show)}
+function syncProgress(done,total,text){
+ $("syncText").textContent=text;
+ $("syncCounter").textContent=`${fmt(done)} de ${fmt(total)}`;
+ $("progress").style.width=(total?Math.min(100,done/total*100):0)+"%";
+}
+
+async function resolveWaiting(names){
+ const wanted=new Set(names.map(norm));if(!wanted.size)return;
+ const suggestions=await all("suggestions"),updates=[];
+ for(const s of suggestions){
+  if(s.status==="waiting"&&wanted.has(norm(s.name))){
+   s.status="heard";s.heardAt=Date.now();updates.push(s);
+  }
+ }
+ if(updates.length){await bulkPut("suggestions",updates);toast(`${updates.length} descoberta(s) saiu(ram) da espera.`)}
+}
+
+async function syncHistory(username,initial,total,options={}){
+ const showModal=options.showModal??initial;
+ if(showModal)showSync(true);
+
+ const known=new Set(await keys("scrobbles"));
+ const artists=new Map((await all("artists")).map(x=>[x.key,x]));
+ const albums=new Map((await all("albums")).map(x=>[x.key,x]));
+ const tracks=new Map((await all("tracks")).map(x=>[x.key,x]));
+
+ let page=1,pages=1,done=0;
+ const checkpoint=Number(await meta("lastScrobbleTimestamp")||0);
+ const requestFrom=initial?0:Math.max(0,checkpoint-1);
+ let newest=checkpoint;
+
+ try{
+  while(page<=pages){
+   const params={user:username,page,limit:PAGE_SIZE,extended:1};
+   if(!initial)params.from=requestFrom;
+
+   if(showModal)syncProgress(done,total,initial?`Baixando página ${page}...`:"Buscando novos scrobbles...");
+   const d=await lastfm("user.getRecentTracks",params);
+   const rt=d.recenttracks;
+   pages=Number(rt?.["@attr"]?.totalPages||1);
+   const arr=Array.isArray(rt?.track)?rt.track:(rt?.track?[rt.track]:[]);
+   if(!arr.length)break;
+
+   const result=await processPage(arr,known,artists,albums,tracks);
+   done+=result.count;
+
+   for(const raw of arr){
+    const ts=Number(raw?.date?.uts||0);
+    if(ts>newest)newest=ts;
+   }
+
+   /* O requestFrom fica FIXO durante toda a sincronização.
+      O checkpoint só avança depois que a página foi persistida. */
+   await meta("lastScrobbleTimestamp",newest);
+   await meta("lastSync",Date.now());
+   await resolveWaiting(result.touchedArtists);
+
+   page++;
+   if(page<=pages)await sleep(300);
+  }
+
+  await meta("username",username);
+  if(showModal){
+   syncProgress(done,total,"Sincronização concluída.");
+   await sleep(250);
+   showSync(false);
+  }
+  $("syncStatus").textContent=done?`${fmt(done)} scrobble(s) sincronizado(s).`:"Já estava em dia.";
+  return done;
+ }catch(error){
+  if(showModal)showSync(false);
+  toast("A sincronização parou. O último checkpoint foi preservado.");
+  throw error;
+ }
+}
+async function validateUser(username){
+ const d=await lastfm("user.getInfo",{user:username});
+ if(!d.user)throw new Error("Usuário do Last.fm não encontrado.");
+ return d.user;
+}
+
+async function switchUserIfNeeded(username){
+ const old=await meta("username");
+ if(old&&norm(old)!==norm(username)){
+  for(const s of ["scrobbles","artists","albums","tracks","suggestions","meta"])await clearStore(s);
+  return true;
+ }
+ return false;
+}
+
+/* ---------------- RADAR ---------------- */
+async function buildSeeds(){
+ const artists=await all("artists"),cut=now()-14*86400;
+ const recent=artists.filter(x=>x.lastPlayed>=cut).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,5);
+ const pillars=[...artists].sort((a,b)=>b.plays-a.plays).slice(0,5);
+ const pool=artists.filter(x=>!recent.some(r=>r.key===x.key)).sort((a,b)=>a.lastPlayed-b.lastPlayed);
+ const random=[];
+ while(random.length<2&&pool.length)random.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+
+ const map=new Map();
+ for(const x of [...recent,...pillars,...random]){
+  if(!x)continue;
+  const recentSeed=x.lastPlayed>=cut;
+  const weight=recentSeed?1:.55;
+  if(!map.has(x.key))map.set(x.key,{name:x.name,weight,recent:recentSeed});
+  else map.get(x.key).weight=Math.max(map.get(x.key).weight,weight);
+ }
+ return [...map.values()];
+}
+
+async function addArtistSimilar(seed,candidates){
+ try{
+  const d=await lastfm("artist.getSimilar",{artist:seed.name,limit:14,autocorrect:1});
+  const arr=d.similarartists?.artist||[];
+  for(const item of(Array.isArray(arr)?arr:[arr])){
+   if(!item?.name)continue;
+   const k=norm(item.name);
+   const c=candidates.get(k)||{name:item.name,artistScores:[],trackScores:[],seeds:[],seedWeight:0};
+   c.artistScores.push(Number(item.match)||0);
+   c.seedWeight+=seed.weight;
+   if(!c.seeds.includes(seed.name))c.seeds.push(seed.name);
+   candidates.set(k,c);
+  }
+ }catch(e){console.warn(e)}
+}
+
+async function addTrackSimilar(seed,candidates,allTracks){
+ const own=allTracks.filter(x=>norm(x.artist)===norm(seed.name)).sort((a,b)=>b.plays-a.plays).slice(0,2);
+ for(const tr of own){
+  try{
+   const d=await lastfm("track.getSimilar",{artist:tr.artist,track:tr.track,limit:8,autocorrect:1});
+   const arr=d.similartracks?.track||[];
+   for(const item of(Array.isArray(arr)?arr:[arr])){
+    const artist=item.artist?.name;if(!artist)continue;
+    const k=norm(artist);
+    const c=candidates.get(k)||{name:artist,artistScores:[],trackScores:[],seeds:[],seedWeight:0};
+    c.trackScores.push(Number(item.match)||0);
+    c.seedWeight+=seed.weight*.7;
+    if(!c.seeds.includes(seed.name))c.seeds.push(seed.name);
+    candidates.set(k,c);
+   }
+  }catch(e){console.warn(e)}
+  await sleep(120);
+ }
+}
+async function calculateRadar(force=false){
+ const old=await all("suggestions");
+ const date=await meta("radarDate");
+ if(!force&&date===today()&&old.some(x=>x.status==="alive"))return;
+
+ const artistsCache=await all("artists");
+ const history=new Map(artistsCache.map(x=>[x.key,x]));
+ const seeds=await buildSeeds();
+ const candidates=new Map();
+ const tracksCache=await all("tracks");
+
+ for(const seed of seeds){await addArtistSimilar(seed,candidates);await sleep(150)}
+ for(const seed of seeds.slice(0,6)){await addTrackSimilar(seed,candidates,tracksCache)}
+
+ const blocked=new Set(old.filter(x=>["known","rejected"].includes(x.status)).map(x=>norm(x.name)));
+ const nowMs=Date.now(),ranked=[];
+
+ for(const c of candidates.values()){
+  const key=norm(c.name);
+  if(blocked.has(key))continue;
+
+  const previous=old.find(x=>norm(x.name)===key);
+  if(previous?.status==="waiting"||previous?.status==="heard")continue;
+  if(previous?.cooldownUntil&&previous.cooldownUntil>nowMs)continue;
+
+  const h=history.get(key),plays=h?.plays||0;
+  const category=h?(plays>=1&&plays<=4?"loose":null):"new";
+  if(!category)continue;
+
+  const artistSimilarity=c.artistScores.length?Math.max(...c.artistScores):0;
+  const trackSimilarity=c.trackScores.length?Math.max(...c.trackScores):0;
+  const similarity=Math.max(artistSimilarity,trackSimilarity*0.95);
+
+  /* 65% similaridade, 25% diversidade, 10% origem da semente. */
+  const similarityPart=similarity*65;
+  const diversityPart=Math.min(1,c.seeds.length/3)*25;
+  const seedPart=Math.min(1,c.seedWeight/Math.max(1,c.seeds.length))*10;
+  const score=similarityPart+diversityPart+seedPart;
+
+  ranked.push({
+   key,name:c.name,category,plays,score,similarity,
+   seeds:c.seeds,seedCount:c.seeds.length,status:"alive",createdAt:Date.now()
+  });
+ }
+
+ /* Cota fixa: três pontas soltas + três territórios novos. */
+ const loose=ranked.filter(x=>x.category==="loose").sort((a,b)=>b.score-a.score);
+ const fresh=ranked.filter(x=>x.category==="new").sort((a,b)=>b.score-a.score);
+ const chosen=[...loose.slice(0,3),...fresh.slice(0,3)];
+
+ /* Expiração com cooldown, preservando qualquer estado de decisão/espera. */
+ for(const s of old){
+  if(s.status==="alive"){
+   s.status="expired";
+   s.cooldownUntil=nowMs+COOLDOWN_DAYS*86400000;
+   await put("suggestions",s);
+  }
+ }
+
+ for(const x of chosen){
+  const existing=await get("suggestions",x.key);
+  if(existing&&["waiting","known","rejected","heard"].includes(existing.status))continue;
+  await put("suggestions",x);
+ }
+ await meta("radarDate",today());
+}
+
+function suggestionHTML(s,i){
+ const loose=s.category==="loose";
+ const why=s.seeds.length>1
+  ?`apareceu porque conversa com <b>${s.seeds.slice(0,3).map(esc).join("</b>, <b>")}</b>.`
+  :`apareceu porque conversa com <b>${esc(s.seeds[0]||"sua escuta")}</b>.`;
+
+ return `<article class="suggest" style="animation-delay:${i*60}ms">
+ <div class="top">
+  <div><div class="name artist-open" data-artist="${esc(s.name)}">${esc(s.name)}</div><div class="muted">${s.plays?fmt(s.plays)+" plays":"0 plays"} no arquivo</div></div>
+  <span class="badge ${loose?"loose":"new"}">${loose?"Ponta solta":"Território novo"}</span>
+ </div>
+ <div class="bridge">${why}</div>
+ <div class="score"><span>conexão</span><div class="bar"><div class="fill" style="width:${Math.round(s.score)}%"></div></div><span>${Math.round(s.score)}</span></div>
+ <div class="actions">
+  <button class="btn action" data-action="known" data-key="${esc(s.key)}">Já conheço</button>
+  <button class="btn action" data-action="rejected" data-key="${esc(s.key)}">Não é pra mim</button>
+  <button class="btn primary action" data-action="waiting" data-key="${esc(s.key)}">Quero ouvir</button>
+ </div>
+ <a class="spotify-link" target="_blank" rel="noopener" href="https://open.spotify.com/search/${encodeURIComponent(s.name)}">abrir no Spotify ↗</a>
+ </article>`;
+}
+
+async function bindSuggestionActions(){
+ document.querySelectorAll(".action").forEach(btn=>btn.onclick=async()=>{
+  const s=await get("suggestions",btn.dataset.key);if(!s)return;
+  s.status=btn.dataset.action;s.decisionAt=Date.now();
+  if(s.status==="waiting")s.waitingAt=Date.now();
+  await put("suggestions",s);
+  await renderRadar();
+  toast(s.status==="waiting"?"Guardado na lista de espera.":"Decisão registrada.");
+ });
+ document.querySelectorAll(".artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+
+async function renderRadar(){
+ const allS=await all("suggestions");
+ const live=allS.filter(x=>x.status==="alive");
+ const waiting=allS.filter(x=>x.status==="waiting");
+ let list=state.radarFilter==="waiting"?waiting:state.radarFilter==="all"?live:live.filter(x=>x.category===state.radarFilter);
+
+ $("radarList").innerHTML=list.length
+  ?list.map(suggestionHTML).join("")
+  :`<div class="empty" style="grid-column:1/-1"><b>${state.radarFilter==="waiting"?"A lista de espera está vazia.":"Nada forte o bastante."}</b>O radar não preenche vaga com afinidade fraca.</div>`;
+
+ $("homeRadar").innerHTML=live.length
+  ?live.slice(0,6).map(suggestionHTML).join("")
+  :`<div class="empty" style="grid-column:1/-1"><b>Nenhuma rodada ainda.</b>Conecte o Last.fm para criar seu primeiro radar.</div>`;
+
+ await bindSuggestionActions();
+ $("radarDate").textContent=await meta("radarDate")||"nenhuma rodada";
+}
+
+async function renderHome(){
+ const scrobbles=(await all("scrobbles")).sort((a,b)=>b.timestamp-a.timestamp);
+ const artists=await all("artists");
+ animateNumber($("totalPlays"),scrobbles.length);
+ $("totalArtists").textContent=fmt(artists.length)+" artistas";
+
+ if(scrobbles[0]){
+  $("lastTrack").textContent=scrobbles[0].track;
+  $("lastArtist").textContent=scrobbles[0].artist;
+ }
+
+ $("recent").innerHTML=scrobbles.slice(0,14).map(x=>
+ `<div class="track">${x.image?`<img class="cover" src="${esc(x.image)}" alt="">`:`<div class="cover"></div>`}
+ <div><b>${esc(x.track)}</b><small>${esc(x.artist)}${x.album?" · "+esc(x.album):""}</small></div>
+ <span class="muted">${new Date(x.timestamp*1000).toLocaleDateString("pt-BR")}</span></div>`
+ ).join("")||`<div class="empty"><b>Seu diário está vazio.</b>Conecte seu Last.fm para começar.</div>`;
+}
+
+async function renderRescue(){
+ const artists=await all("artists"),t=now();
+ const list=artists.filter(x=>x.plays>=1&&x.plays<=4).sort((a,b)=>a.lastPlayed-b.lastPlayed);
+ $("rescueList").innerHTML=list.length?list.map(x=>{
+  const days=Math.max(1,Math.floor((t-x.lastPlayed)/86400));
+  return `<div class="row"><span class="artist-open" data-artist="${esc(x.name)}" style="cursor:pointer"><b>${esc(x.name)}</b><small>${x.plays} ${x.plays===1?"play":"plays"} · há ${days} dias</small></span><span class="plays">${days}d</span></div>`;
+ }).join(""):`<div class="empty"><b>Nenhuma ponta solta.</b>Seu arquivo não deixou nada para trás.</div>`;
+ document.querySelectorAll("#rescueList .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+
+let archiveTimer;
+async function renderArchive(){
+ const q=norm($("search").value);
+ let rows=[];
+ if(state.archiveMode==="artists"){
+  rows=(await all("artists")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.name).includes(q)).slice(0,1000);
+  $("archiveContent").innerHTML=`<div class="archive">${rows.map(x=>`<div class="row"><span class="artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</span><span class="plays">${fmt(x.plays)}</span></div>`).join("")||`<div class="empty"><b>Nada encontrado.</b>Tente outro termo.</div>`}</div>`;
+  document.querySelectorAll("#archiveContent .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+ }else if(state.archiveMode==="albums"){
+  rows=(await all("albums")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.album).includes(q)||norm(x.artist).includes(q)).slice(0,1000);
+  $("archiveContent").innerHTML=`<div class="archive">${rows.map(x=>`<div class="row"><span><b>${esc(x.album)}</b><small>${esc(x.artist)}</small></span><span class="plays">${fmt(x.plays)}</span></div>`).join("")||`<div class="empty"><b>Nada encontrado.</b></div>`}</div>`;
+ }else{
+  rows=(await all("tracks")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.track).includes(q)||norm(x.artist).includes(q)||norm(x.album).includes(q)).slice(0,1000);
+  $("archiveContent").innerHTML=`<div class="archive">${rows.map(x=>`<div class="row"><span><b>${esc(x.track)}</b><small>${esc(x.artist)}${x.album?" · "+esc(x.album):""}</small></span><span class="plays">${fmt(x.plays)}</span></div>`).join("")||`<div class="empty"><b>Nada encontrado.</b></div>`}</div>`;
+ }
+}
+
+async function openArtist(name){
+ $("artistModal").classList.add("show");
+ $("artistName").textContent=name;$("artistBio").textContent="Buscando contexto...";
+ $("artistTags").innerHTML="";$("artistTracks").innerHTML='<div class="skeleton"></div>';$("artistBridge").textContent="";
+
+ const [info,tracks,suggestions]=await Promise.all([
+  lastfm("artist.getInfo",{artist:name,autocorrect:1}).catch(()=>null),
+  all("tracks"),all("suggestions")
+ ]);
+ const mine=tracks.filter(x=>norm(x.artist)===norm(name)).sort((a,b)=>b.plays-a.plays).slice(0,15);
+ const suggestion=suggestions.find(x=>norm(x.name)===norm(name));
+
+ $("artistBio").textContent=(info?.artist?.bio?.summary||"Sem biografia curta disponível.")
+  .replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
+ const tags=info?.artist?.tags?.tag||[];
+ $("artistTags").innerHTML=(Array.isArray(tags)?tags:[]).slice(0,7).map(t=>`<span class="filter active">${esc(t.name)}</span>`).join("");
+ $("artistTracks").innerHTML=mine.length?mine.map(t=>`<div class="row"><span><b>${esc(t.track)}</b><small>${esc(t.album||"")}</small></span><span class="plays">${fmt(t.plays)}</span></div>`).join(""):`<p class="muted">Você ainda não ouviu esse artista.</p>`;
+ $("artistBridge").textContent=suggestion?.seeds?.length?`Essa sugestão chegou pelo cruzamento de ${suggestion.seeds.slice(0,3).join(", ")}.`:"Nenhuma ponte específica está salva para este artista.";
+ $("artistSpotify").href="https://open.spotify.com/search/"+encodeURIComponent(name);
+}
+
+$("closeArtist").onclick=()=>$("artistModal").classList.remove("show");
+
+/* ---------------- MONTH PORTRAIT ---------------- */
+async function monthlyPortrait(){
+ const scrobbles=await all("scrobbles"),cut=Date.now()-30*86400000;
+ const recent=scrobbles.filter(x=>x.timestamp*1000>=cut);
+ const current=new Set(recent.map(x=>norm(x.artist)));
+ const before=scrobbles.filter(x=>x.timestamp*1000<cut);
+ const beforeSet=new Set(before.map(x=>norm(x.artist)));
+ const newArtists=[...current].filter(x=>!beforeSet.has(x));
+ const counts={};recent.forEach(x=>counts[norm(x.artist)]=(counts[norm(x.artist)]||0)+1);
+ const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+ return {newArtists:newArtists.length,scrobbles:recent.length,top:top?top[0]:"—",topPlays:top?top[1]:0};
+}
+
+/* ---------------- SPOTIFY PKCE ----------------
+   O módulo só é usado se o usuário optar por conectar.
+   Não há histórico do Spotify. */
+function randomString(n=64){
+ const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~",a=new Uint8Array(n);
+ crypto.getRandomValues(a);return[...a].map(v=>chars[v%chars.length]).join("");
+}
+async function sha256(s){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s))}
+function base64url(buffer){return btoa(String.fromCharCode(...new Uint8Array(buffer))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+
+async function connectSpotify(){
+ if(location.protocol==="file:"){toast("O módulo Spotify precisa de HTTPS/localhost. O Radar funciona normalmente sem ele.");return}
+ const clientId=prompt("Spotify Client ID:");
+ if(!clientId)return;
+ const verifier=randomString(),challenge=base64url(await sha256(verifier)),stateToken=randomString(24);
+ const redirect=location.origin+location.pathname;
+ await meta("spotifyClientId",clientId);
+ sessionStorage.setItem("spotify_verifier",verifier);
+ sessionStorage.setItem("spotify_state",stateToken);
+
+ const url=new URL("https://accounts.spotify.com/authorize");
+ url.search=new URLSearchParams({
+  response_type:"code",client_id:clientId,
+  scope:"user-read-currently-playing user-read-playback-state user-read-private",
+  code_challenge_method:"S256",code_challenge:challenge,
+  redirect_uri:redirect,state:stateToken
+ });
+ location.href=url.toString();
+}
+
+async function spotifyCallback(){
+ const params=new URLSearchParams(location.search),code=params.get("code");
+ if(!code)return;
+ const clientId=await meta("spotifyClientId"),verifier=sessionStorage.getItem("spotify_verifier"),savedState=sessionStorage.getItem("spotify_state");
+ if(!clientId||!verifier||savedState!==params.get("state"))throw new Error("Autorização Spotify inválida.");
+ const redirect=location.origin+location.pathname;
+ const body=new URLSearchParams({client_id:clientId,grant_type:"authorization_code",code,redirect_uri:redirect,code_verifier:verifier});
+ const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+ if(!r.ok)throw new Error("Spotify recusou a autorização.");
+ const d=await r.json();
+ state.spotify={clientId,accessToken:d.access_token,refreshToken:d.refresh_token||null,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};
+ await meta("spotify",state.spotify);
+ history.replaceState({},document.title,location.pathname);
+ sessionStorage.removeItem("spotify_verifier");sessionStorage.removeItem("spotify_state");
+}
+
+async function spotifyApi(path){
+ if(!state.spotify?.accessToken||Date.now()>state.spotify.expiresAt)return null;
+ const r=await fetch("https://api.spotify.com/v1"+path,{headers:{Authorization:"Bearer "+state.spotify.accessToken}});
+ if(r.status===204)return null;
+ if(!r.ok)throw new Error("Spotify HTTP "+r.status);
+ return r.json();
+}
+async function updateNowPlaying(){
+ if(!state.spotify?.accessToken){$("nowPlaying").textContent="";return}
+ try{
+  const d=await spotifyApi("/me/player/currently-playing");
+  $("nowPlaying").textContent=d?.item?`ouvindo agora · ${d.item.name} — ${d.item.artists?.map(a=>a.name).join(", ")}`:"nada tocando agora.";
+ }catch(e){$("nowPlaying").textContent=""}
+}
+function renderSpotifyStatus(){$("spotifyStatus").textContent=state.spotify?.accessToken?"Conectado. Histórico continua no Last.fm.":"Desligado."}
+
+/* ---------------- NAV / EVENTS ---------------- */
+document.querySelectorAll("nav button").forEach(btn=>btn.onclick=async()=>{
+ document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+ $(btn.dataset.view).classList.add("active");
+ document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===btn));
+ if(btn.dataset.view==="archive")await renderArchive();
+ if(btn.dataset.view==="rescue")await renderRescue();
+});
+
+document.querySelectorAll("[data-filter]").forEach(btn=>btn.onclick=async()=>{
+ state.radarFilter=btn.dataset.filter;
+ document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===btn));
+ await renderRadar();
+});
+
+document.querySelectorAll("[data-archive]").forEach(btn=>btn.onclick=async()=>{
+ state.archiveMode=btn.dataset.archive;
+ document.querySelectorAll("[data-archive]").forEach(x=>x.classList.toggle("active",x===btn));
+ await renderArchive();
+});
+
+$("search").oninput=()=>{clearTimeout(archiveTimer);archiveTimer=setTimeout(renderArchive,220)};
+
+async function connectLastfm(){
+ $("loginModal").classList.add("show");$("usernameInput").focus();
+}
+$("connectLastfm").onclick=connectLastfm;
+$("cancelLogin").onclick=()=>$("loginModal").classList.remove("show");
+$("startLogin").onclick=async()=>{
+ const username=$("usernameInput").value.trim();if(!username)return;
+ try{
+  const user=await validateUser(username);
+  const switched=await switchUserIfNeeded(user.name);
+  state.user=user.name;
+  $("user").textContent=user.name;$("lastfmStatus").textContent="Conectado como "+user.name;
+  const existing=await all("scrobbles");
+  await syncHistory(user.name,switched||!existing.length,Number(user.playcount||0),{showModal:switched||!existing.length});
+  await calculateRadar(false);await renderAll();
+  $("loginModal").classList.remove("show");
+ }catch(e){$("loginError").innerHTML=`<p style="color:var(--danger)">${esc(e.message)}</p>`}
+};
+$("usernameInput").onkeydown=e=>{if(e.key==="Enter")$("startLogin").click()};
+
+$("syncNow").onclick=async()=>{
+ if(!state.user)return connectLastfm();
+ try{await syncHistory(state.user,false,0,{showModal:false});await calculateRadar(false);await renderAll()}catch(e){console.warn(e)}
+};
+
+$("newRadar").onclick=async()=>{
+ if(!state.user)return connectLastfm();
+ try{await calculateRadar(true);await renderAll();toast("Nova rodada pronta.")}catch(e){toast(e.message)}
+};
+
+$("connectSpotify").onclick=async()=>{
+ try{await connectSpotify();}catch(e){toast(e.message)}
+};
+
+$("clearData").onclick=async()=>{
+ if(!confirm("Apagar o diário salvo neste navegador?"))return;
+ for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions"])await clearStore(s);
+ location.reload();
+};
+
+function animateNumber(el,value,duration=420){
+ const target=Number(value)||0,start=Number(el.dataset.value||0),t0=performance.now();
+ el.dataset.value=target;
+ if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){el.textContent=fmt(target);return}
+ function tick(t){
+  const p=Math.min(1,(t-t0)/duration),e=1-Math.pow(1-p,3);
+  el.textContent=fmt(Math.round(start+(target-start)*e));
+  if(p<1)requestAnimationFrame(tick);
+ }
+ requestAnimationFrame(tick);
+}
+
+async function renderAll(){
+ await renderHome();
+ await renderRadar();
+ await renderRescue();
+ await renderArchive();
+ const portrait=await monthlyPortrait();
+ animateNumber($("monthNew"),portrait.newArtists);
+ $("monthTop").textContent=portrait.top==="—"?"—":portrait.top;
+ $("monthTopPlays").textContent=portrait.top==="—"?"":`${fmt(portrait.topPlays)} plays`;
+ animateNumber($("monthScrobbles"),portrait.scrobbles);
+ await meta("monthlyPortrait",portrait);
+}
+
+(async()=>{
+ try{
+  await openDB();
+  const savedSpotify=await meta("spotify");if(savedSpotify)state.spotify=savedSpotify;
+  try{await spotifyCallback()}catch(e){toast(e.message)}
+
+  state.user=await meta("username");
+  if(state.user){
+   $("user").textContent=state.user;
+   $("lastfmStatus").textContent="Conectado como "+state.user;
+
+   /* Primeiro pinta o cache. Depois sincroniza silenciosamente. */
+   await renderAll();
+   try{
+    await syncHistory(state.user,false,0,{showModal:false});
+    await calculateRadar(false);
+    await renderAll();
+   }catch(e){console.warn(e)}
+  }else{
+   await renderAll();
+  }
+
+  renderSpotifyStatus();await updateNowPlaying();
+  if(state.spotify?.accessToken)setInterval(updateNowPlaying,30000);
+ }catch(e){console.error(e);toast("Não foi possível iniciar o Radar.")}
+})();
+</script>
+</body>
+</html>
