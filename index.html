@@ -495,7 +495,7 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
 
     <div class="setting">
       <h3>Saúde do arquivo</h3>
-      <p id="healthStats">carregando...</p>
+      <p id="healthStats">carregando...</p><button class="link-btn" id="reopenStorage" style="margin-top:8px">reabrir banco local</button>
     </div>
 
     <div class="setting">
@@ -547,8 +547,8 @@ const LASTFM_API_KEY="aff32c07f20e1d2391061d3c70cdc111";
 const SPOTIFY_CLIENT_ID="5455d9b625984362b357f0a08d348051";
 const LASTFM_API="https://ws.audioscrobbler.com/2.0/";
 const DB_NAME="radar-musical";
-const DB_VERSION=6;
 const PAGE_SIZE=200;
+const REQUIRED_STORES={meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",suggestions:"key",similar:"key",tags:"key"};
 const COOLDOWN_DAYS=21;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -573,35 +573,46 @@ function toast(text){
   const t=$("toast");t.textContent=text;t.classList.add("show");
   clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),2900);
 }
+function createMissingStores(d){
+  for(const [name,key] of Object.entries(REQUIRED_STORES)){
+    if(!d.objectStoreNames.contains(name))d.createObjectStore(name,{keyPath:key});
+  }
+}
+let dbOpenPromise=null;
 function openDB(){
-  return new Promise((resolve,reject)=>{
-    const req=indexedDB.open(DB_NAME,DB_VERSION);
-    req.onupgradeneeded=e=>{
-      const d=e.target.result;
-      const stores={
-        meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",
-        suggestions:"key",similar:"key",tags:"key"
-      };
-      for(const [name,key] of Object.entries(stores)){
-        if(!d.objectStoreNames.contains(name))d.createObjectStore(name,{keyPath:key});
-      }
+  if(db)return Promise.resolve(db);
+  if(dbOpenPromise)return dbOpenPromise;
+  dbOpenPromise=new Promise((resolve,reject)=>{
+    if(!window.indexedDB){dbOpenPromise=null;reject(new Error("IndexedDB não está disponível neste navegador."));return;}
+    let req;
+    try{req=indexedDB.open(DB_NAME)}catch(e){dbOpenPromise=null;reject(e);return;}
+    req.onupgradeneeded=e=>createMissingStores(e.target.result);
+    req.onblocked=()=>{dbOpenPromise=null;reject(new Error("O banco do Radar está aberto em outra aba. Feche outras abas deste site e tente novamente."));};
+    req.onerror=()=>{dbOpenPromise=null;reject(req.error||new Error("Não foi possível abrir o banco local."));};
+    req.onsuccess=()=>{
+      const opened=req.result;
+      opened.onversionchange=()=>opened.close();
+      const missing=Object.keys(REQUIRED_STORES).filter(name=>!opened.objectStoreNames.contains(name));
+      if(!missing.length){db=opened;dbOpenPromise=null;resolve(db);return;}
+      const nextVersion=opened.version+1;
+      opened.close();
+      let up;
+      try{up=indexedDB.open(DB_NAME,nextVersion)}catch(e){dbOpenPromise=null;reject(e);return;}
+      up.onupgradeneeded=e=>createMissingStores(e.target.result);
+      up.onblocked=()=>{dbOpenPromise=null;reject(new Error("O banco precisa ser atualizado, mas outra aba ainda o mantém aberto. Feche outras abas do Radar e tente novamente."));};
+      up.onerror=()=>{dbOpenPromise=null;reject(up.error||new Error("Não foi possível atualizar o banco local."));};
+      up.onsuccess=()=>{db=up.result;db.onversionchange=()=>db.close();dbOpenPromise=null;resolve(db);};
     };
-    req.onsuccess=()=>{db=req.result;resolve()};
-    req.onerror=()=>reject(req.error);
   });
+  return dbOpenPromise;
 }
-function get(store,key){return new Promise((res,rej)=>{const r=db.transaction(store).objectStore(store).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function all(store){return new Promise((res,rej)=>{const r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
-function keys(store){return new Promise((res,rej)=>{const r=db.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
-function put(store,value){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).put(value);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
-function bulkPut(store,values){
-  if(!values.length)return Promise.resolve();
-  return new Promise((res,rej)=>{
-    const t=db.transaction(store,"readwrite"),s=t.objectStore(store);
-    values.forEach(v=>s.put(v));t.oncomplete=res;t.onerror=()=>rej(t.error);
-  });
-}
-function clearStore(store){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).clear();t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function ensureDB(){if(db)return db;return openDB();}
+async function get(store,key){const d=await ensureDB();return new Promise((res,rej)=>{const r=d.transaction(store).objectStore(store).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});}
+async function all(store){const d=await ensureDB();return new Promise((res,rej)=>{const r=d.transaction(store).objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)});}
+async function keys(store){const d=await ensureDB();return new Promise((res,rej)=>{const r=d.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)});}
+async function put(store,value){const d=await ensureDB();return new Promise((res,rej)=>{const t=d.transaction(store,"readwrite");t.objectStore(store).put(value);t.oncomplete=res;t.onerror=()=>rej(t.error)});}
+async function bulkPut(store,values){if(!values.length)return;const d=await ensureDB();return new Promise((res,rej)=>{const t=d.transaction(store,"readwrite"),s=t.objectStore(store);values.forEach(v=>s.put(v));t.oncomplete=res;t.onerror=()=>rej(t.error)});}
+async function clearStore(store){const d=await ensureDB();return new Promise((res,rej)=>{const t=d.transaction(store,"readwrite");t.objectStore(store).clear();t.oncomplete=res;t.onerror=()=>rej(t.error)});}
 async function meta(key,value){if(arguments.length===2)return put("meta",{key,value});const x=await get("meta",key);return x?.value??null}
 
 async function lastfm(method,params={}){
@@ -1254,6 +1265,14 @@ $("connectSpotifyHero").onclick=async()=>{try{await connectSpotify()}catch(e){to
 $("exportData").onclick=exportBackup;
 $("importData").onclick=()=>$("importFile").click();
 $("importFile").onchange=async e=>{try{await importBackup(e.target.files[0])}catch(err){toast("backup inválido.")}};
+$("reopenStorage").onclick=async()=>{
+  try{
+    db=null;dbOpenPromise=null;
+    await ensureDB();
+    toast("banco local reaberto.");
+    await renderAll();
+  }catch(e){toast(e.message||"não foi possível reabrir o banco.")}
+};
 $("clearData").onclick=async()=>{if(!confirm("Apagar todo o diário local deste navegador?"))return;for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags"])await clearStore(s);location.reload()};
 
 async function health(){
@@ -1281,7 +1300,11 @@ async function renderAll(){
     $("spotifyRedirect").textContent="Redirect URI: "+location.origin+location.pathname;
     await renderSpotify();
     if(state.spotify?.accessToken){setInterval(renderNowPlaying,5000);setInterval(updateNowPlayingProgress,1000);}
-  }catch(e){console.error(e);toast("Não foi possível iniciar o Radar.")}
+  }catch(e){
+    console.error(e);
+    toast(e.message||"Não foi possível iniciar o Radar.");
+    document.body.dataset.storageError="true";
+  }
 })();
 </script>
 </body>
