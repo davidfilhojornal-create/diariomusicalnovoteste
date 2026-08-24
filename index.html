@@ -837,7 +837,7 @@ async function validateUser(username){
 async function switchUser(username){
   const old=await meta("username");
   if(old&&norm(old)!==norm(username)){
-    for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags"])await clearStore(s);
+    for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags","aliases","exposure","contexts","aggregates","syncQueue"])await clearStore(s);
     return true;
   }
   return false;
@@ -925,6 +925,100 @@ async function buildDiscoverySeeds(mode="blend",artistName="",trackKey=""){
   else if(mode==="track"){const tr=tracks.find(x=>x.key===trackKey);if(tr)seeds=[artists.find(a=>a.key===norm(tr.artist))||{key:norm(tr.artist),name:tr.artist,plays:tr.plays,lastPlayed:tr.lastPlayed}]}
   else seeds=[...recent,...pillars.slice(0,8),...surprise];
   return[...new Map(seeds.filter(Boolean).map(x=>[x.key,x])).values()].slice(0,12)
+}
+
+
+async function getExposure(key){
+  const k=norm(key);
+  const existing=await get("exposure",k);
+  return existing||{key:k,shown:0,lastShown:0,lastDecision:0};
+}
+
+async function openArtist(name){
+  const key=norm(name);
+  const artists=await all("artists");
+  const artist=artists.find(a=>a.key===key)||{key,name,plays:0};
+  const tags=await tagInfo(name);
+  let info=null;
+  try{
+    const d=await lastfm("artist.getInfo",{artist:name,autocorrect:1});
+    info=d.artist||null;
+  }catch{}
+  const tracks=(await all("tracks"))
+    .filter(t=>norm(t.artist)===key)
+    .sort((a,b)=>b.plays-a.plays)
+    .slice(0,12);
+
+  $("artistName").textContent=info?.name||artist.name||name;
+  $("artistBio").textContent=info?.bio?.summary
+    ? String(info.bio.summary).replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim()
+    : (artist.plays?`${fmt(artist.plays)} plays no seu arquivo.`:"artista ainda não está no seu arquivo.");
+
+  $("artistTags").innerHTML=tags.length
+    ? tags.slice(0,8).map(t=>`<span class="filter active">${esc(t)}</span>`).join("")
+    : `<span class="muted">sem tags suficientes.</span>`;
+
+  $("artistTracks").innerHTML=tracks.length
+    ? tracks.map((t,i)=>`<div class="archive-row"><div><div class="archive-name">${esc(t.track)}</div><div class="muted">${esc(t.album||"")}</div></div><div class="plays">${fmt(t.plays)}</div></div>`).join("")
+    : `<div class="empty"><strong>nenhuma faixa registrada.</strong>Esse artista ainda não aparece no seu diário.</div>`;
+
+  const suggestions=await all("suggestions");
+  const bridge=suggestions.find(x=>norm(x.name)===key && x.seeds?.length);
+  $("artistBridge").textContent=bridge
+    ? `O Radar chegou aqui por ${bridge.seeds.slice(0,5).join(", ")}.`
+    : artist.plays
+      ? "Artista que já faz parte do seu arquivo."
+      : "Ainda não há uma ponte registrada para este artista.";
+
+  $("artistSpotify").href=`https://open.spotify.com/search/${encodeURIComponent(info?.name||artist.name||name)}`;
+  $("artistHeroArt").innerHTML=info?.image?.length
+    ? (()=>{const img=info.image[info.image.length-1]?.["#text"];return img?`<img src="${esc(img)}" alt="" style="max-width:100%;max-height:180px;object-fit:cover;opacity:.9">`:""})()
+    : "";
+
+  $("artistModal").classList.add("show");
+}
+
+async function populateArtistOptions(){
+  const artists=(await all("artists")).sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
+  $("artistOptions").innerHTML=artists.map(a=>`<option value="${esc(a.name)}"></option>`).join("");
+}
+
+async function findRoute(startName,endName,maxDepth=5){
+  const start=await canonicalKeyFor(startName),end=await canonicalKeyFor(endName);
+  const artists=await all("artists");
+  const startArtist=artists.find(a=>a.key===start)||{key:start,name:startName};
+  const endArtist=artists.find(a=>a.key===end)||{key:end,name:endName};
+  if(start===end)return {nodes:[startArtist.name]};
+  const queue=[{key:startArtist.key,name:startArtist.name,path:[startArtist.name],depth:0}];
+  const visited=new Set([startArtist.key]);
+  while(queue.length){
+    const cur=queue.shift();
+    if(cur.depth>=maxDepth)continue;
+    const neighbors=await similarCached(cur.name,12);
+    for(const item of neighbors){
+      const k=await canonicalKeyFor(item.name);
+      if(visited.has(k))continue;
+      const path=[...cur.path,item.name];
+      if(k===endArtist.key)return {nodes:path};
+      visited.add(k);
+      queue.push({key:k,name:item.name,path,depth:cur.depth+1});
+    }
+  }
+  return null;
+}
+
+function renderRoute(route){
+  if(!route){
+    $("routeResult").innerHTML=`<div class="empty"><strong>nenhum caminho encontrado.</strong>Tente aumentar o número de passos.</div>`;
+    return;
+  }
+  $("routeResult").innerHTML=route.nodes.map((name,i)=>`
+    <div class="route-step">
+      <div class="route-index">${String(i+1).padStart(2,"0")}</div>
+      <div class="route-name artist-open" data-artist="${esc(name)}" style="cursor:pointer">${esc(name)}</div>
+    </div>${i<route.nodes.length-1?`<div class="chain-arrow">↓</div>`:""}
+  `).join("");
+  document.querySelectorAll("#routeResult .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
 }
 
 async function buildDiscoveryEngine(options={}){
@@ -1191,7 +1285,7 @@ async function renderDiscoveryQuality(stats){
 }
 function labCard(x,i,label){
   const why=x.seeds.length>=3?`apareceu por ${x.seeds.length} caminhos: ${x.seeds.slice(0,4).map(esc).join(", ")}.`:`apareceu pela ponte com ${x.seeds.slice(0,3).map(esc).join(", ")}.`;
-  const absent=x.h?.lastPlayed?`última escuta há ${Math.max(1,Math.floor((now()-x.h.lastPlayed)/86400))} dias.`:"zero plays no arquivo.";
+  const absent=x.lastPlayed?`última escuta há ${Math.max(1,Math.floor((now()-x.lastPlayed)/86400))} dias.`:"zero plays no arquivo.";
   return `<article class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="badge ${x.category==="loose"?"loose":"new"}" style="margin-top:5px">${esc(label)}</div><div class="lab-copy">${why} ${x.plays?`Você já ouviu ${x.plays} vezes; ${absent}`:absent}</div><div class="metric-line"><span>match</span><div class="bar"><i style="width:${Math.round(x.affinity*100)}%"></i></div><span>${Math.round(x.affinity*100)}</span></div><div class="story-actions"><button class="link-btn lab-action primary" data-name="${esc(x.name)}" data-action="waiting">quero ouvir</button><button class="link-btn lab-action" data-name="${esc(x.name)}" data-action="rejected">não é pra mim</button><button class="link-btn artist-open" data-artist="${esc(x.name)}">abrir ficha</button></div></div><div class="lab-metrics">${Math.round(x.score*100)} potencial<br>${x.risk} risco<br>${x.seeds.length} pontes</div></div></article>`;
 }
 
@@ -1502,6 +1596,7 @@ $("refreshHeroDiscovery").onclick=async()=>{
   const data=await Promise.all(lab.items.map(async x=>({...x,taxonomy:await classifyDiscoveryItem(x)})));
   await renderDiscoveryHero(data);await bindLabActions();toast("nova aposta calculada.");
 };
+$("closeArtist").onclick=()=>$("artistModal").classList.remove("show");
 /* ----- nav / event binding ----- */
 function showView(name){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
@@ -1522,7 +1617,7 @@ $("newRadar").onclick=async()=>{
 document.querySelectorAll("[data-rfilter]").forEach(btn=>btn.onclick=async()=>{state.radarFilter=btn.dataset.rfilter;document.querySelectorAll("[data-rfilter]").forEach(x=>x.classList.toggle("active",x===btn));await renderRadar()});
 document.querySelectorAll("[data-depth]").forEach(btn=>btn.onclick=()=>{state.routeDepth=Number(btn.dataset.depth);document.querySelectorAll("[data-depth]").forEach(x=>x.classList.toggle("active",x===btn))});
 $("findRoute").onclick=async()=>{const a=$("routeStart").value.trim(),b=$("routeEnd").value.trim();$("routeStatus").textContent="procurando pontes...";$("routeResult").innerHTML='<div class="shimmer"></div>';try{const r=await findRoute(a,b,state.routeDepth);renderRoute(r);$("routeStatus").textContent=r?`${r.nodes.length-1} passos encontrados.`:""}catch(e){toast(e.message);$("routeStatus").textContent=""}};
-$("randomRoute").onclick=async()=>{const a=await all("artists");if(a.length<2)return;let x=a[Math.floor(Math.random()*a.length)],y=a[Math.floor(Math.random()*a.length)];while(y.key===x.key)y=a[Math.floor(Math.random()*a.length)];$("routeStart").value=x.name;$("routeEnd").value=y.name;$("findRoute").click()};$("shuffleRecent").onclick=()=>renderRecentCarousel(true);
+$("randomRoute").onclick=async()=>{const a=await all("artists");if(a.length<2)return;let x=a[Math.floor(Math.random()*a.length)],y=a[Math.floor(Math.random()*a.length)];let guard=0;while(y.key===x.key&&guard++<20)y=a[Math.floor(Math.random()*a.length)];$("routeStart").value=x.name;$("routeEnd").value=y.name;$("findRoute").click()};$("shuffleRecent").onclick=()=>renderRecentCarousel(true);
 $("rescueShuffle").onclick=async()=>{const a=await all("artists"),loose=a.filter(x=>x.plays>=1&&x.plays<=4);if(!loose.length)return;const x=loose[Math.floor(Math.random()*loose.length)];await openArtist(x.name)};
 let archiveTimer;
 document.querySelectorAll("[data-amode]").forEach(btn=>btn.onclick=async()=>{state.archiveMode=btn.dataset.amode;document.querySelectorAll("[data-amode]").forEach(x=>x.classList.toggle("active",x===btn));await renderArchive()});
@@ -1552,7 +1647,7 @@ $("reopenStorage").onclick=async()=>{
     await renderAll();
   }catch(e){toast(e.message||"não foi possível reabrir o banco.")}
 };
-$("clearData").onclick=async()=>{if(!confirm("Apagar todo o diário local deste navegador?"))return;for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags"])await clearStore(s);location.reload()};
+$("clearData").onclick=async()=>{if(!confirm("Apagar todo o diário local deste navegador?"))return;for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags","aliases","exposure","contexts","aggregates","syncQueue"])await clearStore(s);location.reload()};
 
 async function clearStoreItem(store,key){
   if(!db)return;
@@ -1571,19 +1666,47 @@ async function health(){
 }
 async function runDiagnostics(){
   const checks=[];
-  try{await openDB();checks.push(["IndexedDB",true])}catch(e){checks.push(["IndexedDB",false,String(e.message||e)])}
+  try{await openDB();checks.push(["IndexedDB",true])}
+  catch(e){checks.push(["IndexedDB",false,String(e.message||e)])}
+
   checks.push(["Last.fm",Boolean(LASTFM_API_KEY)]);
   checks.push(["Spotify",Boolean(SPOTIFY_CLIENT_ID)]);
-  const ids=[...new Set([...s.matchAll(/\\$\\(["\\\']([^"\\\']+)["\\\']\\)/g)].map(m=>m[1]))];
-  const missing=ids.filter(id=>!document.getElementById(id));
+
+  const sourceIds=[...document.scripts]
+    .map(el=>el.textContent||"")
+    .join("\n")
+    .matchAll(/\$\(\s*["']([^"']+)["']\s*\)/g);
+  const ids=[...new Set([...sourceIds].map(m=>m[1]))];
+  const missing=ids.filter(id=>!document.getElementById(id) && !["startLogin","syncNow"].includes(id));
+
   checks.push(["UI IDs",missing.length===0,missing]);
   checks.push(["PWA manifest",Boolean(document.querySelector('link[rel="manifest"]'))]);
   checks.push(["service worker","serviceWorker" in navigator]);
-  checks.push(["Exploração gráfica",true]);
+
   const result={at:Date.now(),checks,missingIds:missing};
   await meta("diagnostics",result);
   return result;
-}async function safeRenderStep(name,fn){
+}
+
+async function auditFunctions(){
+  const source=[...document.scripts].map(x=>x.textContent||"").join("\n");
+  const defined=new Set();
+  for(const m of source.matchAll(/(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g))defined.add(m[1]);
+  for(const m of source.matchAll(/const\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\(/g))defined.add(m[1]);
+
+  const ignore=new Set([
+    "if","for","while","switch","catch","setTimeout","setInterval","clearTimeout",
+    "Promise","String","Number","Math","Date","JSON","Intl","URLSearchParams",
+    "URL","Blob","FormData","Array","Object","Map","Set","Error","Proxy","console"
+  ]);
+  const calls=new Set();
+  for(const m of source.matchAll(/(?:^|[;{}\n])\s*(?:await\s+)?([A-Za-z_$][\w$]*)\s*\(/g)){
+    if(!ignore.has(m[1]))calls.add(m[1]);
+  }
+  const missing=[...calls].filter(name=>!defined.has(name) && !window[name]);
+  return missing;
+}
+async function safeRenderStep(name,fn){
   try{await fn();return true}catch(e){
     console.error("Radar step failed:",name,e);
     try{
@@ -1608,6 +1731,7 @@ async function renderAll(){
   await safeRenderStep("Saúde",health);
   await safeRenderStep("PWA",installPWA);
   await safeRenderStep("Diagnóstico",runDiagnostics);
+  await safeRenderStep("Auditoria de funções",async()=>{const missing=await auditFunctions();if(missing.length)console.warn("Funções não definidas:",missing);await meta("functionAudit",{at:Date.now(),missing})});
 }(async()=>{
   try{
     await openDB();
