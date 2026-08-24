@@ -34,6 +34,43 @@ main{padding:52px 0 90px}
 @keyframes viewIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes shimmer{to{background-position:-200% 0}}
+.recent-carousel-wrap{position:relative;overflow:hidden;margin-top:14px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.recent-carousel-track{display:flex;gap:12px;width:max-content;animation:recentMarquee 30s linear infinite;will-change:transform}
+.recent-carousel-wrap:hover .recent-carousel-track{animation-play-state:paused}
+.recent-carousel-card{position:relative;display:block;width:154px;height:192px;flex:0 0 154px;border-radius:13px;overflow:hidden;background:#17171a;border:1px solid #ffffff0d}
+.recent-carousel-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .28s ease}
+.recent-carousel-card:hover img{transform:scale(1.045)}
+.recent-carousel-fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);font:700 28px "Space Grotesk"}
+.recent-carousel-shade{position:absolute;inset:35% 0 0;background:linear-gradient(to top,rgba(0,0,0,.92),transparent)}
+.recent-carousel-info{position:absolute;left:0;right:0;bottom:0;padding:11px 11px 12px}
+.recent-carousel-song{font:600 12px "Space Grotesk",sans-serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-carousel-artist{font-size:10px;color:#c9c9cc;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-carousel-date{font-size:9px;color:#808088;margin-top:7px}
+.recent-carousel-label{font:600 10px "DM Sans";letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+@keyframes recentMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.recent-carousel-track{animation:none}}
+@media(max-width:760px){.recent-carousel-card{width:142px;height:178px;flex-basis:142px}}
+
+
+.route-form{display:grid;grid-template-columns:1fr 34px 1fr auto;gap:13px;align-items:end}
+.route-form label{display:block;margin-bottom:7px}
+.route-input{min-width:0}
+.route-arrow{font:700 24px "Space Grotesk";color:var(--accent);text-align:center;padding-bottom:7px}
+.route-step{border-top:1px solid var(--line);padding:21px 0;display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center}
+.route-step:last-child{border-bottom:1px solid var(--line)}
+.route-num{font:700 12px "Space Grotesk";color:var(--accent)}
+.route-name{font:700 clamp(25px,4vw,43px)/1 "Space Grotesk";letter-spacing:-.06em}
+.route-bridge{font-size:11px;color:var(--muted);margin-top:6px}
+.route-match{font:700 11px;color:var(--muted)}
+.canvas-wrap{height:min(70vh,720px);min-height:420px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+#starMap{width:100%;height:100%;display:block}
+@media(max-width:760px){
+ .route-form{grid-template-columns:1fr}
+ .route-arrow{display:none}
+ .route-step{grid-template-columns:34px 1fr}
+ .route-match{grid-column:2}
+ .canvas-wrap{min-height:380px;height:65vh}
+}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .ey{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
 h1,h2,h3{font-family:"Space Grotesk",sans-serif}
@@ -118,6 +155,8 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
 <button class="active" data-view="home">Início</button>
 <button data-view="radar">Radar</button>
 <button data-view="rescue">Resgate</button>
+<button data-view="route">Rota</button>
+<button data-view="map">Mapa</button>
 <button data-view="archive">Arquivo</button>
 <button data-view="settings">Config.</button>
 </nav>
@@ -134,6 +173,14 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
 <div class="stat"><div class="ey">último scrobble</div><div class="big" id="lastTrack">—</div><div class="muted" id="lastArtist">Conecte seu Last.fm</div></div>
 <div class="stat"><div class="ey">arquivo</div><div class="big" id="totalPlays">0</div><div class="muted" id="totalArtists">0 artistas</div></div>
 </div>
+
+<div class="section" style="margin-top:36px">
+  <div class="recent-carousel-label">rotação recente</div>
+  <div class="recent-carousel-wrap" id="recentCarouselWrap">
+    <div class="recent-carousel-track" id="recentCarouselTrack"></div>
+  </div>
+</div>
+
 <div class="section"><div class="sh"><div><h2>Radar de hoje</h2><span class="muted" id="radarDate">nenhuma rodada</span></div><button class="btn primary" id="newRadar">Nova rodada</button></div><div id="homeRadar" class="grid"></div></div>
 <div class="section">
 <div class="sh"><div><h2>Retrato do mês</h2><span class="muted">últimos 30 dias</span></div></div>
@@ -149,15 +196,58 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
 <section id="radar" class="view">
 <div class="ey">descoberta</div><h1 class="title">radar.</h1>
 <p class="sub">A afinidade real manda. Ponta solta e território novo ocupam suas próprias vagas.</p>
-<div class="section"><div class="filters">
+<div class="section">
+<div class="filters">
 <button class="filter active" data-filter="all">Tudo</button><button class="filter" data-filter="new">Território novo</button><button class="filter" data-filter="loose">Ponta solta</button><button class="filter" data-filter="waiting">Lista de espera</button>
-</div><div id="radarList" class="grid"></div></div>
+</div>
+<div class="filters" style="margin-top:8px">
+<span class="muted" style="padding:7px 3px">raio</span>
+<button class="filter" data-radius="near">Perto</button><button class="filter active" data-radius="medium">Médio</button><button class="filter" data-radius="far">Longe</button>
+</div>
+<div style="display:flex;gap:10px;align-items:end;max-width:520px;margin-top:8px">
+<div style="flex:1"><label class="muted" style="display:block;margin-bottom:6px">tag Last.fm</label><input class="search" id="tagFilter" placeholder="ex.: hardcore, samba, grime"></div>
+<button class="btn primary" id="applyTag">Aplicar</button><button class="btn" id="clearTag">Limpar</button>
+</div>
+<div class="muted" id="radarModeHint" style="margin-top:10px"></div>
+<div id="radarList" class="grid" style="margin-top:16px"></div></div>
 </section>
 
 <section id="rescue" class="view">
 <div class="ey">resgate</div><h1 class="title">ponta<br>solta.</h1>
 <p class="sub">Artistas que você ouviu de 1 a 4 vezes e nunca mais voltou. Ordenados pelo tempo que ficaram para trás.</p>
 <div class="section"><div id="rescueList"></div></div>
+</section>
+
+
+<section id="route" class="view">
+<div class="ey">labirinto</div><h1 class="title">rota.</h1>
+<p class="sub">Escolha dois artistas. O Radar percorre o grafo de similares do Last.fm e procura a menor ponte que liga um ao outro.</p>
+<div class="section">
+<div class="route-form">
+<div><label class="muted">partida</label><input class="search route-input" id="routeStart" list="artistOptions" placeholder="ex.: Papangu"></div>
+<div class="route-arrow">→</div>
+<div><label class="muted">chegada</label><input class="search route-input" id="routeEnd" list="artistOptions" placeholder="ex.: Marisa Monte"></div>
+<button class="btn primary" id="findRoute">Encontrar caminho</button>
+</div>
+<datalist id="artistOptions"></datalist>
+<div class="filters" style="margin-top:16px">
+<button class="filter active" data-route-depth="5">até 5 passos</button>
+<button class="filter" data-route-depth="7">até 7 passos</button>
+<button class="filter" data-route-depth="9">até 9 passos</button>
+</div>
+<div id="routeStatus" class="muted" style="margin-top:12px"></div>
+<div id="routeResult" style="margin-top:25px"></div>
+</div>
+</section>
+
+<section id="map" class="view">
+<div class="ey">constelação</div><h1 class="title">mapa.</h1>
+<p class="sub">Seu arquivo como um céu: tamanho é play, linhas são afinidade e concentrações viram vizinhanças.</p>
+<div class="section">
+<div class="sh"><div><h2>Mapa estelar</h2><span class="muted" id="mapStatus">pronto para desenhar</span></div><button class="btn primary" id="buildMap">Desenhar mapa</button></div>
+<div class="canvas-wrap"><canvas id="starMap"></canvas></div>
+<div class="muted" style="margin-top:10px">Todos os artistas do seu arquivo aparecem como pontos. As linhas usam similaridades Last.fm já descobertas ou buscadas para o núcleo mais ouvido.</div>
+</div>
 </section>
 
 <section id="archive" class="view">
@@ -173,7 +263,11 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
 <div class="section settings">
 <div class="setting"><h3>Last.fm</h3><p class="muted">Baixe o histórico completo e sincronize apenas o que chegou depois.</p><button class="btn primary" id="connectLastfm">Conectar Last.fm</button><p class="muted" id="lastfmStatus">Não conectado.</p></div>
 <div class="setting"><h3>Sincronização</h3><p class="muted">O marcador é salvo a cada página para poder continuar de onde parou.</p><button class="btn" id="syncNow">Sincronizar agora</button><p class="muted" id="syncStatus">Nunca sincronizado.</p></div>
-<div class="setting"><h3>Spotify</h3><p class="muted">Somente recursos opcionais: foto, perfil e ouvindo agora. Nunca é fonte do histórico.</p><button class="btn" id="connectSpotify">Conectar Spotify</button><p class="muted" id="spotifyStatus">Desligado.</p><div class="muted" id="nowPlaying"></div></div>
+<div class="setting"><h3>Spotify</h3><p class="muted">Somente recursos opcionais: foto de artista e ouvindo agora. Nunca é fonte do histórico.</p>
+<div class="field"><label>Client ID</label><input id="spotifyClientId" placeholder="Cole aqui o Client ID do seu app Spotify"></div>
+<p class="muted" style="margin-top:9px">Redirect URI usado automaticamente: <span id="spotifyRedirect"></span></p>
+<button class="btn" id="connectSpotify">Conectar Spotify</button>
+<p class="muted" id="spotifyStatus">Desligado.</p><div class="muted" id="nowPlaying"></div></div>
 <div class="setting"><h3>Dados locais</h3><p class="muted">Apaga o arquivo deste navegador. Seu Last.fm não é alterado.</p><button class="btn" id="clearData">Apagar dados locais</button></div>
 </div>
 </section>
@@ -191,7 +285,7 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
 </div></div>
 
 <div class="modalbg" id="artistModal"><div class="modal">
-<div class="ey">ficha do artista</div><h2 id="artistName">Artista</h2><p id="artistBio">Carregando...</p>
+<div class="ey">ficha do artista</div><h2 id="artistName">Artista</h2><div id="artistPhotoWrap"></div><p id="artistBio">Carregando...</p>
 <div id="artistTags" class="filters"></div>
 <div class="cardless"><h3>Suas faixas</h3><div id="artistTracks"></div></div>
 <div class="cardless"><h3>Ponte</h3><p id="artistBridge"></p></div>
@@ -205,9 +299,10 @@ h1,h2,h3{font-family:"Space Grotesk",sans-serif}
    RADAR MUSICAL — CONFIG
    ========================= */
 const LASTFM_API_KEY="aff32c07f20e1d2391061d3c70cdc111";
+const SPOTIFY_CLIENT_ID="5455d9b625984362b357f0a08d348051";
 const LASTFM_API="https://ws.audioscrobbler.com/2.0/";
 const DB_NAME="radar-musical";
-const DB_VERSION=3;
+const DB_VERSION=5;
 const PAGE_SIZE=200;
 const COOLDOWN_DAYS=21;
 
@@ -230,7 +325,7 @@ function openDB(){
   req.onupgradeneeded=e=>{
    const d=e.target.result;
    const stores={
-    meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",suggestions:"key"
+    meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",suggestions:"key",similar:"key",artistTags:"key"
    };
    for(const [name,key] of Object.entries(stores)){
     if(!d.objectStoreNames.contains(name)){
@@ -381,6 +476,7 @@ async function syncHistory(username,initial,total,options={}){
    /* O requestFrom fica FIXO durante toda a sincronização.
       O checkpoint só avança depois que a página foi persistida. */
    await meta("lastScrobbleTimestamp",newest);
+   await meta("totalScrobbles",known.size);
    await meta("lastSync",Date.now());
    await resolveWaiting(result.touchedArtists);
 
@@ -411,7 +507,7 @@ async function validateUser(username){
 async function switchUserIfNeeded(username){
  const old=await meta("username");
  if(old&&norm(old)!==norm(username)){
-  for(const s of ["scrobbles","artists","albums","tracks","suggestions","meta"])await clearStore(s);
+  for(const s of ["scrobbles","artists","albums","tracks","suggestions","artistTags","meta"])await clearStore(s);
   return true;
  }
  return false;
@@ -472,7 +568,22 @@ async function addTrackSimilar(seed,candidates,allTracks){
   await sleep(120);
  }
 }
+async function getArtistTags(name){
+ const key=norm(name),cached=await get("artistTags",key);
+ if(cached?.tags)return cached.tags;
+ try{
+  const info=await lastfm("artist.getInfo",{artist:name,autocorrect:1});
+  const tags=(info?.artist?.tags?.tag||[]).map(t=>norm(t.name)).filter(Boolean);
+  await put("artistTags",{key,name,tags,updatedAt:Date.now()});
+  return tags;
+ }catch(e){console.warn(e);return []}
+}
+
+const RADIUS_CUTS={near:.65,medium:.45,far:.28};
+let radarRadius="medium",radarTag="";
+async function loadRadarPreferences(){radarRadius=await meta("radarRadius")||"medium";radarTag=(await meta("radarTag")||"").trim().toLowerCase();}
 async function calculateRadar(force=false){
+ await loadRadarPreferences();
  const old=await all("suggestions");
  const date=await meta("radarDate");
  if(!force&&date===today()&&old.some(x=>x.status==="alive"))return;
@@ -504,6 +615,7 @@ async function calculateRadar(force=false){
   const artistSimilarity=c.artistScores.length?Math.max(...c.artistScores):0;
   const trackSimilarity=c.trackScores.length?Math.max(...c.trackScores):0;
   const similarity=Math.max(artistSimilarity,trackSimilarity*0.95);
+  if(similarity<RADIUS_CUTS[radarRadius])continue;
 
   /* 65% similaridade, 25% diversidade, 10% origem da semente. */
   const similarityPart=similarity*65;
@@ -518,8 +630,17 @@ async function calculateRadar(force=false){
  }
 
  /* Cota fixa: três pontas soltas + três territórios novos. */
- const loose=ranked.filter(x=>x.category==="loose").sort((a,b)=>b.score-a.score);
- const fresh=ranked.filter(x=>x.category==="new").sort((a,b)=>b.score-a.score);
+ let filteredRanked=ranked;
+ if(radarTag){
+  const tagged=[];
+  for(const item of ranked.sort((a,b)=>b.score-a.score).slice(0,40)){
+   try{const tags=await getArtistTags(item.name);item.tags=tags;if(tags.some(t=>t.includes(norm(radarTag))))tagged.push(item)}catch(e){console.warn(e)}
+   await sleep(100);
+  }
+  filteredRanked=tagged;
+ }
+ const loose=filteredRanked.filter(x=>x.category==="loose").sort((a,b)=>b.score-a.score);
+ const fresh=filteredRanked.filter(x=>x.category==="new").sort((a,b)=>b.score-a.score);
  const chosen=[...loose.slice(0,3),...fresh.slice(0,3)];
 
  /* Expiração com cooldown, preservando qualquer estado de decisão/espera. */
@@ -576,6 +697,9 @@ async function bindSuggestionActions(){
 async function renderRadar(){
  const allS=await all("suggestions");
  const live=allS.filter(x=>x.status==="alive");
+ const radiusLabel={near:"perto",medium:"médio",far:"longe"}[radarRadius]||"médio";
+ const radiusText={near:"afinidade ≥ 65%",medium:"afinidade ≥ 45%",far:"afinidade ≥ 28%"}[radarRadius]||"afinidade ≥ 45%";
+ $("radarModeHint").textContent=`raio ${radiusLabel} · ${radiusText}${radarTag?" · tag “"+radarTag+"”":""}`;
  const waiting=allS.filter(x=>x.status==="waiting");
  let list=state.radarFilter==="waiting"?waiting:state.radarFilter==="all"?live:live.filter(x=>x.category===state.radarFilter);
 
@@ -589,6 +713,38 @@ async function renderRadar(){
 
  await bindSuggestionActions();
  $("radarDate").textContent=await meta("radarDate")||"nenhuma rodada";
+}
+
+
+function recentCarouselCard(track){
+  const href="https://open.spotify.com/search/"+encodeURIComponent(track.artist+" "+track.track);
+  const date=track.timestamp?new Date(track.timestamp*1000).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}):"";
+  return `<a class="recent-carousel-card" href="${href}" target="_blank" rel="noopener" aria-label="Abrir ${esc(track.track)} no Spotify">
+    ${track.image?`<img src="${esc(track.image)}" alt="" loading="lazy">`:`<div class="recent-carousel-fallback">♪</div>`}
+    <div class="recent-carousel-shade"></div>
+    <div class="recent-carousel-info">
+      <div class="recent-carousel-song">${esc(track.track)}</div>
+      <div class="recent-carousel-artist">${esc(track.artist)}</div>
+      <div class="recent-carousel-date">${date}</div>
+    </div>
+  </a>`;
+}
+
+async function renderRecentCarousel(){
+  const scrobbles=(await all("scrobbles")).sort((a,b)=>b.timestamp-a.timestamp);
+  const items=scrobbles.slice(0,10);
+  const track=$("recentCarouselTrack");
+  const wrap=$("recentCarouselWrap");
+  if(!track||!wrap)return;
+
+  if(!items.length){
+    wrap.innerHTML=`<div class="muted" style="padding:18px 3px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">As músicas recentes vão aparecer aqui.</div>`;
+    return;
+  }
+
+  track.innerHTML=items.map(recentCarouselCard).join("")+items.map(recentCarouselCard).join("");
+  const seconds=Math.max(20,Math.min(38,items.length*3.1));
+  track.style.animationDuration=`${seconds}s`;
 }
 
 async function renderHome(){
@@ -638,16 +794,17 @@ async function renderArchive(){
 
 async function openArtist(name){
  $("artistModal").classList.add("show");
- $("artistName").textContent=name;$("artistBio").textContent="Buscando contexto...";
+ $("artistName").textContent=name;$("artistBio").textContent="Buscando contexto...";$("artistPhotoWrap").innerHTML="";
  $("artistTags").innerHTML="";$("artistTracks").innerHTML='<div class="skeleton"></div>';$("artistBridge").textContent="";
 
- const [info,tracks,suggestions]=await Promise.all([
+ const [info,tracks,suggestions,spotifyImage]=await Promise.all([
   lastfm("artist.getInfo",{artist:name,autocorrect:1}).catch(()=>null),
-  all("tracks"),all("suggestions")
+  all("tracks"),all("suggestions"),spotifyArtistImage(name)
  ]);
  const mine=tracks.filter(x=>norm(x.artist)===norm(name)).sort((a,b)=>b.plays-a.plays).slice(0,15);
  const suggestion=suggestions.find(x=>norm(x.name)===norm(name));
 
+ $("artistPhotoWrap").innerHTML=spotifyImage?`<img src="${esc(spotifyImage)}" alt="${esc(name)}" style="width:96px;height:96px;object-fit:cover;border-radius:2px;margin:4px 0 16px" loading="lazy">`:"";
  $("artistBio").textContent=(info?.artist?.bio?.summary||"Sem biografia curta disponível.")
   .replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
  const tags=info?.artist?.tags?.tag||[];
@@ -660,79 +817,339 @@ async function openArtist(name){
 $("closeArtist").onclick=()=>$("artistModal").classList.remove("show");
 
 /* ---------------- MONTH PORTRAIT ---------------- */
-async function monthlyPortrait(){
- const scrobbles=await all("scrobbles"),cut=Date.now()-30*86400000;
- const recent=scrobbles.filter(x=>x.timestamp*1000>=cut);
- const current=new Set(recent.map(x=>norm(x.artist)));
- const before=scrobbles.filter(x=>x.timestamp*1000<cut);
+async function monthlyPortrait(force=false){
+ const newest=Number(await meta("lastScrobbleTimestamp")||0);
+ let scrobbleCount=Number(await meta("totalScrobbles"));
+ const cached=await meta("monthlyPortrait");
+ if(!scrobbleCount){const allScrobbles=await all("scrobbles");scrobbleCount=allScrobbles.length;await meta("totalScrobbles",scrobbleCount)}
+ const signature=`${newest}|${scrobbleCount}`;
+ if(!force&&cached&&cached.signature===signature)return cached.data;
+ const scrobbles=await all("scrobbles");
+ const cut=Math.floor(Date.now()/1000)-30*86400;
+ const recent=scrobbles.filter(x=>x.timestamp>=cut);
+ const before=scrobbles.filter(x=>x.timestamp<cut);
  const beforeSet=new Set(before.map(x=>norm(x.artist)));
- const newArtists=[...current].filter(x=>!beforeSet.has(x));
- const counts={};recent.forEach(x=>counts[norm(x.artist)]=(counts[norm(x.artist)]||0)+1);
- const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
- return {newArtists:newArtists.length,scrobbles:recent.length,top:top?top[0]:"—",topPlays:top?top[1]:0};
+ const names=new Map();
+ recent.forEach(x=>{const k=norm(x.artist);if(!names.has(k))names.set(k,x.artist)});
+ const newArtists=[...names.keys()].filter(k=>!beforeSet.has(k));
+ const counts=new Map();
+ recent.forEach(x=>{const k=norm(x.artist);counts.set(k,(counts.get(k)||0)+1)});
+ let topKey=null,topPlays=0;
+ for(const [k,n] of counts){if(n>topPlays){topKey=k;topPlays=n}}
+ const top=topKey?(names.get(topKey)||topKey):"—";
+ const data={newArtists:newArtists.length,scrobbles:recent.length,top,topPlays};
+ await meta("monthlyPortrait",{signature,data});
+ return data;
 }
-
 /* ---------------- SPOTIFY PKCE ----------------
-   O módulo só é usado se o usuário optar por conectar.
-   Não há histórico do Spotify. */
+   Módulo opcional: foto de artista + ouvindo agora. Histórico = Last.fm. */
 function randomString(n=64){
  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~",a=new Uint8Array(n);
  crypto.getRandomValues(a);return[...a].map(v=>chars[v%chars.length]).join("");
 }
 async function sha256(s){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s))}
 function base64url(buffer){return btoa(String.fromCharCode(...new Uint8Array(buffer))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function spotifyRedirectUri(){return location.origin+location.pathname}
 
 async function connectSpotify(){
- if(location.protocol==="file:"){toast("O módulo Spotify precisa de HTTPS/localhost. O Radar funciona normalmente sem ele.");return}
- const clientId=prompt("Spotify Client ID:");
- if(!clientId)return;
- const verifier=randomString(),challenge=base64url(await sha256(verifier)),stateToken=randomString(24);
- const redirect=location.origin+location.pathname;
+ if(location.protocol==="file:"){toast("Publique o Radar em HTTPS para conectar o Spotify. O restante funciona normalmente sem ele.");return}
+ const clientId=$("spotifyClientId").value.trim()||SPOTIFY_CLIENT_ID;
+ if(!clientId){toast("Cole o Client ID do seu app Spotify nas configurações.");$("spotifyClientId").focus();return}
  await meta("spotifyClientId",clientId);
- sessionStorage.setItem("spotify_verifier",verifier);
- sessionStorage.setItem("spotify_state",stateToken);
-
+ const verifier=randomString(),challenge=base64url(await sha256(verifier)),stateToken=randomString(24);
+ sessionStorage.setItem("spotify_verifier",verifier);sessionStorage.setItem("spotify_state",stateToken);
  const url=new URL("https://accounts.spotify.com/authorize");
- url.search=new URLSearchParams({
-  response_type:"code",client_id:clientId,
-  scope:"user-read-currently-playing user-read-playback-state user-read-private",
-  code_challenge_method:"S256",code_challenge:challenge,
-  redirect_uri:redirect,state:stateToken
- });
+ url.search=new URLSearchParams({response_type:"code",client_id:clientId,scope:"user-read-currently-playing user-read-playback-state",code_challenge_method:"S256",code_challenge:challenge,redirect_uri:spotifyRedirectUri(),state:stateToken});
  location.href=url.toString();
 }
-
 async function spotifyCallback(){
  const params=new URLSearchParams(location.search),code=params.get("code");
  if(!code)return;
  const clientId=await meta("spotifyClientId"),verifier=sessionStorage.getItem("spotify_verifier"),savedState=sessionStorage.getItem("spotify_state");
  if(!clientId||!verifier||savedState!==params.get("state"))throw new Error("Autorização Spotify inválida.");
- const redirect=location.origin+location.pathname;
- const body=new URLSearchParams({client_id:clientId,grant_type:"authorization_code",code,redirect_uri:redirect,code_verifier:verifier});
+ const body=new URLSearchParams({client_id:clientId,grant_type:"authorization_code",code,redirect_uri:spotifyRedirectUri(),code_verifier:verifier});
  const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
- if(!r.ok)throw new Error("Spotify recusou a autorização.");
- const d=await r.json();
+ const d=await r.json();if(!r.ok)throw new Error(d.error_description||"Spotify recusou a autorização.");
  state.spotify={clientId,accessToken:d.access_token,refreshToken:d.refresh_token||null,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};
- await meta("spotify",state.spotify);
- history.replaceState({},document.title,location.pathname);
+ await meta("spotify",state.spotify);history.replaceState({},document.title,location.pathname);
  sessionStorage.removeItem("spotify_verifier");sessionStorage.removeItem("spotify_state");
 }
-
+async function refreshSpotifyToken(){
+ if(!state.spotify?.refreshToken||!state.spotify?.clientId)return false;
+ const body=new URLSearchParams({grant_type:"refresh_token",refresh_token:state.spotify.refreshToken,client_id:state.spotify.clientId});
+ const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+ const d=await r.json();
+ if(!r.ok){state.spotify=null;await meta("spotify",null);renderSpotifyStatus();return false}
+ state.spotify.accessToken=d.access_token;state.spotify.expiresAt=Date.now()+Number(d.expires_in||3600)*1000;
+ if(d.refresh_token)state.spotify.refreshToken=d.refresh_token;
+ await meta("spotify",state.spotify);return true;
+}
 async function spotifyApi(path){
- if(!state.spotify?.accessToken||Date.now()>state.spotify.expiresAt)return null;
- const r=await fetch("https://api.spotify.com/v1"+path,{headers:{Authorization:"Bearer "+state.spotify.accessToken}});
- if(r.status===204)return null;
- if(!r.ok)throw new Error("Spotify HTTP "+r.status);
- return r.json();
+ if(!state.spotify?.accessToken)return null;
+ if(Date.now()>state.spotify.expiresAt-60000){if(!(await refreshSpotifyToken()))return null}
+ let r=await fetch("https://api.spotify.com/v1"+path,{headers:{Authorization:"Bearer "+state.spotify.accessToken}});
+ if(r.status===401&&state.spotify?.refreshToken){if(await refreshSpotifyToken())r=await fetch("https://api.spotify.com/v1"+path,{headers:{Authorization:"Bearer "+state.spotify.accessToken}})}
+ if(r.status===204)return null;if(!r.ok)throw new Error("Spotify HTTP "+r.status);return r.json();
+}
+async function spotifyArtistImage(name){
+ if(!state.spotify?.accessToken)return "";
+ try{const d=await spotifyApi("/search?type=artist&limit=1&q="+encodeURIComponent(name));return d?.artists?.items?.[0]?.images?.[0]?.url||""}catch(e){console.warn(e);return ""}
 }
 async function updateNowPlaying(){
  if(!state.spotify?.accessToken){$("nowPlaying").textContent="";return}
- try{
-  const d=await spotifyApi("/me/player/currently-playing");
-  $("nowPlaying").textContent=d?.item?`ouvindo agora · ${d.item.name} — ${d.item.artists?.map(a=>a.name).join(", ")}`:"nada tocando agora.";
- }catch(e){$("nowPlaying").textContent=""}
+ try{const d=await spotifyApi("/me/player/currently-playing");$("nowPlaying").textContent=d?.item?`ouvindo agora · ${d.item.name} — ${d.item.artists?.map(a=>a.name).join(", ")}`:"nada tocando agora."}catch(e){$("nowPlaying").textContent=""}
 }
-function renderSpotifyStatus(){$("spotifyStatus").textContent=state.spotify?.accessToken?"Conectado. Histórico continua no Last.fm.":"Desligado."}
+function renderSpotifyStatus(){
+ $("spotifyStatus").textContent=state.spotify?.accessToken?"Conectado. Histórico continua no Last.fm.":"Desligado.";
+ $("spotifyRedirect").textContent=spotifyRedirectUri();
+}
+
+
+/* ---------------- ROTAS / GRAFO LAST.FM ---------------- */
+let routeDepth=5;
+
+async function similarCached(name,limit=18){
+ const key=norm(name);
+ const cached=await get("similar",key);
+ if(cached?.items?.length)return cached.items;
+ const d=await lastfm("artist.getSimilar",{artist:name,limit,autocorrect:1});
+ const arr=d.similarartists?.artist||[];
+ const items=(Array.isArray(arr)?arr:[arr]).filter(x=>x?.name).map(x=>({name:x.name,match:Number(x.match)||0}));
+ await put("similar",{key,name,items,savedAt:Date.now()});
+ return items;
+}
+
+async function populateArtistOptions(){
+ const artists=await all("artists");
+ $("artistOptions").innerHTML=artists
+  .sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"))
+  .map(x=>`<option value="${esc(x.name)}"></option>`).join("");
+}
+
+async function findArtistRoute(start,end,maxSteps=5){
+ start=start.trim();end=end.trim();
+ if(!start||!end)throw new Error("Escolha os dois artistas.");
+ if(norm(start)===norm(end))return {nodes:[start],edges:[]};
+
+ const parentsA=new Map([[norm(start),null]]);
+ const parentsB=new Map([[norm(end),null]]);
+ const namesA=new Map([[norm(start),start]]);
+ const namesB=new Map([[norm(end),end]]);
+ let frontierA=[norm(start)],frontierB=[norm(end)];
+ let depthA=0,depthB=0,meeting=null;
+
+ while(frontierA.length&&frontierB.length&&depthA+depthB<maxSteps){
+  const expandA=frontierA.length<=frontierB.length;
+  const frontier=expandA?frontierA:frontierB;
+  const next=[];
+  if(expandA)depthA++;else depthB++;
+
+  for(const currentKey of frontier){
+   const currentName=(expandA?namesA:namesB).get(currentKey);
+   let items=[];
+   try{items=await similarCached(currentName,18)}catch(e){continue}
+
+   for(const item of items){
+    const k=norm(item.name);
+    const parents=expandA?parentsA:parentsB;
+    const names=expandA?namesA:namesB;
+    if(parents.has(k))continue;
+
+    parents.set(k,{node:currentKey,match:item.match});
+    names.set(k,item.name);
+    next.push(k);
+
+    if((expandA?parentsB:parentsA).has(k)){meeting=k;break}
+   }
+   if(meeting)break;
+  }
+
+  if(meeting)break;
+  if(expandA)frontierA=next;else frontierB=next;
+  if(!next.length)break;
+ }
+
+ if(!meeting)return null;
+
+ const left=[];
+ let k=meeting;
+ while(k!==null){
+  left.push(k);
+  const p=parentsA.get(k);
+  k=p?p.node:null;
+ }
+ left.reverse();
+
+ const right=[];
+ k=meeting;
+ while(k!==null){
+  right.push(k);
+  const p=parentsB.get(k);
+  k=p?p.node:null;
+ }
+
+ const keysPath=[...left,...right.slice(1)];
+ const nodeName=k=>namesA.get(k)||namesB.get(k)||k;
+ const nodes=keysPath.map(nodeName);
+ const edges=[];
+
+ for(let i=0;i<keysPath.length-1;i++){
+  const a=keysPath[i],b=keysPath[i+1];
+  let match=null;
+  const pa=parentsA.get(b);
+  if(pa?.node===a)match=pa.match;
+  const pb=parentsB.get(a);
+  if(pb?.node===b)match=pb.match;
+  edges.push({from:nodes[i],to:nodes[i+1],match:Number(match||0)});
+ }
+ return {nodes,edges};
+}
+
+function renderRoute(result){
+ if(!result){
+  $("routeResult").innerHTML=`<div class="empty"><b>Nenhuma rota encontrada.</b>Tente aumentar o número de passos ou escolher artistas mais conectados.</div>`;
+  return;
+ }
+
+ $("routeResult").innerHTML=result.nodes.map((name,i)=>{
+  const edge=result.edges[i];
+  return `<div class="route-step">
+   <div class="route-num">${i===0?"START":i===result.nodes.length-1?"END":String(i).padStart(2,"0")}</div>
+   <div>
+    <div class="route-name artist-open" data-artist="${esc(name)}" style="cursor:pointer">${esc(name)}</div>
+    ${edge?`<div class="route-bridge">ponte → ${esc(edge.to)}</div>`:"<div class=\"route-bridge\">chegada</div>"}
+   </div>
+   <div class="route-match">${edge?Math.round(edge.match*100)+"% conexão":" "}</div>
+  </div>`;
+ }).join("");
+
+ document.querySelectorAll("#routeResult .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+ $("routeStatus").textContent=`${result.nodes.length-1} ${result.nodes.length-1===1?"passo":"passos"} encontrados.`;
+}
+
+/* ---------------- MAPA ESTELAR ---------------- */
+let mapArtists=[],mapEdges=[];
+
+function mapSize(canvas){
+ const r=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ canvas.width=Math.max(1,Math.floor(r.width*dpr));
+ canvas.height=Math.max(1,Math.floor(r.height*dpr));
+ return {w:r.width,h:r.height,dpr};
+}
+
+async function buildStarMap(){
+ const canvas=$("starMap"),ctx=canvas.getContext("2d");
+ const {w,h}=mapSize(canvas);
+ const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays);
+ const selected=artists.slice(0,100);
+ const selectedKeys=new Set(selected.map(x=>x.key));
+ const edgeMap=new Map();
+
+ $("mapStatus").textContent=`preparando ${selected.length} artistas...`;
+
+ for(let i=0;i<Math.min(selected.length,45);i++){
+  const a=selected[i];
+  try{
+   const sims=await similarCached(a.name,16);
+   for(const x of sims){
+    const k=norm(x.name);
+    if(!selectedKeys.has(k))continue;
+    const pair=[a.key,k].sort().join("|");
+    const match=Number(x.match)||0;
+    const prev=edgeMap.get(pair);
+    if(!prev||match>prev.match)edgeMap.set(pair,{a:a.key,b:k,match});
+   }
+  }catch(e){}
+  if(i%5===0)$("mapStatus").textContent=`conectando constelação · ${i+1}/${Math.min(selected.length,45)}`;
+  await sleep(70);
+ }
+
+ mapArtists=selected.map(a=>({
+  key:a.key,name:a.name,plays:a.plays,
+  x:w/2+(Math.random()-.5)*w*.8,
+  y:h/2+(Math.random()-.5)*h*.8,vx:0,vy:0,
+  r:Math.max(2.5,Math.min(13,3+Math.log10(a.plays+1)*3))
+ }));
+
+ const byKey=new Map(mapArtists.map(x=>[x.key,x]));
+ mapEdges=[...edgeMap.values()]
+  .map(e=>({...e,a:byKey.get(e.a),b:byKey.get(e.b)}))
+  .filter(e=>e.a&&e.b&&e.match>=.28);
+
+ const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const steps=reduced?1:90;
+
+ for(let step=0;step<steps;step++){
+  const n=mapArtists.length;
+  for(const a of mapArtists){
+   a.vx*=.86;a.vy*=.86;
+   a.vx+=(w/2-a.x)*.00035;
+   a.vy+=(h/2-a.y)*.00035;
+  }
+
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+   const a=mapArtists[i],b=mapArtists[j];
+   const dx=a.x-b.x,dy=a.y-b.y;
+   const d2=dx*dx+dy*dy+80;
+   const force=2600/d2;
+   a.vx+=dx*force/d2*20;a.vy+=dy*force/d2*20;
+   b.vx-=dx*force/d2*20;b.vy-=dy*force/d2*20;
+  }
+
+  for(const e of mapEdges){
+   const a=e.a,b=e.b,dx=b.x-a.x,dy=b.y-a.y;
+   const dist=Math.hypot(dx,dy)||1;
+   const target=45+100*(1-e.match);
+   const f=(dist-target)*.0015;
+   a.vx+=dx/dist*f;a.vy+=dy/dist*f;
+   b.vx-=dx/dist*f;b.vy-=dy/dist*f;
+  }
+
+  for(const a of mapArtists){
+   a.x=Math.max(10,Math.min(w-10,a.x+a.vx));
+   a.y=Math.max(10,Math.min(h-10,a.y+a.vy));
+  }
+ }
+
+ renderMap(ctx,w,h);
+ $("mapStatus").textContent=`${mapArtists.length} artistas · ${mapEdges.length} pontes`;
+}
+
+function renderMap(ctx,w,h){
+ const dpr=window.devicePixelRatio||1;
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ ctx.clearRect(0,0,w,h);
+
+ for(const e of mapEdges){
+  ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+  ctx.globalAlpha=Math.max(.05,(e.match-.28)/.72)*.28;
+  ctx.lineWidth=.7+e.match*1.2;
+  ctx.strokeStyle="#d9ff3f";ctx.stroke();
+ }
+
+ for(const a of mapArtists){
+  ctx.globalAlpha=.9;
+  ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);
+  ctx.fillStyle="#f2f1ed";ctx.fill();
+
+  if(a.plays>20){
+   ctx.globalAlpha=.9;ctx.font="10px DM Sans";
+   ctx.fillStyle="#85858d";ctx.fillText(a.name,a.x+a.r+5,a.y+3);
+  }
+ }
+ ctx.globalAlpha=1;
+}
+
+$("buildMap")?.addEventListener("click",async()=>{
+ try{await buildStarMap()}catch(e){console.error(e);toast("Não foi possível desenhar o mapa agora.")}
+});
+
+window.addEventListener("resize",()=>{
+ if(mapArtists.length){
+  const c=$("starMap"),ctx=c.getContext("2d"),{w,h}=mapSize(c);
+  renderMap(ctx,w,h);
+ }
+});
 
 /* ---------------- NAV / EVENTS ---------------- */
 document.querySelectorAll("nav button").forEach(btn=>btn.onclick=async()=>{
@@ -741,6 +1158,11 @@ document.querySelectorAll("nav button").forEach(btn=>btn.onclick=async()=>{
  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===btn));
  if(btn.dataset.view==="archive")await renderArchive();
  if(btn.dataset.view==="rescue")await renderRescue();
+ if(btn.dataset.view==="route")await populateArtistOptions();
+ if(btn.dataset.view==="map"&&mapArtists.length){
+  const c=$("starMap"),ctx=c.getContext("2d"),{w,h}=mapSize(c);
+  renderMap(ctx,w,h);
+ }
 });
 
 document.querySelectorAll("[data-filter]").forEach(btn=>btn.onclick=async()=>{
@@ -749,6 +1171,14 @@ document.querySelectorAll("[data-filter]").forEach(btn=>btn.onclick=async()=>{
  await renderRadar();
 });
 
+document.querySelectorAll("[data-radius]").forEach(btn=>btn.onclick=async()=>{
+ radarRadius=btn.dataset.radius;await meta("radarRadius",radarRadius);
+ document.querySelectorAll("[data-radius]").forEach(x=>x.classList.toggle("active",x===btn));
+ if(state.user){await calculateRadar(true);await renderAll();toast("Raio do radar atualizado.")}
+});
+$("applyTag").onclick=async()=>{radarTag=$("tagFilter").value.trim().toLowerCase();await meta("radarTag",radarTag);if(state.user){await calculateRadar(true);await renderAll();toast(radarTag?`Filtro “${radarTag}” aplicado.`:"Filtro removido.")}};
+$("clearTag").onclick=async()=>{$("tagFilter").value="";radarTag="";await meta("radarTag","");if(state.user){await calculateRadar(true);await renderAll();}};
+
 document.querySelectorAll("[data-archive]").forEach(btn=>btn.onclick=async()=>{
  state.archiveMode=btn.dataset.archive;
  document.querySelectorAll("[data-archive]").forEach(x=>x.classList.toggle("active",x===btn));
@@ -756,6 +1186,25 @@ document.querySelectorAll("[data-archive]").forEach(btn=>btn.onclick=async()=>{
 });
 
 $("search").oninput=()=>{clearTimeout(archiveTimer);archiveTimer=setTimeout(renderArchive,220)};
+document.querySelectorAll("[data-route-depth]").forEach(btn=>btn.onclick=()=>{
+ routeDepth=Number(btn.dataset.routeDepth);
+ document.querySelectorAll("[data-route-depth]").forEach(x=>x.classList.toggle("active",x===btn));
+});
+
+$("findRoute").onclick=async()=>{
+ const start=$("routeStart").value.trim(),end=$("routeEnd").value.trim();
+ if(!start||!end){toast("Escolha partida e chegada.");return}
+ $("routeStatus").textContent="procurando pontes no Last.fm...";
+ $("routeResult").innerHTML='<div class="skeleton"></div>';
+ try{
+  const result=await findArtistRoute(start,end,routeDepth);
+  renderRoute(result);
+ }catch(e){
+  $("routeResult").innerHTML=`<div class="empty"><b>Não consegui calcular.</b>${esc(e.message)}</div>`;
+  $("routeStatus").textContent="";
+ }
+};
+
 
 async function connectLastfm(){
  $("loginModal").classList.add("show");$("usernameInput").focus();
@@ -793,7 +1242,7 @@ $("connectSpotify").onclick=async()=>{
 
 $("clearData").onclick=async()=>{
  if(!confirm("Apagar o diário salvo neste navegador?"))return;
- for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions"])await clearStore(s);
+ for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","artistTags"])await clearStore(s);
  location.reload();
 };
 
@@ -811,15 +1260,16 @@ function animateNumber(el,value,duration=420){
 
 async function renderAll(){
  await renderHome();
+ await renderRecentCarousel();
  await renderRadar();
  await renderRescue();
  await renderArchive();
- const portrait=await monthlyPortrait();
+ const portrait=await monthlyPortrait(false);
  animateNumber($("monthNew"),portrait.newArtists);
  $("monthTop").textContent=portrait.top==="—"?"—":portrait.top;
  $("monthTopPlays").textContent=portrait.top==="—"?"":`${fmt(portrait.topPlays)} plays`;
  animateNumber($("monthScrobbles"),portrait.scrobbles);
- await meta("monthlyPortrait",portrait);
+
 }
 
 (async()=>{
@@ -828,6 +1278,9 @@ async function renderAll(){
   const savedSpotify=await meta("spotify");if(savedSpotify)state.spotify=savedSpotify;
   try{await spotifyCallback()}catch(e){toast(e.message)}
 
+  await loadRadarPreferences();
+  $("tagFilter").value=radarTag;
+  document.querySelectorAll("[data-radius]").forEach(x=>x.classList.toggle("active",x.dataset.radius===radarRadius));
   state.user=await meta("username");
   if(state.user){
    $("user").textContent=state.user;
@@ -844,6 +1297,7 @@ async function renderAll(){
    await renderAll();
   }
 
+  $("spotifyClientId").value=await meta("spotifyClientId")||"";
   renderSpotifyStatus();await updateNowPlaying();
   if(state.spotify?.accessToken)setInterval(updateNowPlaying,30000);
  }catch(e){console.error(e);toast("Não foi possível iniciar o Radar.")}
