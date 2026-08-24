@@ -3,1289 +3,1285 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#08080a">
-<title>Radar — Arquivo Vivo</title>
+<meta name="theme-color" content="#09090b">
+<meta name="description" content="Radar Musical — um arquivo vivo da sua vida musical.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<title>Radar — Arquivo Vivo</title>
 <style>
 :root{
-  --bg:#08080a; --surface:#0e0e11; --line:rgba(255,255,255,.10); --line-soft:rgba(255,255,255,.055);
-  --text:#f4f3ef; --muted:#8a8a92; --dim:#5c5c64;
-  --accent:#d7ff4e; --accent-dim:rgba(215,255,78,.14);
-  --danger:#ff6b5e;
-  --sans:"DM Sans",system-ui,sans-serif; --display:"Space Grotesk",system-ui,sans-serif;
-  --ease:cubic-bezier(.16,.84,.44,1);
+  --bg:#09090b;
+  --paper:#f2f1ed;
+  --text:#f2f1ed;
+  --muted:#77777f;
+  --faint:#404047;
+  --line:#232327;
+  --accent:#d9ff3f;
+  --danger:#ff6f73;
+  --warm:#ffbd62;
+  --soft:#ffffff08;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-::selection{background:var(--accent);color:#000}
-.shell{width:min(1180px,100% - 44px);margin:0 auto}
-@media(max-width:640px){.shell{width:min(1180px,100% - 28px)}}
-
-/* ---------- header ---------- */
-.header{position:sticky;top:0;z-index:60;background:rgba(8,8,10,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-soft)}
-.head{display:flex;align-items:center;gap:26px;height:60px}
-.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700;font-size:16px;color:var(--text);text-decoration:none;letter-spacing:-.02em}
-.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-dim)}
-nav{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-nav button{background:none;border:0;color:var(--muted);font-family:var(--sans);font-size:13.5px;padding:7px 12px;border-radius:7px;cursor:pointer;white-space:nowrap;transition:color .18s,background .18s}
-nav button:hover{color:var(--text)}
-nav button.active{color:var(--text);background:rgba(255,255,255,.06)}
-.userLabel{font-family:var(--display);font-size:11.5px;color:var(--dim);letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
-@media(max-width:860px){.head{height:auto;flex-wrap:wrap;padding:12px 0;gap:12px}nav{width:100%;margin-left:0;order:3}.userLabel{margin-left:auto}}
-
-/* ---------- views ---------- */
-main{padding:52px 0 120px;min-height:70vh}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:14px "DM Sans",system-ui,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+.shell{width:min(1180px,calc(100% - 32px));margin:0 auto}
+.header{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(#09090bf5,#09090bdc);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid #ffffff0b;
+}
+.head{min-height:64px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:9px;font:700 18px "Space Grotesk";letter-spacing:-.07em}
+.brand-mark{width:20px;height:20px;border-radius:50%;background:var(--accent);position:relative}
+.brand-mark:after{content:"";position:absolute;width:6px;height:6px;left:7px;top:7px;background:var(--bg);border-radius:50%}
+.nav{display:flex;gap:2px;overflow:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button,.link-btn,.btn,.filter{
+  border:0;background:transparent;color:var(--muted);padding:7px 8px;border-radius:5px;
+}
+.nav button:hover,.nav button.active,.link-btn:hover,.filter:hover{color:var(--text);background:var(--soft)}
+.btn.primary{color:var(--accent);text-decoration:underline;text-underline-offset:4px}
+.user{font:400 10px "DM Mono";color:var(--muted);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+main{padding:58px 0 100px}
 .view{display:none}
-.view.active{display:block;animation:viewIn .42s var(--ease)}
-@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
-.ey{font-family:var(--display);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
-.hero-title{font-family:var(--display);font-weight:700;font-size:clamp(46px,8.4vw,92px);line-height:.93;letter-spacing:-.035em;margin-bottom:20px}
-.hero-lede{font-size:16.5px;color:var(--muted);max-width:57ch;line-height:1.62}
-
-.section{margin-top:58px}
-.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:26px;flex-wrap:wrap}
-.section-head h2{font-family:var(--display);font-size:19px;font-weight:600;letter-spacing:-.01em}
-.section-head p{font-size:13px;color:var(--dim);margin-top:3px}
-.muted{color:var(--muted)}
-.dim{color:var(--dim)}
-
-/* ---------- buttons ---------- */
-.btn{background:none;border:0;color:var(--muted);font-family:var(--sans);font-size:13.5px;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line);transition:color .18s,text-decoration-color .18s}
-.btn:hover{color:var(--text);text-decoration-color:var(--accent)}
-.btn.primary{color:var(--accent)}
-.btn.danger{color:var(--danger)}
-.chip{background:none;border:1px solid var(--line);color:var(--muted);font-family:var(--sans);font-size:12.5px;padding:6px 13px;border-radius:100px;cursor:pointer;transition:all .18s}
-.chip:hover{border-color:var(--muted);color:var(--text)}
-.chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.chips{display:flex;gap:8px;flex-wrap:wrap}
-input,select{background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--text);font-family:var(--sans);font-size:14.5px;padding:9px 0;width:100%;outline:none;transition:border-color .2s}
-input:focus,select:focus{border-bottom-color:var(--accent)}
-select option{background:var(--surface);color:var(--text)}
-label{font-family:var(--display);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:2px}
-
-/* ---------- stats ---------- */
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:34px;margin-top:44px;padding-top:34px;border-top:1px solid var(--line)}
-.stat .k{font-family:var(--display);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
-.stat .v{font-family:var(--display);font-size:34px;font-weight:600;letter-spacing:-.025em;line-height:1.1}
-.stat .s{font-size:13px;color:var(--muted);margin-top:4px}
-
-/* ---------- discovery cards ---------- */
-.headline{border-top:2px solid var(--accent);padding-top:22px;margin-bottom:14px;animation:rise .5s var(--ease) both}
-.headline-tag{font-family:var(--display);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
-.headline-name{font-family:var(--display);font-size:clamp(32px,5.4vw,54px);font-weight:700;letter-spacing:-.03em;line-height:1;cursor:pointer;transition:color .2s}
-.headline-name:hover{color:var(--accent)}
-.headline-body{display:grid;grid-template-columns:1fr 260px;gap:38px;margin-top:18px}
-@media(max-width:820px){.headline-body{grid-template-columns:1fr;gap:22px}}
-.headline-copy{font-size:15.5px;color:var(--muted);line-height:1.65}
-.headline-copy b{color:var(--text);font-weight:500}
-.headline-side{border-left:1px solid var(--line);padding-left:22px}
-@media(max-width:820px){.headline-side{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:18px}}
-
-.disc{border-top:1px solid var(--line-soft);padding:20px 0;display:grid;grid-template-columns:38px 1fr auto;gap:20px;align-items:start;animation:rise .45s var(--ease) both}
-@keyframes rise{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
-.disc-i{font-family:var(--display);font-size:12px;color:var(--dim);padding-top:5px;letter-spacing:.04em}
-.disc-name{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-.02em;cursor:pointer;transition:color .2s;line-height:1.2}
-.disc-name:hover{color:var(--accent)}
-.disc-copy{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.55}
-.disc-copy b{color:var(--text);font-weight:500}
-.disc-right{text-align:right;font-family:var(--display);font-size:11px;color:var(--dim);letter-spacing:.05em;padding-top:6px;white-space:nowrap}
-.disc-right b{display:block;font-size:19px;color:var(--text);font-weight:600;letter-spacing:-.02em}
-.acts{display:flex;gap:16px;margin-top:13px;opacity:.4;transition:opacity .22s}
-.disc:hover .acts,.disc:focus-within .acts,.headline .acts{opacity:1}
-@media(max-width:760px){.acts{opacity:1}.disc{grid-template-columns:26px 1fr;gap:14px}.disc-right{grid-column:2;text-align:left;padding-top:10px}.disc-right b{display:inline;font-size:14px;margin-right:6px}}
-
-.badge{display:inline-block;font-family:var(--display);font-size:10px;letter-spacing:.13em;text-transform:uppercase;padding:3px 9px;border-radius:100px;border:1px solid var(--line);color:var(--muted);margin-top:7px}
-.badge.loose{border-color:rgba(215,255,78,.4);color:var(--accent)}
-
-.bar{height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px;max-width:220px}
-.bar i{display:block;height:100%;background:var(--accent);border-radius:2px;transform-origin:left;animation:grow .7s var(--ease) both}
-@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-
-.tagline{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
-.tg{font-family:var(--display);font-size:10.5px;letter-spacing:.06em;color:var(--dim);border:1px solid var(--line-soft);padding:2px 8px;border-radius:100px}
-.tg.hit{color:var(--accent);border-color:rgba(215,255,78,.35)}
-
-/* ---------- rows / archive ---------- */
-.rows{display:flex;flex-direction:column}
-.row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 0;border-bottom:1px solid var(--line-soft);animation:rise .4s var(--ease) both}
-.row-name{font-family:var(--display);font-size:15px;font-weight:500;letter-spacing:-.01em}
-.row-sub{font-size:12.5px;color:var(--dim);margin-top:2px}
-.row-n{font-family:var(--display);font-size:14px;color:var(--muted);white-space:nowrap}
-.clickable{cursor:pointer;transition:color .18s}
-.clickable:hover{color:var(--accent)}
-
-.empty{border:1px dashed var(--line);border-radius:12px;padding:30px;text-align:center;color:var(--dim);font-size:13.5px}
-.empty strong{display:block;color:var(--text);font-family:var(--display);font-size:15px;font-weight:600;margin-bottom:6px}
-.shimmer{height:70px;border-radius:10px;background:linear-gradient(100deg,rgba(255,255,255,.03) 30%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.03) 70%);background-size:220% 100%;animation:sh 1.3s infinite linear}
-@keyframes sh{from{background-position:200% 0}to{background-position:-40% 0}}
-
-/* ---------- heatmap / timeline ---------- */
-.heat{display:flex;align-items:flex-end;gap:3px;height:68px;margin-top:8px}
-.heat-cell{flex:1;background:var(--line);border-radius:2px;min-height:3px;transition:background .2s;animation:grow2 .6s var(--ease) both}
-@keyframes grow2{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-.heat-cell{transform-origin:bottom}
-.heat-cell.mid{background:rgba(215,255,78,.42)}
-.heat-cell.hot{background:var(--accent)}
-
-.tl{display:grid;grid-template-columns:78px 1fr;gap:20px;padding:15px 0;border-bottom:1px solid var(--line-soft)}
-.tl-date{font-family:var(--display);font-size:11.5px;color:var(--dim);letter-spacing:.04em;line-height:1.4}
-.tl-artists{font-size:13.5px;color:var(--muted);line-height:1.6}
-.tl-artists b{color:var(--text);font-weight:500}
-
-/* ---------- route ---------- */
-.route{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px}
-.node{font-family:var(--display);font-size:14px;padding:9px 15px;border:1px solid var(--line);border-radius:100px;animation:rise .45s var(--ease) both;cursor:pointer;transition:all .2s}
-.node:hover{border-color:var(--accent);color:var(--accent)}
-.node.end{border-color:var(--accent);color:var(--accent)}
-.arrow{color:var(--dim);font-size:13px}
-
-/* ---------- modals ---------- */
-.mbg{position:fixed;inset:0;background:rgba(4,4,6,.82);backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;z-index:200;padding:22px}
-.mbg.show{display:flex;animation:fade .22s var(--ease)}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-.modal{width:min(600px,100%);max-height:88vh;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:32px;animation:pop .32s var(--ease)}
-@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
-.modal h2{font-family:var(--display);font-size:26px;font-weight:600;letter-spacing:-.025em;margin-bottom:10px}
-.modal p{font-size:14px;color:var(--muted);line-height:1.6}
-.mfoot{display:flex;justify-content:flex-end;gap:22px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
-.field{margin:22px 0}
-.progress{height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin:18px 0 8px}
-.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .4s var(--ease)}
-.hero-art{width:100%;aspect-ratio:16/7;object-fit:cover;border-radius:10px;margin-bottom:18px;display:block;animation:fade .5s var(--ease)}
-.sub-h{font-family:var(--display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:24px 0 10px}
-
-.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,22px);background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:13.5px;padding:12px 20px;border-radius:100px;opacity:0;pointer-events:none;transition:all .3s var(--ease);z-index:300;max-width:88vw;text-align:center}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px}
-.cfg h3{font-family:var(--display);font-size:15px;font-weight:600;margin-bottom:6px}
-.cfg p{font-size:13px;color:var(--dim);line-height:1.55;margin-bottom:14px}
-.cfg{padding-top:22px;border-top:1px solid var(--line)}
-
+.view.active{display:block;animation:pageIn .28s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes shimmer{to{background-position:-200% 0}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.ey{color:var(--accent);font:500 10px "DM Mono";letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px}
+h1,h2,h3{font-family:"Space Grotesk",sans-serif}
+.hero-title{font:700 clamp(58px,9vw,112px)/.85 "Space Grotesk";letter-spacing:-.085em;margin:0;max-width:950px}
+.hero-lede{max-width:700px;color:var(--muted);font-size:16px;line-height:1.7;margin:22px 0 0}
+.kicker{display:flex;gap:18px;flex-wrap:wrap;margin-top:24px;font:400 10px "DM Mono";color:var(--muted)}
+.kicker span{display:inline-flex;gap:8px;align-items:center}
+.kicker i{width:5px;height:5px;background:var(--accent);display:inline-block;border-radius:50%}
+.hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:50px;margin-top:58px}
+.stat{border-top:1px solid var(--line);padding-top:16px}
+.stat-number{font:700 clamp(34px,5vw,66px)/1 "Space Grotesk";letter-spacing:-.075em}
+.stat-label{color:var(--muted);font-size:12px;margin-top:7px}
+.section{margin-top:68px}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:18px}
+.section-head h2{font-size:21px;letter-spacing:-.045em;margin:0}
+.section-head p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.thin-rule{border-top:1px solid var(--line)}
+.recent-carousel-wrap{position:relative;overflow:hidden;margin-top:12px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+.recent-carousel-track{display:flex;gap:12px;width:max-content;animation:marquee 32s linear infinite;will-change:transform}
+.recent-carousel-wrap:hover .recent-carousel-track{animation-play-state:paused}
+.recent-card{position:relative;width:160px;height:200px;flex:0 0 160px;overflow:hidden;border-radius:2px;background:#111114;border:1px solid #ffffff0b}
+.recent-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .28s}
+.recent-card:hover img{transform:scale(1.05)}
+.recent-card-fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);font-size:32px}
+.recent-card-shade{position:absolute;inset:35% 0 0;background:linear-gradient(transparent,#000e)}
+.recent-card-info{position:absolute;left:0;right:0;bottom:0;padding:12px}
+.recent-card-track{font:600 12px "Space Grotesk";white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-card-artist{font-size:10px;color:#c4c4c8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-card-time{font:400 9px "DM Mono";color:#77777f;margin-top:8px}
+.story{border-top:1px solid var(--line);padding:22px 0}
+.story-grid{display:grid;grid-template-columns:70px 1fr auto;gap:18px;align-items:start}
+.story-index{font:500 10px "DM Mono";color:var(--accent)}
+.story-name{font:700 clamp(26px,4vw,43px)/1 "Space Grotesk";letter-spacing:-.06em}
+.story-name:hover{text-decoration:underline;text-underline-offset:5px}
+.story-copy{margin-top:10px;color:#b7b7bc;max-width:650px;font-size:12px;line-height:1.6}
+.story-meta{font:400 10px "DM Mono";color:var(--muted);white-space:nowrap}
+.story-actions{display:flex;gap:14px;opacity:.38;margin-top:13px;transition:.2s}
+.story:hover .story-actions,.story:focus-within .story-actions{opacity:1}
+.story-actions button{text-decoration:underline;text-underline-offset:3px;padding:0}
+.badge{font:500 9px "DM Mono";text-transform:uppercase;letter-spacing:.12em;padding-top:4px}
+.badge.new{color:var(--accent)}
+.badge.loose{color:var(--warm)}
+.score-row{display:flex;gap:8px;align-items:center;color:var(--muted);font:400 10px "DM Mono";margin-top:15px;max-width:420px}
+.score-bar{height:2px;flex:1;background:#242428}
+.score-fill{height:100%;background:var(--accent)}
+.profile-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:38px}
+.profile-copy{border-top:1px solid var(--line);padding-top:18px;font-size:15px;line-height:1.7;color:#c1c1c6}
+.profile-pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}
+.pill{font:400 10px "DM Mono";color:var(--muted);border:1px solid var(--line);padding:7px 9px}
+.heatmap{display:grid;grid-template-columns:repeat(53,1fr);gap:2px;align-items:end;height:92px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0}
+.heat-cell{height:100%;max-height:64px;background:#17171a}
+.heat-cell.hot{background:var(--accent)}
+.heat-cell.mid{background:#74801e}
+.timeline{border-top:1px solid var(--line)}
+.timeline-row{display:grid;grid-template-columns:100px 1fr;gap:25px;border-bottom:1px solid #ffffff0a;padding:16px 0}
+.timeline-date{font:400 10px "DM Mono";color:var(--muted)}
+.timeline-artists{display:flex;gap:8px;flex-wrap:wrap}
+.timeline-artists span{font-family:"Space Grotesk";font-size:13px}
+.filter-bar{display:flex;gap:5px;flex-wrap:wrap;margin:16px 0}
+.search{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:13px 3px;color:var(--text);outline:0}
+.empty{border-top:1px solid var(--line);padding:54px 3px;color:var(--muted)}
+.empty strong{display:block;color:var(--text);margin-bottom:6px}
+.archive{border-top:1px solid var(--line)}
+.archive-row{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;border-bottom:1px solid #ffffff0a;padding:14px 2px}
+.archive-name{font-family:"Space Grotesk";font-weight:600}
+.archive-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.plays{font:500 10px "DM Mono";color:var(--accent)}
+.route-form{display:grid;grid-template-columns:1fr 30px 1fr auto;gap:12px;align-items:end}
+.route-form label{display:block;font:400 10px "DM Mono";color:var(--muted);margin-bottom:6px}
+.route-input{width:100%;border-bottom:1px solid var(--line);padding:13px 2px}
+.route-arrow{font:700 24px "Space Grotesk";color:var(--accent);text-align:center}
+.route-step{display:grid;grid-template-columns:54px 1fr auto;gap:16px;align-items:start;border-top:1px solid var(--line);padding:21px 0}
+.route-step:last-child{border-bottom:1px solid var(--line)}
+.route-num{font:500 10px "DM Mono";color:var(--accent)}
+.route-name{font:700 clamp(25px,4vw,43px)/1 "Space Grotesk";letter-spacing:-.06em}
+.route-copy{font-size:11px;color:var(--muted);margin-top:6px}
+.route-match{font:500 10px "DM Mono";color:var(--muted)}
+.canvas-wrap{height:min(72vh,760px);min-height:430px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.canvas-overlay{position:absolute;left:12px;top:12px;font:400 10px "DM Mono";color:var(--muted);pointer-events:none}
+.canvas-hint{position:absolute;right:12px;bottom:12px;font:400 10px "DM Mono";color:#5e5e66;pointer-events:none}
+.dash{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.dash-item{border-top:1px solid var(--line);padding-top:14px}
+.dash-value{font:700 31px "Space Grotesk";letter-spacing:-.06em}
+.dash-label{font-size:11px;color:var(--muted);margin-top:5px}
+.month-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.month-feature{border-top:1px solid var(--line);padding-top:16px}
+.month-feature-title{font:700 34px/1.02 "Space Grotesk";letter-spacing:-.065em}
+.month-feature-copy{color:var(--muted);font-size:12px;line-height:1.6;margin-top:8px}
+.challenge{border-top:1px solid var(--line);padding:18px 0;display:grid;grid-template-columns:1fr auto;gap:16px}
+.challenge strong{font:600 17px "Space Grotesk"}
+.challenge p{margin:5px 0 0;color:var(--muted);font-size:11px}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:45px 55px}
+.setting{border-top:1px solid var(--line);padding-top:17px}
+.setting h3{font-size:18px;margin:0 0 8px}
+.setting p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 12px}
+.setting input{width:100%;padding:10px 2px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);outline:0}
+.modal-bg{position:fixed;inset:0;background:#000c;backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
+.modal-bg.show{display:flex}
+.modal{width:min(620px,100%);max-height:90vh;overflow:auto;background:var(--bg);border:1px solid var(--line);padding:25px}
+.modal h2{font:700 31px "Space Grotesk";letter-spacing:-.06em;margin:0}
+.modal p{font-size:12px;line-height:1.6;color:var(--muted)}
+.modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:22px}
+.progress{height:3px;background:#242428;margin-top:20px}
+.progress div{height:100%;background:var(--accent);width:0;transition:width .2s}
+.shimmer{height:82px;border-top:1px solid var(--line);background:linear-gradient(90deg,transparent 25%,#ffffff07 50%,transparent 75%);background-size:200% 100%;animation:shimmer 1.1s infinite}
+.toast{position:fixed;right:18px;bottom:18px;z-index:200;background:var(--paper);color:#09090b;padding:11px 14px;font:600 11px "DM Sans";opacity:0;transform:translateY(8px);transition:.25s}
+.toast.show{opacity:1;transform:none}
+@media(max-width:820px){
+  .head{grid-template-columns:auto 1fr}
+  .user{display:none}
+  .hero-grid,.profile-grid,.month-grid,.settings-grid{grid-template-columns:1fr}
+  .dash{grid-template-columns:1fr 1fr}
+  .route-form{grid-template-columns:1fr}
+  .route-arrow{display:none}
+  .story-grid{grid-template-columns:36px 1fr}
+  .story-meta{grid-column:2}
+}
+@media(max-width:640px){
+  .shell{width:calc(100% - 22px)}
+  main{padding-top:39px}
+  .head{min-height:58px}
+  .nav button{font-size:11px;padding:6px}
+  .hero-title{font-size:58px}
+  .recent-card{width:140px;height:175px;flex-basis:140px}
+  .dash{grid-template-columns:1fr 1fr}
+  .timeline-row{grid-template-columns:70px 1fr;gap:14px}
+  .canvas-wrap{min-height:380px;height:64vh}
+}
+
+.radar-modes{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.radar-mode{border:0;border-right:1px solid var(--line);background:transparent;color:var(--muted);text-align:left;padding:16px 14px;min-height:92px}
+.radar-mode:last-child{border-right:0}.radar-mode.active{background:#ffffff05}.radar-mode b{display:block;font:600 17px "Space Grotesk";color:var(--muted)}.radar-mode.active b{color:var(--accent)}
+.radar-mode span{display:block;font-size:10px;line-height:1.5;margin-top:7px}
+.radar-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.control-card{border-top:1px solid var(--line);padding-top:14px}.control-label{display:flex;justify-content:space-between;font:500 10px "DM Mono";color:var(--muted);text-transform:uppercase;letter-spacing:.1em}.control-label b{color:var(--accent)}
+.control-card input[type=range]{width:100%;accent-color:var(--accent);margin:18px 0 7px}.range-ends{display:flex;justify-content:space-between;font:400 9px "DM Mono";color:#55555c}
+.seed-row{display:flex;gap:7px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}.seed-chip{border:1px solid var(--line);background:transparent;color:var(--muted);padding:8px 10px;font:400 10px "DM Mono"}.seed-chip.active{color:var(--accent);border-color:#d9ff3f55}
+.seed-select{background:var(--bg);border:0;border-bottom:1px solid var(--line);color:var(--text);padding:9px 3px;min-width:180px;outline:0}
+.mix-box{display:grid;grid-template-columns:1fr 18px 1fr 18px 1fr auto;gap:10px;align-items:end;border-top:1px solid var(--line);padding-top:16px}.mix-box>span{font:700 18px "Space Grotesk";color:var(--accent);text-align:center;padding-bottom:7px}.mix-result{margin-top:18px}
+.lab-card{border-top:1px solid var(--line);padding:20px 0}.lab-grid{display:grid;grid-template-columns:55px 1fr auto;gap:15px}.lab-index{font:500 10px "DM Mono";color:var(--accent)}.lab-name{font:700 clamp(24px,3.2vw,38px)/1 "Space Grotesk";letter-spacing:-.06em}.lab-copy{font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px;max-width:720px}.lab-metrics{font:500 10px "DM Mono";color:var(--muted);text-align:right;white-space:nowrap}
+.metric-line{display:flex;gap:8px;align-items:center;margin-top:7px;font:400 9px "DM Mono";color:var(--muted)}.metric-line .bar{width:150px;height:2px;background:#222226}.metric-line .bar i{display:block;height:100%;background:var(--accent)}
+.chain{border-top:1px solid var(--line);padding:16px 0;display:flex;gap:0;align-items:center;flex-wrap:wrap}.chain-node{font:600 13px "Space Grotesk"}.chain-arrow{padding:0 8px;color:var(--accent);font:700 17px "Space Grotesk"}
+.wait-row{display:grid;grid-template-columns:1fr auto;gap:15px;border-top:1px solid var(--line);padding:14px 0}.wait-name{font:600 16px "Space Grotesk"}.wait-meta{color:var(--muted);font:10px "DM Mono";margin-top:4px}
+@media(max-width:900px){.radar-modes,.radar-controls{grid-template-columns:1fr 1fr}.mix-box{grid-template-columns:1fr}}
+@media(max-width:640px){.radar-modes,.radar-controls{grid-template-columns:1fr}.radar-mode{border-right:0;border-bottom:1px solid var(--line)}.radar-mode:last-child{border-bottom:0}.lab-grid{grid-template-columns:34px 1fr}.lab-metrics{grid-column:2;text-align:left}.seed-select{width:100%;min-width:0}.mix-box{gap:13px}}
+
+.now-playing-stat{min-height:270px}.now-playing-live[hidden],.now-playing-empty[hidden]{display:none}.now-playing-live{display:grid;grid-template-columns:112px 1fr;gap:18px;align-items:start}.now-playing-cover-link{display:block;width:112px;height:112px;border-radius:2px;overflow:hidden;background:#151518;border:1px solid #ffffff0d}.now-playing-cover{width:100%;height:100%;display:block;object-fit:cover}.now-playing-main{min-width:0}.now-playing-track{display:block;font:700 clamp(25px,3.1vw,38px)/1.02 "Space Grotesk";letter-spacing:-.06em;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.now-playing-artist{display:block;margin-top:7px;font:600 13px "Space Grotesk";color:var(--text)}.now-playing-album{display:block;margin-top:4px;font-size:11px;color:var(--muted)}.now-playing-track:hover,.now-playing-artist:hover,.now-playing-album:hover{text-decoration:underline;text-underline-offset:4px}.now-playing-progress{margin-top:22px}.now-playing-progress-top{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font:400 9px "DM Mono";color:var(--muted)}#nowPlayingState{text-align:center;text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}.now-playing-progress-bar{height:3px;background:#242428;margin-top:8px;overflow:hidden}.now-playing-progress-bar i{display:block;width:0;height:100%;background:var(--accent);transition:width .4s linear}.now-playing-empty .link-btn{margin-top:12px;padding-left:0}@media(max-width:700px){.now-playing-live{grid-template-columns:86px 1fr;gap:13px}.now-playing-cover-link{width:86px;height:86px}.now-playing-track{font-size:24px}}
 </style>
 </head>
 <body>
-<header class="header"><div class="shell head">
-  <a class="brand" href="#" data-nav="home"><span class="brand-dot"></span>radar</a>
-  <nav>
-    <button class="active" data-nav="home">Início</button>
-    <button data-nav="radar">Radar</button>
-    <button data-nav="rescue">Resgate</button>
-    <button data-nav="route">Rota</button>
-    <button data-nav="archive">Arquivo</button>
-    <button data-nav="settings">Config.</button>
-  </nav>
-  <div class="userLabel" id="userLabel">offline</div>
-</div></header>
+<header class="header">
+  <div class="shell head">
+    <a class="brand" href="#" data-nav="home" aria-label="Radar Musical">
+      <span class="brand-mark"></span>radar
+    </a>
+    <nav class="nav" aria-label="Navegação principal">
+      <button class="active" data-nav="home">Início</button>
+      <button data-nav="radar">Radar</button>
+      <button data-nav="rescue">Resgate</button>
+      <button data-nav="route">Rota</button>
+      <button data-nav="map">Mapa</button>
+      <button data-nav="archive">Arquivo</button>
+      <button data-nav="settings">Config.</button>
+    </nav>
+    <div class="user" id="userLabel">offline</div>
+  </div>
+</header>
 
-<main><div class="shell">
+<main>
+<div class="shell">
 
-<!-- ============ INÍCIO ============ -->
 <section id="view-home" class="view active">
-  <div class="ey">diário musical</div>
-  <h1 class="hero-title">o arquivo<br>é seu.</h1>
-  <p class="hero-lede">Tudo que você ouve entra aqui e vira memória. O que você esqueceu vira ponta solta. O que nunca entrou vira território novo.</p>
-
-  <div class="stat-row">
-    <div class="stat"><div class="k">último scrobble</div><div class="v" id="lastTrack" style="font-size:22px">—</div><div class="s" id="lastArtist">conecte seu Last.fm</div></div>
-    <div class="stat"><div class="k">scrobbles</div><div class="v" id="totalPlays">0</div><div class="s" id="totalArtists">0 artistas</div></div>
-    <div class="stat"><div class="k">na fila</div><div class="v" id="waitingCount">0</div><div class="s">descobertas pra ouvir</div></div>
+  <div class="ey">arquivo vivo</div>
+  <h1 class="hero-title">o que você<br>tem ouvido.</h1>
+  <p class="hero-lede">Um diário musical que lembra o que você esqueceu, encontra o que você ainda não conhece e transforma sua escuta em um mapa que continua mudando.</p>
+  <div class="kicker">
+    <span><i></i><span id="homeState">aguardando Last.fm</span></span>
+    <span>indexedDB</span>
+    <span>last.fm / spotify</span>
   </div>
 
-  <div class="section">
-    <div class="section-head"><div><h2>radar de hoje</h2><p id="radarDateLabel">nenhuma rodada ainda</p></div><button class="btn primary" data-nav="radar">ver tudo</button></div>
-    <div id="homeRadar"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-head"><div><h2>retrato do mês</h2><p>últimos 30 dias</p></div></div>
-    <div class="stat-row" style="margin-top:0;padding-top:0;border-top:0">
-      <div class="stat"><div class="k">artistas novos</div><div class="v" id="monthNew">0</div></div>
-      <div class="stat"><div class="k">maior presença</div><div class="v" id="monthTop" style="font-size:22px">—</div><div class="s" id="monthTopPlays"></div></div>
-      <div class="stat"><div class="k">scrobbles</div><div class="v" id="monthScrobbles">0</div></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-head"><div><h2>um ano de escuta</h2><p>cada barra é uma semana</p></div></div>
-    <div class="heat" id="heatmap"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-head"><div><h2>há um ano</h2><p>o que tocava por volta desta data</p></div></div>
-    <div id="oneYear"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-head"><div><h2>sessões recentes</h2><p>blocos contínuos de escuta</p></div></div>
-    <div id="timeline"></div>
-  </div>
-</section>
-
-<!-- ============ RADAR ============ -->
-<section id="view-radar" class="view">
-  <div class="ey">descoberta</div>
-  <h1 class="hero-title">o que<br>vem depois.</h1>
-  <p class="hero-lede">Um motor só. Ele atravessa duas camadas do grafo, cruza com a sua assinatura de tags e aprende com o que você rejeita.</p>
-
-  <div class="section">
-    <div class="section-head"><div><h2>raio</h2><p id="radiusDesc">afinidade alta, pouca surpresa</p></div><button class="btn primary" id="recalc">nova rodada</button></div>
-    <div class="chips" style="margin-bottom:20px">
-      <button class="chip active" data-radius="near">perto</button>
-      <button class="chip" data-radius="mid">médio</button>
-      <button class="chip" data-radius="far">longe</button>
-    </div>
-    <div class="chips">
-      <button class="chip active" data-seed="blend">misturar tudo</button>
-      <button class="chip" data-seed="recent">o que ouvi agora</button>
-      <button class="chip" data-seed="pillars">meus pilares</button>
-      <button class="chip" data-seed="past">meu passado</button>
-      <button class="chip" data-seed="artist">a partir de um artista</button>
-      <button class="chip" data-seed="cross">cruzar dois artistas</button>
-    </div>
-    <div id="seedPicker" style="display:none;margin-top:22px">
-      <div class="grid2" style="gap:24px">
-        <div><label>artista</label><select id="seedArtist"></select></div>
-        <div id="seedBWrap" style="display:none"><label>cruzar com</label><select id="seedB"></select></div>
+  <div class="hero-grid">
+    <div class="stat now-playing-stat" id="nowPlayingHero">
+      <div class="ey">ouvindo agora · spotify</div>
+      <div class="now-playing-empty" id="nowPlayingHeroEmpty">
+        <div class="stat-number">—</div>
+        <div class="stat-label">conecte o Spotify para ver a escuta ao vivo</div>
+        <button class="link-btn primary" id="connectSpotifyHero">conectar spotify</button>
+      </div>
+      <div class="now-playing-live" id="nowPlayingHeroLive" hidden>
+        <a id="nowPlayingCoverLink" class="now-playing-cover-link" target="_blank" rel="noopener"><img id="nowPlayingCover" class="now-playing-cover" alt=""></a>
+        <div class="now-playing-main">
+          <a id="nowPlayingTrackLink" class="now-playing-track" target="_blank" rel="noopener">—</a>
+          <a id="nowPlayingArtistLink" class="now-playing-artist" target="_blank" rel="noopener">—</a>
+          <a id="nowPlayingAlbumLink" class="now-playing-album" target="_blank" rel="noopener">—</a>
+          <div class="now-playing-progress"><div class="now-playing-progress-top"><span id="nowPlayingElapsed">0:00</span><span id="nowPlayingState">pausado</span><span id="nowPlayingDuration">0:00</span></div><div class="now-playing-progress-bar"><i id="nowPlayingProgressFill"></i></div></div>
+        </div>
       </div>
     </div>
-    <div style="margin-top:22px;max-width:320px"><label>filtrar por tag (opcional)</label><input id="tagFilter" placeholder="ex: hardcore, samba, shoegaze"></div>
-    <div style="margin-top:12px;display:flex;gap:18px"><button class="btn" id="applyTag">aplicar tag</button><button class="btn" id="clearTag">limpar</button><span class="dim" id="tagStatus" style="font-size:13px"></span></div>
+    <div class="stat">
+      <div class="ey">arquivo</div>
+      <div class="stat-number" id="totalPlays">0</div>
+      <div class="stat-label" id="totalArtists">0 artistas</div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <div><div class="ey" style="margin-bottom:7px">rotação recente · last.fm</div><h2>as últimas coisas</h2></div>
+      <button class="link-btn" id="shuffleRecent">embaralhar</button>
+    </div>
+    <div class="recent-carousel-wrap" id="recentCarouselWrap">
+      <div class="recent-carousel-track" id="recentCarouselTrack"></div>
+    </div>
+    <div class="muted" id="recentCarouselStatus" style="margin-top:9px">as últimas 10 escutas do seu diário</div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><h2>radar de hoje</h2><p id="radarDate">nenhuma rodada</p></div>
+      <button class="link-btn" id="newRadar">nova rodada</button>
+    </div>
+    <div id="homeRadar"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div><h2>retrato do mês</h2><p>últimos 30 dias</p></div></div>
+    <div class="dash">
+      <div class="dash-item"><div class="dash-value" id="monthNew">0</div><div class="dash-label">artistas novos</div></div>
+      <div class="dash-item"><div class="dash-value" id="monthScrobbles">0</div><div class="dash-label">scrobbles</div></div>
+      <div class="dash-item"><div class="dash-value" id="monthTop" style="font-size:25px">—</div><div class="dash-label" id="monthTopPlays">maior presença do mês</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div><h2>há um ano</h2><p>o que estava no ar nessa época</p></div></div>
+    <div id="oneYear"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div><h2>sua assinatura musical</h2><p>um retrato do comportamento da biblioteca</p></div></div>
+    <div class="profile-grid">
+      <div>
+        <div class="profile-copy" id="profileCopy">Carregando seu retrato...</div>
+        <div class="profile-pills" id="profilePills"></div>
+      </div>
+      <div>
+        <div class="heatmap" id="heatmap"></div>
+        <div class="muted" style="margin-top:8px">densidade de escuta nas últimas 53 semanas</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div><h2>diário</h2><p>as sessões que ficaram no arquivo</p></div></div>
+    <div id="timeline"></div>
+  </section>
+</section>
+
+
+<section id="view-radar" class="view">
+  <div class="ey">laboratório de descoberta</div>
+  <h1 class="hero-title">o que<br>vem depois.</h1>
+  <p class="hero-lede">Controle a temperatura, escolha a pergunta e explore seu próprio mapa musical. A recomendação agora explica o caminho que levou até ela.</p>
+
+  <div class="section">
+    <div class="section-head"><div><h2>pergunta do radar</h2><p>quatro modos, quatro formas de descobrir</p></div></div>
+    <div class="radar-modes" id="radarModes">
+      <button class="radar-mode active" data-mode="discover"><b>descobrir</b><span>match alto, descoberta equilibrada</span></button>
+      <button class="radar-mode" data-mode="rescue"><b>resgatar</b><span>puxe seu próprio passado</span></button>
+      <button class="radar-mode" data-mode="detour"><b>desviar</b><span>pontes estranhas sem perder o fio</span></button>
+      <button class="radar-mode" data-mode="cross"><b>atravessar</b><span>interseções entre cenas</span></button>
+    </div>
   </div>
 
   <div class="section">
-    <div class="section-head"><div><h2>a aposta de hoje</h2><p id="engineNote">o motor explica cada escolha</p></div></div>
-    <div id="headline"></div>
+    <div class="section-head"><div><h2>controles</h2><p id="radarControlSummary">afinidade alta, pouca surpresa</p></div><button class="link-btn primary" id="recalculateRadar">recalcular</button></div>
+    <div class="radar-controls">
+      <div class="control-card"><div class="control-label"><span>afinidade</span><b id="matchValue">82</b></div><input id="matchRange" type="range" min="28" max="90" value="82"><div class="range-ends"><span>estranho</span><span>familiar</span></div></div>
+      <div class="control-card"><div class="control-label"><span>risco</span><b id="riskValue">28</b></div><input id="riskRange" type="range" min="0" max="100" value="28"><div class="range-ends"><span>seguro</span><span>arriscado</span></div></div>
+      <div class="control-card"><div class="control-label"><span>nostalgia</span><b id="nostalgiaValue">24</b></div><input id="nostalgiaRange" type="range" min="0" max="100" value="24"><div class="range-ends"><span>agora</span><span>passado</span></div></div>
+      <div class="control-card"><div class="control-label"><span>diversidade</span><b id="diversityValue">55</b></div><input id="diversityRange" type="range" min="0" max="100" value="55"><div class="range-ends"><span>uma cena</span><span>várias cenas</span></div></div>
+    </div>
   </div>
 
   <div class="section">
-    <div class="section-head"><div><h2>o resto da leva</h2><p id="radarCount"></p></div></div>
-    <div class="chips" style="margin-bottom:22px">
-      <button class="chip active" data-rfilter="all">tudo</button>
-      <button class="chip" data-rfilter="new">território novo</button>
-      <button class="chip" data-rfilter="loose">ponta solta</button>
-      <button class="chip" data-rfilter="waiting">fila de espera</button>
+    <div class="section-head"><div><h2>semente</h2><p>comece de um ponto específico ou misture tudo</p></div></div>
+    <div class="seed-row">
+      <button class="seed-chip active" data-seed-mode="blend">misturar tudo</button>
+      <button class="seed-chip" data-seed-mode="recent">escuta recente</button>
+      <button class="seed-chip" data-seed-mode="pillars">meus pilares</button>
+      <button class="seed-chip" data-seed-mode="past">meu passado</button>
+      <button class="seed-chip" data-seed-mode="artist">um artista</button>
+      <button class="seed-chip" data-seed-mode="track">uma música</button>
+      <select id="seedArtist" class="seed-select"><option value="">Escolha um artista...</option></select>
+      <select id="seedTrack" class="seed-select"><option value="">Escolha uma faixa...</option></select>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><div><h2>mistura</h2><p>encontre artistas que vivem entre três pontos do seu gosto</p></div></div>
+    <div class="mix-box"><select id="mixA" class="seed-select"><option value="">artista 1</option></select><span>×</span><select id="mixB" class="seed-select"><option value="">artista 2</option></select><span>×</span><select id="mixC" class="seed-select"><option value="">artista 3</option></select><button class="link-btn primary" id="runMix">encontrar o meio</button></div>
+    <div id="mixResult" class="mix-result"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><div><h2>pontes ocultas</h2><p>artistas a dois graus do seu núcleo</p></div><button class="link-btn" id="discoverBridges">explorar</button></div>
+    <div id="bridgeResult"></div>
+  </div>
+
+  <div class="section"><div class="section-head"><div><h2>você deveria já ter ouvido isso</h2><p>alta afinidade, zero plays</p></div></div><div id="shouldKnow"></div></div>
+  <div class="section"><div class="section-head"><div><h2>quase favorito</h2><p>poucos plays, alta afinidade, longa ausência</p></div></div><div id="nearFavorite"></div></div>
+  <div class="section"><div class="section-head"><div><h2>risco</h2><p>baixa familiaridade, alta surpresa</p></div></div><div id="riskPicks"></div></div>
+  <div class="section"><div class="section-head"><div><h2>cadeias de descoberta</h2><p>como uma escuta virou outra</p></div></div><div id="discoveryChains"></div></div>
+  <div class="section"><div class="section-head"><div><h2>o radar acerta?</h2><p>suas decisões viram métricas pessoais de curadoria</p></div></div><div class="dash" id="radarStats"></div></div>
+  <div class="section"><div class="section-head"><div><h2>fila de descoberta</h2><p>quando você ouvir alguém daqui, o arquivo fecha o ciclo sozinho</p></div></div><div id="waitingRail"></div></div>
+
+  <div class="section">
+    <div class="section-head"><div><h2>radar clássico</h2><p>as seis sugestões da leva diária</p></div><button class="link-btn primary" id="classicRadar">atualizar leva</button></div>
+    <div class="filter-bar">
+      <button class="filter active" data-rfilter="all">tudo</button>
+      <button class="filter" data-rfilter="loose">ponta solta</button>
+      <button class="filter" data-rfilter="new">território novo</button>
+      <button class="filter" data-rfilter="waiting">espera</button>
     </div>
     <div id="radarList"></div>
   </div>
-
-  <div class="section">
-    <div class="section-head"><div><h2>o radar acerta?</h2><p>medido pelo que saiu da fila e virou escuta</p></div></div>
-    <div class="stat-row" style="margin-top:0;padding-top:0;border-top:0" id="radarStats"></div>
-  </div>
 </section>
 
-<!-- ============ RESGATE ============ -->
 <section id="view-rescue" class="view">
-  <div class="ey">resgate</div>
-  <h1 class="hero-title">ponta<br>solta.</h1>
-  <p class="hero-lede">Artistas que você ouviu de uma a quatro vezes e nunca mais voltou, ordenados pelo tempo que ficaram para trás.</p>
+  <div class="ey">memória</div>
+  <h1 class="hero-title">o que você<br>esqueceu.</h1>
+  <p class="hero-lede">Ponta solta é uma categoria própria: você já ouviu, mas não voltou. O arquivo sabe há quanto tempo.</p>
   <div class="section">
-    <div class="section-head"><div><h2>quem ficou pra trás</h2><p id="rescueCount"></p></div><button class="btn primary" id="rescueShuffle">me dá um aleatório</button></div>
+    <div class="section-head"><div><h2>resgate</h2><p id="rescueCount">—</p></div><button class="link-btn" id="rescueShuffle">sortear</button></div>
     <div id="rescueList"></div>
   </div>
   <div class="section">
-    <div class="section-head"><div><h2>ouvidas uma vez só</h2><p>faixas com exatamente um play</p></div></div>
+    <div class="section-head"><div><h2>faixas de uma vez</h2><p>ouvidas uma única vez</p></div></div>
     <div id="onePlayTracks"></div>
   </div>
 </section>
 
-<!-- ============ ROTA ============ -->
 <section id="view-route" class="view">
-  <div class="ey">travessia</div>
-  <h1 class="hero-title">como sair<br>daqui.</h1>
-  <p class="hero-lede">O caminho entre dois artistas pelo grafo de similaridade. As escalas do meio costumam ser a melhor parte.</p>
+  <div class="ey">labirinto</div>
+  <h1 class="hero-title">de A até B.</h1>
+  <p class="hero-lede">Entre dois artistas existe um caminho. O Radar procura a menor ponte no grafo de similaridade do Last.fm.</p>
   <div class="section">
-    <div class="grid2" style="gap:26px">
-      <div><label>partida</label><input id="routeStart" list="artistOptions" placeholder="um artista"></div>
-      <div><label>chegada</label><input id="routeEnd" list="artistOptions" placeholder="outro artista"></div>
+    <div class="route-form">
+      <div><label>partida</label><input class="search route-input" id="routeStart" list="artistOptions" placeholder="ex.: Papangu"></div>
+      <div class="route-arrow">→</div>
+      <div><label>chegada</label><input class="search route-input" id="routeEnd" list="artistOptions" placeholder="ex.: Marisa Monte"></div>
+      <button class="link-btn primary" id="findRoute">encontrar</button>
     </div>
     <datalist id="artistOptions"></datalist>
-    <div style="margin-top:22px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-      <button class="btn primary" id="findRoute">traçar rota</button>
-      <button class="btn" id="randomRoute">sortear dois</button>
-      <span class="dim" id="routeStatus" style="font-size:13px"></span>
+    <div class="filter-bar">
+      <button class="filter active" data-depth="5">5 passos</button>
+      <button class="filter" data-depth="7">7 passos</button>
+      <button class="filter" data-depth="9">9 passos</button>
+      <button class="filter" id="randomRoute">dois absurdos</button>
     </div>
-    <div id="routeResult" style="margin-top:26px"></div>
+    <div id="routeStatus" class="muted"></div>
+    <div id="routeResult" style="margin-top:22px"></div>
   </div>
 </section>
 
-<!-- ============ ARQUIVO ============ -->
-<section id="view-archive" class="view">
-  <div class="ey">memória</div>
-  <h1 class="hero-title">arquivo.</h1>
-  <p class="hero-lede">Cada coisa aparece uma vez. O contador registra quantas vezes ela voltou.</p>
+<section id="view-map" class="view">
+  <div class="ey">constelação</div>
+  <h1 class="hero-title">seu céu.</h1>
+  <p class="hero-lede">Cada artista é um ponto. Tamanho é play. Linhas são similaridade. As regiões mais densas são os lugares onde sua escuta mora.</p>
   <div class="section">
-    <input id="archiveSearch" placeholder="buscar artista, álbum ou faixa...">
-    <div class="chips" style="margin:24px 0">
-      <button class="chip active" data-amode="artists">artistas</button>
-      <button class="chip" data-amode="albums">álbuns</button>
-      <button class="chip" data-amode="tracks">faixas</button>
-      <button class="chip" data-amode="first">primeira vez</button>
+    <div class="section-head"><div><h2>mapa estelar</h2><p id="mapStatus">pronto para desenhar</p></div><button class="link-btn primary" id="buildMap">desenhar</button></div>
+    <div class="canvas-wrap">
+      <canvas id="starMap"></canvas>
+      <div class="canvas-overlay">ARQUIVO / CONSTELAÇÃO</div>
+      <div class="canvas-hint">arraste · aproxime · explore</div>
+    </div>
+  </div>
+</section>
+
+<section id="view-archive" class="view">
+  <div class="ey">arquivo</div>
+  <h1 class="hero-title">tudo que ficou.</h1>
+  <p class="hero-lede">Artistas, álbuns e faixas. O diário bruto, sem recomendação no meio.</p>
+  <div class="section">
+    <input class="search" id="archiveSearch" placeholder="buscar artista, álbum ou faixa...">
+    <div class="filter-bar">
+      <button class="filter active" data-amode="artists">artistas</button>
+      <button class="filter" data-amode="albums">álbuns</button>
+      <button class="filter" data-amode="tracks">faixas</button>
+      <button class="filter" data-amode="sessions">sessões</button>
     </div>
     <div id="archiveContent"></div>
-    <p class="dim" id="archiveNotice" style="margin-top:14px;font-size:12.5px"></p>
+    <div class="muted" id="archiveNotice" style="margin-top:10px"></div>
   </div>
 </section>
 
-<!-- ============ CONFIG ============ -->
 <section id="view-settings" class="view">
   <div class="ey">controle</div>
-  <h1 class="hero-title">config.</h1>
-  <p class="hero-lede">Last.fm é a fonte do histórico. Spotify é opcional e nunca substitui o seu diário.</p>
-  <div class="section grid2">
-    <div class="cfg"><h3>Last.fm</h3><p>Histórico completo na primeira vez, incremental depois.</p><button class="btn primary" id="connectLastfm">conectar / trocar usuário</button><p class="dim" id="lastfmStatus" style="margin-top:10px">não conectado.</p></div>
-    <div class="cfg"><h3>Sincronização</h3><p>Depois da carga inicial, o diário se atualiza sozinho em segundo plano.</p><button class="btn" id="syncNow">sincronizar agora</button><p class="dim" id="syncStatus" style="margin-top:10px">nunca sincronizado.</p></div>
-    <div class="cfg"><h3>Spotify</h3><p>Só foto de artista e ouvindo agora. Precisa de HTTPS. Nunca é fonte do histórico.</p><label>client id</label><input id="spotifyClientId"><div style="margin-top:14px"><button class="btn" id="connectSpotify">conectar spotify</button></div><p class="dim" id="spotifyStatus" style="margin-top:10px">desligado.</p><p class="dim" id="spotifyRedirect" style="font-size:11.5px;margin-top:6px"></p><p class="dim" id="nowPlaying" style="margin-top:8px"></p></div>
-    <div class="cfg"><h3>Backup</h3><p>Suas decisões (fila, rejeições, já conheço) só existem neste navegador. Exporte de vez em quando.</p><div style="display:flex;gap:20px"><button class="btn" id="exportData">exportar JSON</button><button class="btn" id="importData">importar JSON</button></div><input type="file" id="importFile" accept="application/json" style="display:none"></div>
-    <div class="cfg"><h3>Saúde do arquivo</h3><p id="healthStats">carregando...</p></div>
-    <div class="cfg"><h3>Dados locais</h3><p>Apaga o diário deste navegador. Nada é alterado no seu Last.fm.</p><button class="btn danger" id="clearData">apagar dados locais</button></div>
+  <h1 class="hero-title">o arquivo é seu.</h1>
+  <p class="hero-lede">Local-first, Last.fm-first, Spotify só quando você quiser. O banco vive no seu navegador.</p>
+
+  <div class="section settings-grid">
+    <div class="setting">
+      <h3>Last.fm</h3>
+      <p>Histórico completo, sincronização incremental e validação do usuário.</p>
+      <button class="link-btn primary" id="connectLastfm">conectar / trocar usuário</button>
+      <p id="lastfmStatus">não conectado.</p>
+    </div>
+
+    <div class="setting">
+      <h3>Spotify</h3>
+      <p>Ouvindo agora em tempo real, capa, links de artista/faixa/álbum e foto do artista. Nunca é fonte do histórico.</p>
+      <label class="muted" for="spotifyClientId">client id</label>
+      <input id="spotifyClientId" value="5455d9b625984362b357f0a08d348051">
+      <p id="spotifyRedirect" style="margin-top:10px"></p>
+      <button class="link-btn primary" id="connectSpotify">conectar spotify</button>
+      <p id="spotifyStatus">desligado.</p>
+      <p id="nowPlaying"></p>
+    </div>
+
+    <div class="setting">
+      <h3>Sincronização</h3>
+      <p>Depois da carga inicial, o diário atualiza silenciosamente em segundo plano.</p>
+      <button class="link-btn" id="syncNow">sincronizar agora</button>
+      <p id="syncStatus">nunca sincronizado.</p>
+    </div>
+
+    <div class="setting">
+      <h3>Backup</h3>
+      <p>Exporte o diário para JSON ou restaure um arquivo salvo anteriormente.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="link-btn primary" id="exportData">exportar JSON</button>
+        <button class="link-btn" id="importData">importar JSON</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+    </div>
+
+    <div class="setting">
+      <h3>Saúde do arquivo</h3>
+      <p id="healthStats">carregando...</p>
+    </div>
+
+    <div class="setting">
+      <h3>Dados locais</h3>
+      <p>Apaga o diário deste navegador. Nada é alterado no Last.fm.</p>
+      <button class="link-btn" id="clearData">apagar dados locais</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><div><h2>desafios</h2><p>pequenas missões para sair do piloto automático</p></div></div>
+    <div id="challenges"></div>
   </div>
 </section>
 
-</div></main>
+</div>
+</main>
 
-<div class="mbg" id="loginModal"><div class="modal">
+<div class="modal-bg" id="loginModal"><div class="modal">
   <div class="ey">last.fm</div><h2>Seu usuário.</h2>
-  <p>Na primeira vez o Radar baixa o histórico inteiro. Depois só o que chegou de novo.</p>
-  <div class="field"><label>usuário</label><input id="usernameInput" placeholder="seuusuario"></div>
+  <p>Na primeira vez, o Radar reconstrói seu arquivo. Depois, cada abertura procura apenas o que chegou depois do último checkpoint.</p>
+  <input class="search" id="usernameInput" placeholder="seuusuario" style="margin-top:14px">
   <div id="loginError"></div>
-  <div class="mfoot"><button class="btn" id="cancelLogin">cancelar</button><button class="btn primary" id="startLogin">começar</button></div>
+  <div class="modal-foot"><button class="link-btn" id="cancelLogin">cancelar</button><button class="link-btn primary" id="startLogin">começar</button></div>
 </div></div>
 
-<div class="mbg" id="syncModal"><div class="modal">
-  <div class="ey">sincronização</div><h2>Seu diário está vindo.</h2>
-  <p id="syncText">preparando...</p>
-  <div class="progress"><i id="syncBar"></i></div>
-  <p class="dim" id="syncCounter" style="font-size:12.5px">0 de 0</p>
+<div class="modal-bg" id="syncModal"><div class="modal">
+  <div class="ey">sincronização inicial</div><h2>seu diário está vindo.</h2>
+  <p id="syncText">preparando...</p><div class="progress"><div id="syncBar"></div></div><p id="syncCounter" class="muted">0 de 0</p>
 </div></div>
 
-<div class="mbg" id="artistModal"><div class="modal">
-  <div id="artistHeroArt"></div>
-  <div class="ey">ficha do artista</div><h2 id="artistName">—</h2>
-  <div class="tagline" id="artistTags"></div>
-  <p id="artistBio" style="margin-top:14px">carregando...</p>
-  <div id="artistPreview" style="margin-top:18px"></div>
-  <div class="sub-h">suas faixas</div><div id="artistTracks"></div>
-  <div class="sub-h">a ponte</div><p id="artistBridge"></p>
-  <div class="mfoot"><button class="btn" id="closeArtist">fechar</button><a class="btn primary" id="artistSpotify" target="_blank" rel="noopener">abrir no Spotify</a></div>
+<div class="modal-bg" id="artistModal"><div class="modal">
+  <div class="ey">ficha</div><h2 id="artistName">Artista</h2>
+  <div id="artistHeroArt" style="margin:16px 0"></div>
+  <p id="artistBio">carregando...</p>
+  <div class="filter-bar" id="artistTags"></div>
+  <div class="cardless"><h3>suas faixas</h3><div id="artistTracks"></div></div>
+  <div class="cardless"><h3>ponte</h3><p id="artistBridge"></p></div>
+  <div class="modal-foot"><button class="link-btn" id="closeArtist">fechar</button><a class="link-btn primary" id="artistSpotify" target="_blank" rel="noopener">spotify ↗</a></div>
 </div></div>
 
 <div class="toast" id="toast"></div>
+
 <script>
-/* =========================================================
-   RADAR — ARQUIVO VIVO
-   Last.fm é a fonte da verdade. IndexedDB é o cache local.
-   Spotify e Deezer são camadas opcionais de enriquecimento.
-   ========================================================= */
+/* ============================
+   ARQUIVO VIVO — MOTOR
+   ============================ */
 const LASTFM_API_KEY="aff32c07f20e1d2391061d3c70cdc111";
 const SPOTIFY_CLIENT_ID="5455d9b625984362b357f0a08d348051";
 const LASTFM_API="https://ws.audioscrobbler.com/2.0/";
-const DB_NAME="radar-musical", DB_VERSION=7, PAGE_SIZE=200;
-const COOLDOWN_DAYS=24;          /* quarentena de sugestão recusada pelo tempo */
-const SIMILAR_TTL=30*86400000;   /* cache de vizinhança expira em 30 dias */
-const INFO_TTL=60*86400000;      /* cache de tags/ouvintes expira em 60 dias */
-
-/* Um id que sumiu do HTML devolve um elemento fantasma em vez de null,
-   pra que uma referência órfã vire aviso no console e não mate o script. */
-const GHOSTED=new Set();
-function ghost(id){
-  if(!GHOSTED.has(id)){GHOSTED.add(id);console.warn("[radar] #"+id+" não existe no HTML.")}
-  const g={id,textContent:"",innerHTML:"",value:"",href:"",dataset:{},style:{},
-    classList:{add(){},remove(){},toggle(){},contains(){return false}},
-    setAttribute(){},getAttribute(){return null},addEventListener(){},focus(){},click(){},
-    querySelector(){return null},querySelectorAll(){return[]}};
-  return new Proxy(g,{get:(t,p)=>p in t?t[p]:undefined,set:()=>true});
-}
-const $=id=>document.getElementById(id)||ghost(id);
+const DB_NAME="radar-musical";
+const DB_VERSION=6;
+const PAGE_SIZE=200;
+const COOLDOWN_DAYS=21;
+const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 const fmt=n=>new Intl.NumberFormat("pt-BR").format(Number(n)||0);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const now=()=>Math.floor(Date.now()/1000);
 const today=()=>new Date().toISOString().slice(0,10);
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const days=ts=>Math.max(1,Math.floor((now()-ts)/86400));
+const now=()=>Math.floor(Date.now()/1000);
 
 let db=null;
-const state={user:null,radius:"near",seedMode:"blend",radarFilter:"all",archiveMode:"artists",tag:"",spotify:null};
-let lastRound=[];
+const state={
+  user:null,
+  radarFilter:"all",
+  radius:"near",
+  archiveMode:"artists",
+  tag:"",
+  routeDepth:5,
+  spotify:null
+};
 
-function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window.__t);window.__t=setTimeout(()=>e.classList.remove("show"),2800)}
-
-/* ---------------- IndexedDB ---------------- */
+function toast(text){
+  const t=$("toast");t.textContent=text;t.classList.add("show");
+  clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),2900);
+}
 function openDB(){
-  return new Promise((res,rej)=>{
-    const rq=indexedDB.open(DB_NAME,DB_VERSION);
-    rq.onupgradeneeded=e=>{
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=e=>{
       const d=e.target.result;
-      const stores={meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",suggestions:"key",similar:"key",info:"key"};
-      for(const[n,k]of Object.entries(stores))if(!d.objectStoreNames.contains(n))d.createObjectStore(n,{keyPath:k});
+      const stores={
+        meta:"key",scrobbles:"id",artists:"key",albums:"key",tracks:"key",
+        suggestions:"key",similar:"key",tags:"key"
+      };
+      for(const [name,key] of Object.entries(stores)){
+        if(!d.objectStoreNames.contains(name))d.createObjectStore(name,{keyPath:key});
+      }
     };
-    rq.onsuccess=()=>{db=rq.result;res()};rq.onerror=()=>rej(rq.error);
+    req.onsuccess=()=>{db=req.result;resolve()};
+    req.onerror=()=>reject(req.error);
   });
 }
-const get=(s,k)=>new Promise((r,j)=>{const q=db.transaction(s).objectStore(s).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
-const all=s=>new Promise((r,j)=>{const q=db.transaction(s).objectStore(s).getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error)});
-const keys=s=>new Promise((r,j)=>{const q=db.transaction(s).objectStore(s).getAllKeys();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error)});
-const put=(s,v)=>new Promise((r,j)=>{const t=db.transaction(s,"readwrite");t.objectStore(s).put(v);t.oncomplete=r;t.onerror=()=>j(t.error)});
-const bulkPut=(s,vs)=>vs.length?new Promise((r,j)=>{const t=db.transaction(s,"readwrite"),o=t.objectStore(s);vs.forEach(v=>o.put(v));t.oncomplete=r;t.onerror=()=>j(t.error)}):Promise.resolve();
-const clearStore=s=>new Promise((r,j)=>{const t=db.transaction(s,"readwrite");t.objectStore(s).clear();t.oncomplete=r;t.onerror=()=>j(t.error)});
-async function meta(k,v){if(arguments.length===2)return put("meta",{key:k,value:v});const x=await get("meta",k);return x?.value??null}
+function get(store,key){return new Promise((res,rej)=>{const r=db.transaction(store).objectStore(store).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function all(store){return new Promise((res,rej)=>{const r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
+function keys(store){return new Promise((res,rej)=>{const r=db.transaction(store).objectStore(store).getAllKeys();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
+function put(store,value){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).put(value);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+function bulkPut(store,values){
+  if(!values.length)return Promise.resolve();
+  return new Promise((res,rej)=>{
+    const t=db.transaction(store,"readwrite"),s=t.objectStore(store);
+    values.forEach(v=>s.put(v));t.oncomplete=res;t.onerror=()=>rej(t.error);
+  });
+}
+function clearStore(store){return new Promise((res,rej)=>{const t=db.transaction(store,"readwrite");t.objectStore(store).clear();t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function meta(key,value){if(arguments.length===2)return put("meta",{key,value});const x=await get("meta",key);return x?.value??null}
 
-/* ---------------- Last.fm ---------------- */
-let lastCall=0;
 async function lastfm(method,params={}){
-  const wait=180-(Date.now()-lastCall);if(wait>0)await sleep(wait);lastCall=Date.now();
   const q=new URLSearchParams({method,api_key:LASTFM_API_KEY,format:"json",...params});
   const r=await fetch(LASTFM_API+"?"+q);
   if(!r.ok)throw new Error("Last.fm HTTP "+r.status);
   const d=await r.json();
-  if(d.error)throw new Error(d.message||"erro do Last.fm");
+  if(d.error)throw new Error(d.message||"Erro do Last.fm");
   return d;
 }
-
-/* ---------------- sincronização ---------------- */
 function rawToScrobble(raw){
   if(!raw?.artist||!raw?.name||raw["@attr"]?.nowplaying==="true")return null;
-  const ts=Number(raw.date?.uts||0);if(!ts)return null;
+  const timestamp=Number(raw.date?.uts||0);if(!timestamp)return null;
   const artist=raw.artist.name||raw.artist;
-  return{id:ts+"|"+norm(artist)+"|"+norm(raw.name),timestamp:ts,artist,
-    album:raw.album?.["#text"]||"",track:raw.name,
-    image:raw.image?.find(x=>x.size==="extralarge")?.["#text"]||""};
+  return{
+    id:`${timestamp}|${norm(artist)}|${norm(raw.name)}`,
+    timestamp,artist,
+    album:raw.album?.["#text"]||"",
+    track:raw.name,
+    image:raw.image?.find(x=>x.size==="extralarge")?.["#text"]||""
+  };
 }
+
+/* ----- synced history: fixed requestFrom, page checkpoints, touched-only writes ----- */
 async function processPage(raws,known,artists,albums,tracks){
-  const scrobbles=[],tA=new Set(),tB=new Set(),tC=new Set(),names=[];
+  const scrobbles=[],artistTouched=new Set(),albumTouched=new Set(),trackTouched=new Set(),touchedNames=[];
   for(const raw of raws){
     const x=rawToScrobble(raw);if(!x||known.has(x.id))continue;
     known.add(x.id);scrobbles.push(x);
     const ak=norm(x.artist);
-    let a=artists.get(ak)||{key:ak,name:x.artist,plays:0,firstPlayed:x.timestamp,lastPlayed:x.timestamp};
+    let a=artists.get(ak);if(!a)a={key:ak,name:x.artist,plays:0,firstPlayed:x.timestamp,lastPlayed:x.timestamp};
     a.plays++;a.lastPlayed=Math.max(a.lastPlayed,x.timestamp);a.firstPlayed=Math.min(a.firstPlayed,x.timestamp);
-    artists.set(ak,a);tA.add(ak);names.push(x.artist);
+    artists.set(ak,a);artistTouched.add(ak);touchedNames.push(x.artist);
     if(x.album){
-      const k=ak+"|"+norm(x.album);
-      let al=albums.get(k)||{key:k,artist:x.artist,album:x.album,plays:0,lastPlayed:x.timestamp};
-      al.plays++;al.lastPlayed=Math.max(al.lastPlayed,x.timestamp);albums.set(k,al);tB.add(k);
+      const k=ak+"|"+norm(x.album);let al=albums.get(k);
+      if(!al)al={key:k,artist:x.artist,album:x.album,plays:0,lastPlayed:x.timestamp};
+      al.plays++;al.lastPlayed=Math.max(al.lastPlayed,x.timestamp);albums.set(k,al);albumTouched.add(k);
     }
-    const tk=ak+"|"+norm(x.track);
-    let tr=tracks.get(tk)||{key:tk,artist:x.artist,track:x.track,album:x.album,image:x.image,plays:0,firstPlayed:x.timestamp,lastPlayed:x.timestamp};
-    tr.plays++;tr.lastPlayed=Math.max(tr.lastPlayed,x.timestamp);tr.firstPlayed=Math.min(tr.firstPlayed||x.timestamp,x.timestamp);
-    if(!tr.image)tr.image=x.image;tracks.set(tk,tr);tC.add(tk);
+    const tk=ak+"|"+norm(x.track);let tr=tracks.get(tk);
+    if(!tr)tr={key:tk,artist:x.artist,track:x.track,album:x.album,image:x.image,plays:0,lastPlayed:x.timestamp};
+    tr.plays++;tr.lastPlayed=Math.max(tr.lastPlayed,x.timestamp);if(!tr.image)tr.image=x.image;
+    tracks.set(tk,tr);trackTouched.add(tk);
   }
   await Promise.all([
     bulkPut("scrobbles",scrobbles),
-    bulkPut("artists",[...tA].map(k=>artists.get(k))),
-    bulkPut("albums",[...tB].map(k=>albums.get(k))),
-    bulkPut("tracks",[...tC].map(k=>tracks.get(k)))
+    bulkPut("artists",[...artistTouched].map(k=>artists.get(k))),
+    bulkPut("albums",[...albumTouched].map(k=>albums.get(k))),
+    bulkPut("tracks",[...trackTouched].map(k=>tracks.get(k)))
   ]);
-  return{count:scrobbles.length,touched:[...new Set(names)]};
+  return{count:scrobbles.length,touchedArtists:[...new Set(touchedNames)]};
 }
-function showSync(v){$("syncModal").classList.toggle("show",v)}
+function showSync(show){$("syncModal").classList.toggle("show",show)}
 function syncUI(n,total,text){
   $("syncText").textContent=text;
-  $("syncCounter").textContent=total?fmt(n)+" de "+fmt(total):fmt(n)+" novos";
-  $("syncBar").style.width=(total?clamp(n/total*100,0,100):0)+"%";
+  $("syncCounter").textContent=`${fmt(n)} de ${fmt(total)}`;
+  $("syncBar").style.width=(total?Math.min(100,n/total*100):0)+"%";
 }
-/* Fecha a fila de espera sozinha: qualquer artista tocado, novo ou antigo. */
 async function resolveWaiting(names){
   const wanted=new Set(names.map(norm));if(!wanted.size)return;
-  const list=await all("suggestions"),up=[];
-  for(const s of list)if(s.status==="waiting"&&wanted.has(norm(s.name))){s.status="heard";s.heardAt=Date.now();up.push(s)}
-  if(up.length){await bulkPut("suggestions",up);toast(up.length+" descoberta(s) saíram da fila.")}
+  const suggestions=await all("suggestions"),updates=[];
+  for(const s of suggestions){
+    if(s.status==="waiting"&&wanted.has(norm(s.name))){s.status="heard";s.heardAt=Date.now();updates.push(s)}
+  }
+  if(updates.length){await bulkPut("suggestions",updates);toast(`${updates.length} descoberta(s) saíram da espera.`)}
 }
 async function syncHistory(username,initial,total,showModal=false){
-  if(showModal)showSync(true);
+  if(initial&&showModal)showSync(true);
   const known=new Set(await keys("scrobbles"));
   const artists=new Map((await all("artists")).map(x=>[x.key,x]));
   const albums=new Map((await all("albums")).map(x=>[x.key,x]));
   const tracks=new Map((await all("tracks")).map(x=>[x.key,x]));
   let page=1,pages=1,done=0,newest=Number(await meta("lastScrobbleTimestamp")||0);
-  /* requestFrom FIXO durante toda a sincronização: se ele acompanhasse o
-     newest, a página 2 pediria a partir de agora e o laço morreria na
-     primeira volta, trazendo no máximo 200 scrobbles por vez. */
-  const requestFrom=initial?0:Math.max(0,newest-1);
+  const checkpoint=newest;
+  const requestFrom=initial?0:Math.max(0,checkpoint-1);
   try{
     while(page<=pages){
       const params={user:username,page,limit:PAGE_SIZE,extended:1};
       if(!initial)params.from=requestFrom;
-      if(showModal)syncUI(done,total,initial?"baixando página "+page+"...":"buscando novidades...");
+      if(showModal)syncUI(done,total,initial?`Baixando página ${page}...`:"Sincronizando...");
       const d=await lastfm("user.getRecentTracks",params),rt=d.recenttracks;
       pages=Number(rt?.["@attr"]?.totalPages||1);
       const arr=Array.isArray(rt?.track)?rt.track:(rt?.track?[rt.track]:[]);
       if(!arr.length)break;
-      const r=await processPage(arr,known,artists,albums,tracks);
-      done+=r.count;
+      const result=await processPage(arr,known,artists,albums,tracks);
+      done+=result.count;
       for(const raw of arr){const ts=Number(raw?.date?.uts||0);if(ts>newest)newest=ts}
       await meta("lastScrobbleTimestamp",newest);
       await meta("lastSync",Date.now());
-      await resolveWaiting(r.touched);
+      await resolveWaiting(result.touchedArtists);
       page++;
-      if(!initial&&r.count===0)break;
-      if(page<=pages)await sleep(240);
+      if(page<=pages)await sleep(260);
+      if(!initial&&result.count===0)break;
     }
     await meta("username",username);
-    if(showModal){syncUI(done,total,"pronto.");await sleep(240);showSync(false)}
-    $("syncStatus").textContent=done?fmt(done)+" novo(s) scrobble(s).":"já estava em dia.";
+    if(showModal){syncUI(done,total,"Sincronização concluída.");await sleep(250);showSync(false)}
+    $("syncStatus").textContent=done?`${fmt(done)} novo(s) scrobble(s).`:"Já estava em dia.";
     return done;
-  }catch(e){
-    if(showModal)showSync(false);
-    toast("sincronização interrompida. o checkpoint foi preservado.");
-    throw e;
-  }
+  }catch(e){if(showModal)showSync(false);toast("Sincronização interrompida. O checkpoint foi preservado.");throw e}
 }
-async function validateUser(u){const d=await lastfm("user.getInfo",{user:u});if(!d.user)throw new Error("usuário do Last.fm não encontrado.");return d.user}
-async function switchUser(u){
+async function validateUser(username){
+  const d=await lastfm("user.getInfo",{user:username});
+  if(!d.user)throw new Error("Usuário do Last.fm não encontrado.");
+  return d.user;
+}
+async function switchUser(username){
   const old=await meta("username");
-  if(old&&norm(old)!==norm(u)){
-    for(const s of["meta","scrobbles","artists","albums","tracks","suggestions","similar","info"])await clearStore(s);
+  if(old&&norm(old)!==norm(username)){
+    for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags"])await clearStore(s);
     return true;
   }
   return false;
 }
 
-/* =========================================================
-   MOTOR DE DESCOBERTA — um só
-   1. sementes rotativas
-   2. grafo em duas camadas com coocorrência
-   3. afinidade normalizada por posição (o match cru do Last.fm
-      não é comparável entre artistas: o primeiro similar de
-      qualquer um volta perto de 1.0)
-   4. assinatura de tags do usuário
-   5. obscuridade (ouvintes)
-   6. aprendizado negativo pelas tags do que foi rejeitado
-   ========================================================= */
+/* ----- radar ----- */
 const RADIUS={
-  near:{minAff:.55,wAff:.55,wCooc:.20,wTag:.18,wObsc:.04,wAbs:.03,deep:false,desc:"afinidade alta, pouca surpresa"},
-  mid: {minAff:.32,wAff:.42,wCooc:.20,wTag:.22,wObsc:.13,wAbs:.03,deep:true, desc:"equilíbrio entre familiar e inesperado"},
-  far: {minAff:.16,wAff:.27,wCooc:.22,wTag:.22,wObsc:.25,wAbs:.04,deep:true, desc:"baixa afinidade, estranheza alta"}
+  near:{min:.65,desc:"afinidade alta, pouca surpresa"},
+  mid:{min:.45,desc:"equilíbrio entre familiar e inesperado"},
+  far:{min:.28,desc:"baixa afinidade, maior estranheza"}
 };
-
-async function similarOf(name,limit=20){
-  const key=norm(name),c=await get("similar",key);
-  if(c?.items&&Date.now()-c.savedAt<SIMILAR_TTL)return c.items.slice(0,limit);
-  let items=[];
-  try{
-    const d=await lastfm("artist.getSimilar",{artist:name,limit:24,autocorrect:1});
-    const raw=d.similarartists?.artist;
-    const arr=Array.isArray(raw)?raw:(raw?[raw]:[]);
-    items=arr.map((x,i)=>({name:x.name,match:Number(x.match)||0,rank:i,rankScore:1-i/Math.max(1,arr.length)}));
-  }catch{}
-  await put("similar",{key,name,items,savedAt:Date.now()});
-  return items.slice(0,limit);
-}
-async function infoOf(name){
-  const key=norm(name),c=await get("info",key);
-  if(c?.savedAt&&Date.now()-c.savedAt<INFO_TTL)return c;
-  let tags=[],listeners=0,bio="";
-  try{
-    const d=await lastfm("artist.getInfo",{artist:name,autocorrect:1});
-    const t=d.artist?.tags?.tag||[];
-    tags=(Array.isArray(t)?t:[t]).map(x=>norm(x.name)).filter(Boolean).slice(0,8);
-    listeners=Number(d.artist?.stats?.listeners||0);
-    bio=(d.artist?.bio?.summary||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
-  }catch{}
-  const rec={key,name,tags,listeners,bio,savedAt:Date.now()};
-  await put("info",rec);return rec;
-}
-/* A assinatura de tags sai dos artistas mais ouvidos, com peso por plays. */
-async function tagProfile(){
-  const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays).slice(0,25);
-  if(!artists.length)return new Map();
-  const sig=artists.map(x=>x.key+":"+x.plays).join("|");
-  const cached=await meta("tagProfile");
-  if(cached?.sig===sig)return new Map(cached.entries);
-  const weights=new Map();
-  for(const a of artists){
-    const info=await infoOf(a.name);
-    const w=Math.log10(a.plays+1);
-    info.tags.forEach((t,i)=>weights.set(t,(weights.get(t)||0)+w*(1-i/10)));
-  }
-  const max=Math.max(...weights.values(),1);
-  for(const[k,v]of weights)weights.set(k,v/max);
-  await meta("tagProfile",{sig,entries:[...weights]});
-  return weights;
-}
-async function rejectionPenalty(){
-  const rejected=(await all("suggestions")).filter(x=>x.status==="rejected");
-  const p=new Map();
-  if(rejected.length<3)return p;
-  for(const r of rejected){
-    const info=await get("info",norm(r.name));
-    (info?.tags||[]).forEach(t=>p.set(t,(p.get(t)||0)+1));
-  }
-  for(const[k,v]of p)p.set(k,clamp(v/rejected.length,0,1));
-  return p;
-}
-function sample(arr,n){
-  const c=[...arr],out=[];
-  while(out.length<n&&c.length)out.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);
-  return out;
-}
-/* Sementes rotativas: os pilares saem de um sorteio dentro do top 40,
-   não dos 5 fixos. Sem isso a vizinhança se esgota em duas semanas. */
 async function buildSeeds(){
-  const artists=await all("artists");
-  if(!artists.length)return[];
-  const cut=now()-14*86400;
-  const recent=artists.filter(x=>x.lastPlayed>=cut).sort((a,b)=>b.lastPlayed-a.lastPlayed);
-  const core=[...artists].sort((a,b)=>b.plays-a.plays).slice(0,40);
-  const deep=artists.filter(x=>x.plays>=3&&x.lastPlayed<now()-180*86400);
-  const wrap=(list,w,why)=>list.filter(Boolean).map(x=>({name:x.name,key:x.key,weight:w,why}));
-  let seeds=[];
-  if(state.seedMode==="recent")      seeds=wrap(recent.slice(0,8),1,"escuta recente");
-  else if(state.seedMode==="pillars")seeds=wrap(sample(core,8),1,"seus pilares");
-  else if(state.seedMode==="past")   seeds=wrap(sample(deep.length?deep:artists,8),.85,"seu passado");
-  else if(state.seedMode==="artist"){
-    const pick=artists.find(x=>norm(x.name)===norm($("seedArtist").value));
-    seeds=wrap([pick],1,"sua escolha");
+  const artists=await all("artists"),cut=now()-14*86400;
+  const recent=artists.filter(x=>x.lastPlayed>=cut).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,5);
+  const pillars=[...artists].sort((a,b)=>b.plays-a.plays).slice(0,5);
+  const pool=artists.filter(x=>!recent.some(y=>y.key===x.key)).sort((a,b)=>a.lastPlayed-b.lastPlayed);
+  const random=[];while(random.length<2&&pool.length)random.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+  const map=new Map();
+  for(const x of [...recent,...pillars,...random]){
+    const w=x.lastPlayed>=cut?1:.55;if(!map.has(x.key))map.set(x.key,{name:x.name,weight:w});else map.get(x.key).weight=Math.max(map.get(x.key).weight,w);
   }
-  else if(state.seedMode==="cross"){
-    const a=artists.find(x=>norm(x.name)===norm($("seedArtist").value));
-    const b=artists.find(x=>norm(x.name)===norm($("seedB").value));
-    seeds=wrap([a,b],1,"cruzamento");
-  }
-  else seeds=[...wrap(sample(recent,3),1,"escuta recente"),...wrap(sample(core,4),.8,"seus pilares"),...wrap(sample(deep,1),.65,"seu passado")];
-  return[...new Map(seeds.filter(x=>x&&x.name).map(x=>[x.key||norm(x.name),x])).values()];
+  return[...map.values()];
 }
-
-async function runRadar(){
-  const cfg=RADIUS[state.radius];
-  const artists=await all("artists"),map=new Map(artists.map(x=>[x.key,x]));
-  const suggestions=await all("suggestions");
-  const seeds=await buildSeeds();
-  if(!seeds.length)return{headline:null,list:[],seeds:[]};
-
-  const seedKeys=new Set(seeds.map(s=>norm(s.name)));
-  const cand=new Map();
-  const add=(name,aff,seedName)=>{
-    const k=norm(name);
-    if(seedKeys.has(k))return;
-    const c=cand.get(k)||{name,aff:0,seeds:[]};
-    c.aff=Math.max(c.aff,aff);
-    if(!c.seeds.includes(seedName))c.seeds.push(seedName);
-    cand.set(k,c);
-  };
-  /* camada 1 */
-  const layer1=[];
-  for(const s of seeds.slice(0,8)){
-    const sims=await similarOf(s.name,20);
-    for(const x of sims){add(x.name,x.rankScore*s.weight,s.name)}
-    layer1.push({seed:s,sims:sims.slice(0,5)});
-  }
-  /* camada 2: vizinho do vizinho, onde mora o que não é óbvio */
-  if(cfg.deep){
-    for(const{seed,sims}of layer1.slice(0,4)){
-      for(const mid of sims){
-        const deeper=await similarOf(mid.name,12);
-        for(const x of deeper)add(x.name,x.rankScore*mid.rankScore*seed.weight*.62,seed.name);
-      }
+async function similarCached(name,limit=18){
+  const key=norm(name),cached=await get("similar",key);
+  if(cached?.items?.length)return cached.items.slice(0,limit);
+  const d=await lastfm("artist.getSimilar",{artist:name,limit,autocorrect:1});
+  const items=(Array.isArray(d.similarartists?.artist)?d.similarartists.artist:[d.similarartists?.artist].filter(Boolean))
+    .map(x=>({name:x.name,match:Number(x.match)||0}));
+  await put("similar",{key,name,items,savedAt:Date.now()});return items;
+}
+async function tagInfo(name){
+  const key=norm(name),c=await get("tags",key);if(c?.tags?.length)return c.tags;
+  try{
+    const d=await lastfm("artist.getInfo",{artist:name,autocorrect:1}),tags=d.artist?.tags?.tag||[];
+    const list=(Array.isArray(tags)?tags:[]).map(x=>norm(x.name)).filter(Boolean);
+    await put("tags",{key,name,tags:list,savedAt:Date.now()});return list;
+  }catch{return[]}
+}
+async function trackSimilarForSeeds(seeds,candidates,allTracks){
+  for(const seed of seeds.slice(0,6)){
+    const mine=allTracks.filter(t=>norm(t.artist)===norm(seed.name)).sort((a,b)=>b.plays-a.plays).slice(0,2);
+    for(const tr of mine){
+      try{
+        const d=await lastfm("track.getSimilar",{artist:tr.artist,track:tr.track,limit:8,autocorrect:1});
+        const arr=d.similartracks?.track||[];
+        for(const item of(Array.isArray(arr)?arr:[arr])){
+          const artist=item.artist?.name;if(!artist)continue;
+          const k=norm(artist),c=candidates.get(k)||{name:artist,artistScores:[],trackScores:[],seeds:[],seedWeight:0};
+          c.trackScores.push(Number(item.match)||0);c.seedWeight+=seed.weight*.7;
+          if(!c.seeds.includes(seed.name))c.seeds.push(seed.name);candidates.set(k,c);
+        }
+      }catch{}
+      await sleep(90);
     }
   }
-
-  const blocked=new Set(suggestions.filter(x=>["known","rejected","waiting","heard"].includes(x.status)).map(x=>norm(x.name)));
-  const cooling=new Set(suggestions.filter(x=>x.cooldownUntil>Date.now()).map(x=>norm(x.name)));
-
-  /* pré-ranking barato pra decidir em quem vale gastar chamada de API */
-  const prelim=[];
-  for(const c of cand.values()){
-    const k=norm(c.name);
-    if(blocked.has(k)||cooling.has(k))continue;
-    const h=map.get(k),plays=h?.plays||0;
-    const category=h?(plays>=1&&plays<=4?"loose":null):"new";
-    if(!category)continue;
-    if(c.aff<cfg.minAff)continue;
-    const cooc=clamp(c.seeds.length/3,0,1);
-    prelim.push({key:k,name:c.name,category,plays,h,aff:c.aff,cooc,seeds:c.seeds,pre:c.aff*.7+cooc*.3});
+}
+async function calculateRadar(force=false){
+  const old=await all("suggestions"),date=await meta("radarDate");
+  if(!force&&date===today()&&old.some(x=>x.status==="alive"))return;
+  const history=new Map((await all("artists")).map(x=>[x.key,x]));
+  const tracks=await all("tracks"),seeds=await buildSeeds(),candidates=new Map();
+  for(const seed of seeds){
+    try{
+      const arr=await similarCached(seed.name,14);
+      for(const item of arr){
+        const k=norm(item.name),c=candidates.get(k)||{name:item.name,artistScores:[],trackScores:[],seeds:[],seedWeight:0};
+        c.artistScores.push(item.match);c.seedWeight+=seed.weight;if(!c.seeds.includes(seed.name))c.seeds.push(seed.name);candidates.set(k,c);
+      }
+    }catch{}
+    await sleep(100);
   }
-  prelim.sort((a,b)=>b.pre-a.pre);
-  const shortlist=prelim.slice(0,18);
-
-  const profile=await tagProfile(),penalty=await rejectionPenalty();
-  const scored=[];
-  for(const x of shortlist){
-    const info=await infoOf(x.name);
-    const hits=info.tags.filter(t=>profile.has(t));
-    const tagFit=clamp(hits.reduce((a,t)=>a+profile.get(t),0)/2.2,0,1);
-    const obsc=1-clamp(Math.log10(Math.max(info.listeners,1))/6.4,0,1);
-    const absence=x.h?.lastPlayed?clamp((now()-x.h.lastPlayed)/(365*86400),0,1):1;
-    const pen=clamp(info.tags.reduce((a,t)=>a+(penalty.get(t)||0),0)*.18,0,.22);
-    const score=clamp(x.aff*cfg.wAff+x.cooc*cfg.wCooc+tagFit*cfg.wTag+obsc*cfg.wObsc+absence*cfg.wAbs-pen,0,1);
-    scored.push({...x,tags:info.tags,hits,tagFit,obsc,listeners:info.listeners,bio:info.bio,absence,score});
+  await trackSimilarForSeeds(seeds,candidates,tracks);
+  const blocked=new Set(old.filter(x=>["known","rejected"].includes(x.status)).map(x=>norm(x.name)));
+  const ranked=[],nowMs=Date.now(),min=RADIUS[state.radius].min;
+  for(const c of candidates.values()){
+    const k=norm(c.name);if(blocked.has(k))continue;
+    const prior=old.find(x=>norm(x.name)===k);
+    if(prior?.status==="waiting"||prior?.status==="heard")continue;
+    if(prior?.cooldownUntil&&prior.cooldownUntil>nowMs)continue;
+    const h=history.get(k),plays=h?.plays||0,category=h?(plays>=1&&plays<=4?"loose":null):"new";if(!category)continue;
+    const artistSim=c.artistScores.length?Math.max(...c.artistScores):0;
+    const trackSim=c.trackScores.length?Math.max(...c.trackScores):0;
+    const similarity=Math.max(artistSim,trackSim*.95);
+    if(similarity<min)continue;
+    const diversity=Math.min(1,c.seeds.length/3),origin=Math.min(1,c.seedWeight/Math.max(1,c.seeds.length));
+    const score=similarity*65+diversity*25+origin*10;
+    ranked.push({key:k,name:c.name,category,plays,score,similarity,seeds:c.seeds,status:"alive",createdAt:nowMs});
   }
-  scored.sort((a,b)=>b.score-a.score);
-
-  /* cota: a leva não pode virar só ponta solta nem só território novo */
-  const loose=scored.filter(x=>x.category==="loose"),fresh=scored.filter(x=>x.category==="new");
-  const picked=[],seen=new Set();
-  const take=(arr,n)=>{for(const x of arr){if(picked.length>=9||n<=0)break;if(seen.has(x.key))continue;seen.add(x.key);picked.push(x);n--}};
-  take(loose,3);take(fresh,3);take(scored,9);
-  picked.sort((a,b)=>b.score-a.score);
-
-  const headline=picked[0]||null;
-  if(headline)headline.entry=await entryTrack(headline.name);
-  return{headline,list:picked.slice(1),seeds};
-}
-async function entryTrack(name){
-  try{
-    const d=await lastfm("artist.getTopTracks",{artist:name,limit:1,autocorrect:1});
-    const t=d.toptracks?.track;const first=Array.isArray(t)?t[0]:t;
-    return first?.name||null;
-  }catch{return null}
-}
-/* tag como filtro duro, aplicado depois do score */
-function applyTagFilter(rows){
-  if(!state.tag)return rows;
-  const t=norm(state.tag);
-  return rows.filter(x=>(x.tags||[]).some(v=>v.includes(t)));
-}
-
-/* =========================================================
-   RENDER
-   ========================================================= */
-function whyLine(x){
-  const n=x.seeds.length;
-  const via=x.seeds.slice(0,3).map(esc).join(", ");
-  let s=n>=3?"Chegou por <b>"+n+" caminhos</b> diferentes do seu arquivo: "+via+"."
-            :"Chegou pela ponte com <b>"+via+"</b>.";
-  if(x.hits?.length)s+=" Divide "+x.hits.length+" tag"+(x.hits.length>1?"s":"")+" com a sua assinatura.";
-  if(x.obsc>.62)s+=" É um nome pequeno: "+fmt(x.listeners)+" ouvintes.";
-  s+=x.category==="loose"
-    ? " Você já ouviu <b>"+x.plays+" vez"+(x.plays>1?"es":"")+"</b> e sumiu faz "+fmt(days(x.h.lastPlayed))+" dias."
-    : " Zero plays no seu arquivo.";
-  return s;
-}
-function tagPills(x){
-  if(!x.tags?.length)return"";
-  return '<div class="tagline">'+x.tags.slice(0,5).map(t=>'<span class="tg'+(x.hits?.includes(t)?" hit":"")+'">'+esc(t)+"</span>").join("")+"</div>";
-}
-function actions(name){
-  return '<div class="acts">'
-    +'<button class="btn primary" data-act="waiting" data-name="'+esc(name)+'">quero ouvir</button>'
-    +'<button class="btn" data-act="known" data-name="'+esc(name)+'">já conheço</button>'
-    +'<button class="btn" data-act="rejected" data-name="'+esc(name)+'">não é pra mim</button>'
-    +"</div>";
-}
-function headlineCard(x){
-  if(!x)return'<div class="empty"><strong>nenhuma aposta hoje.</strong>Abra o raio ou troque a semente. O Radar não inventa recomendação pra preencher espaço.</div>';
-  return'<div class="headline">'
-    +'<div class="headline-tag">'+(x.category==="loose"?"ponta solta":"território novo")+" · aposta principal</div>"
-    +'<div class="headline-name" data-artist="'+esc(x.name)+'">'+esc(x.name)+"</div>"
-    +'<div class="headline-body"><div>'
-      +'<p class="headline-copy">'+whyLine(x)+"</p>"
-      +(x.entry?'<p class="headline-copy" style="margin-top:12px">Comece por <b>'+esc(x.entry)+"</b>.</p>":"")
-      +tagPills(x)+actions(x.name)
-    +"</div><div class=\"headline-side\">"
-      +'<div class="stat"><div class="k">afinidade</div><div class="v" style="font-size:26px">'+Math.round(x.aff*100)+'</div><div class="bar"><i style="width:'+Math.round(x.aff*100)+'%"></i></div></div>'
-      +'<div class="stat" style="margin-top:18px"><div class="k">pontes</div><div class="v" style="font-size:26px">'+x.seeds.length+"</div></div>"
-      +'<div class="stat" style="margin-top:18px"><div class="k">ouvintes</div><div class="v" style="font-size:26px">'+(x.listeners?fmt(x.listeners):"—")+"</div></div>"
-    +"</div></div></div>";
-}
-function discCard(x,i){
-  return'<div class="disc" style="animation-delay:'+(i*55)+'ms">'
-    +'<div class="disc-i">'+String(i+1).padStart(2,"0")+"</div><div>"
-    +'<div class="disc-name" data-artist="'+esc(x.name)+'">'+esc(x.name)+"</div>"
-    +'<span class="badge '+(x.category==="loose"?"loose":"")+'">'+(x.category==="loose"?"ponta solta":"território novo")+"</span>"
-    +'<div class="disc-copy">'+whyLine(x)+"</div>"
-    +tagPills(x)+actions(x.name)
-    +'</div><div class="disc-right"><b>'+Math.round(x.score*100)+"</b>score</div></div>";
-}
-async function renderRadarView(){
-  const wait=(await all("suggestions")).filter(x=>x.status==="waiting");
-  if(state.radarFilter==="waiting"){
-    $("headline").innerHTML="";
-    $("radarList").innerHTML=wait.length?wait.map((x,i)=>'<div class="disc" style="animation-delay:'+(i*45)+'ms"><div class="disc-i">'+String(i+1).padStart(2,"0")+'</div><div><div class="disc-name" data-artist="'+esc(x.name)+'">'+esc(x.name)+'</div><div class="disc-copy">guardado em '+new Date(x.waitingAt||x.createdAt||Date.now()).toLocaleDateString("pt-BR")+". Sai daqui sozinho quando o scrobble chegar.</div></div><div class=\"disc-right\">na fila</div></div>").join(""):'<div class="empty"><strong>fila vazia.</strong>Marque "quero ouvir" numa descoberta.</div>';
-    $("radarCount").textContent=wait.length+" na fila";
-    return;
+  if(state.tag){
+    const filtered=[];
+    for(const x of ranked){const tags=await tagInfo(x.name);if(tags.includes(norm(state.tag)))filtered.push(x)}
+    ranked.splice(0,ranked.length,...filtered);
   }
-  let rows=applyTagFilter(lastRound.list||[]);
-  let head=lastRound.headline;
-  if(state.tag&&head&&!applyTagFilter([head]).length){head=rows.shift()||null}
-  if(state.radarFilter!=="all"){
-    rows=rows.filter(x=>x.category===state.radarFilter);
-    if(head&&head.category!==state.radarFilter)head=rows.shift()||null;
+  const loose=ranked.filter(x=>x.category==="loose").sort((a,b)=>b.score-a.score);
+  const fresh=ranked.filter(x=>x.category==="new").sort((a,b)=>b.score-a.score);
+  const chosen=[...loose.slice(0,3),...fresh.slice(0,3)];
+  for(const x of old){
+    if(x.status==="alive"){x.status="expired";x.cooldownUntil=nowMs+COOLDOWN_DAYS*86400000;await put("suggestions",x)}
   }
-  $("headline").innerHTML=headlineCard(head);
-  $("radarList").innerHTML=rows.length?rows.map((x,i)=>discCard(x,i)).join(""):'<div class="empty"><strong>nada além da aposta.</strong>Prefiro te dar três certeiras a seis com enchimento.</div>';
-  $("radarCount").textContent=rows.length?rows.length+" descobertas · "+(lastRound.seeds||[]).length+" sementes nesta rodada":"";
-  const s=await all("suggestions"),heard=s.filter(x=>x.status==="heard").length,rej=s.filter(x=>x.status==="rejected").length,dec=heard+rej;
-  $("radarStats").innerHTML=[
-    [dec?Math.round(heard/dec*100)+"%":"—","taxa de acerto"],
-    [fmt(heard),"viraram escuta"],
-    [fmt(wait.length),"na fila"],
-    [fmt(rej),"rejeitadas"]
-  ].map(a=>'<div class="stat"><div class="k">'+a[1]+'</div><div class="v">'+a[0]+"</div></div>").join("");
-}
-async function calcRadar(force=false){
-  const stamp=await meta("radarStamp");
-  const sig=state.radius+"|"+state.seedMode+"|"+today();
-  if(!force&&stamp?.sig===sig&&stamp.round?.list){lastRound=stamp.round;return}
-  $("headline").innerHTML='<div class="shimmer"></div>';
-  $("radarList").innerHTML='<div class="shimmer" style="margin-top:12px"></div>';
-  $("engineNote").textContent="atravessando o grafo... a primeira rodada é a mais lenta, depois fica em cache";
-  lastRound=await runRadar();
-  $("engineNote").textContent="o motor explica cada escolha";
-  await meta("radarStamp",{sig,round:lastRound,at:Date.now()});
-  $("radarDateLabel").textContent="rodada de "+new Date().toLocaleDateString("pt-BR");
+  for(const x of chosen){
+    const existing=await get("suggestions",x.key);
+    if(existing&&["waiting","known","rejected","heard"].includes(existing.status))continue;
+    await put("suggestions",x);
+  }
+  await meta("radarDate",today());await meta("radarRadius",state.radius);await meta("radarTag",state.tag);
 }
 
-/* ---------------- diário ---------------- */
-function animNum(el,target){
+/* ----- month portrait / profile / timeline ----- */
+function animatedNumber(el,target){
   const n=Number(target)||0,start=Number(el.dataset.value||0);el.dataset.value=n;
-  if(matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=fmt(n);return}
-  const t0=performance.now(),tick=t=>{const p=Math.min(1,(t-t0)/460),e=1-Math.pow(1-p,3);
-    el.textContent=fmt(Math.round(start+(n-start)*e));if(p<1)requestAnimationFrame(tick)};
-  requestAnimationFrame(tick);
+  if(window.matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=fmt(n);return}
+  const t0=performance.now();const tick=t=>{
+    const p=Math.min(1,(t-t0)/420),e=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.round(start+(n-start)*e));if(p<1)requestAnimationFrame(tick);
+  };requestAnimationFrame(tick);
 }
 async function monthlyPortrait(){
-  const scrobbles=await all("scrobbles");
-  const newest=scrobbles.reduce((m,x)=>Math.max(m,x.timestamp),0),sig=scrobbles.length+":"+newest;
-  const c=await meta("monthCache");if(c?.sig===sig)return c.data;
-  const cut=Date.now()-30*86400000;
-  const recent=scrobbles.filter(x=>x.timestamp*1000>=cut),before=scrobbles.filter(x=>x.timestamp*1000<cut);
-  const cur=new Set(recent.map(x=>norm(x.artist))),old=new Set(before.map(x=>norm(x.artist)));
+  const cached=await meta("monthlyCache"),scrobbles=await all("scrobbles");
+  const newest=scrobbles.reduce((m,x)=>Math.max(m,x.timestamp),0),signature=`${scrobbles.length}:${newest}`;
+  if(cached?.signature===signature)return cached.data;
+  const cut=Date.now()-30*86400000,recent=scrobbles.filter(x=>x.timestamp*1000>=cut),before=scrobbles.filter(x=>x.timestamp*1000<cut);
+  const current=new Set(recent.map(x=>norm(x.artist))),beforeSet=new Set(before.map(x=>norm(x.artist)));
   const counts={};recent.forEach(x=>counts[norm(x.artist)]=(counts[norm(x.artist)]||0)+1);
   const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
-  const names=new Map((await all("artists")).map(x=>[x.key,x.name]));
-  const data={newArtists:[...cur].filter(k=>!old.has(k)).length,scrobbles:recent.length,
-    top:top?(names.get(top[0])||top[0]):"—",topPlays:top?top[1]:0};
-  await meta("monthCache",{sig,data});return data;
+  const artistMap=new Map((await all("artists")).map(x=>[x.key,x.name]));
+  const data={newArtists:[...current].filter(x=>!beforeSet.has(x)).map(k=>artistMap.get(k)||k).length,scrobbles:recent.length,top:top?(artistMap.get(top[0])||top[0]):"—",topPlays:top?top[1]:0};
+  await meta("monthlyCache",{signature,data});return data;
+}
+async function oneYearAgo(){
+  const target=new Date();target.setFullYear(target.getFullYear()-1);
+  const day=Math.floor(target.getTime()/86400000),start=(day-2)*86400,end=(day+2)*86400;
+  const s=await all("scrobbles"),arr=s.filter(x=>x.timestamp>=start&&x.timestamp<=end).sort((a,b)=>b.timestamp-a.timestamp);
+  return arr.slice(0,20);
 }
 async function sessions(){
-  const s=(await all("scrobbles")).sort((a,b)=>a.timestamp-b.timestamp),out=[];let cur=null;
+  const s=(await all("scrobbles")).sort((a,b)=>a.timestamp-b.timestamp),out=[];let current=null;
   for(const x of s){
-    if(!cur||x.timestamp-cur.last>45*60){cur={start:x.timestamp,last:x.timestamp,tracks:[],artists:new Set()};out.push(cur)}
-    cur.last=x.timestamp;cur.tracks.push(x);cur.artists.add(x.artist);
+    if(!current||x.timestamp-current.last>45*60){current={start:x.timestamp,last:x.timestamp,tracks:[],artists:new Set()};out.push(current)}
+    current.last=x.timestamp;current.tracks.push(x);current.artists.add(x.artist);
   }
-  return out.slice(-14).reverse();
+  return out.slice(-12).reverse();
 }
-async function renderHome(){
-  const [scrobbles,artists,sugg]=await Promise.all([all("scrobbles"),all("artists"),all("suggestions")]);
-  const last=scrobbles.sort((a,b)=>b.timestamp-a.timestamp)[0];
-  $("lastTrack").textContent=last?last.track:"—";
-  $("lastArtist").textContent=last?last.artist:"conecte seu Last.fm";
-  animNum($("totalPlays"),scrobbles.length);
-  $("totalArtists").textContent=fmt(artists.length)+" artistas";
-  animNum($("waitingCount"),sugg.filter(x=>x.status==="waiting").length);
-
-  const p=await monthlyPortrait();
-  animNum($("monthNew"),p.newArtists);animNum($("monthScrobbles"),p.scrobbles);
-  $("monthTop").textContent=p.top;
-  $("monthTopPlays").textContent=p.top==="—"?"":fmt(p.topPlays)+" plays no mês";
-
-  /* heatmap de 53 semanas */
-  const weeks=[],t=new Date();
+async function renderProfile(){
+  const artists=await all("artists"),scrobbles=await all("scrobbles"),top=[...artists].sort((a,b)=>b.plays-a.plays).slice(0,5);
+  const unique=artists.length,plays=scrobbles.length,onePlay=artists.filter(x=>x.plays===1).length;
+  const ratio=unique?Math.round(onePlay/unique*100):0;
+  const copy=plays?`Seu arquivo tem <b>${fmt(unique)}</b> artistas e <b>${fmt(plays)}</b> scrobbles. ${ratio>=25?"Você deixa muitas primeiras escutas abertas como portas — há bastante terreno para resgate.":"Você tende a voltar para o que já conhece; o seu arquivo tem uma espinha dorsal mais concentrada."} ${top.length?`Seu núcleo passa por ${top.slice(0,3).map(x=>x.name).join(", ")}.`:""}`:"Sincronize seu histórico para gerar seu retrato.";
+  $("profileCopy").innerHTML=copy;
+  $("profilePills").innerHTML=[`núcleo ${top.length}`,`1 play ${ratio}%`,`arquivo ${fmt(unique)}`,`escuta ${fmt(plays)}`].map(x=>`<span class="pill">${esc(x)}</span>`).join("");
+}
+async function renderHeatmap(){
+  const s=await all("scrobbles"),todayDate=new Date(),weeks=[];
   for(let i=52;i>=0;i--){
-    const end=new Date(t);end.setDate(t.getDate()-i*7);
+    const end=new Date(todayDate);end.setDate(todayDate.getDate()-i*7);
     const start=new Date(end);start.setDate(end.getDate()-6);
-    weeks.push(scrobbles.filter(x=>{const d=x.timestamp*1000;return d>=start.getTime()&&d<=end.getTime()}).length);
+    const count=s.filter(x=>{const d=x.timestamp*1000;return d>=start.getTime()&&d<=end.getTime()}).length;
+    weeks.push(count);
   }
   const max=Math.max(1,...weeks);
-  $("heatmap").innerHTML=weeks.map((v,i)=>'<span class="heat-cell '+(v>max*.66?"hot":v>max*.3?"mid":"")+'" style="height:'+Math.max(4,Math.round(v/max*66))+"px;animation-delay:"+(i*7)+'ms" title="'+v+' scrobbles"></span>').join("");
-
-  /* há um ano */
-  const target=new Date();target.setFullYear(target.getFullYear()-1);
-  const day=Math.floor(target.getTime()/86400000);
-  const win=scrobbles.filter(x=>x.timestamp>=(day-2)*86400&&x.timestamp<=(day+2)*86400);
-  const counts={};win.forEach(x=>counts[x.artist]=(counts[x.artist]||0)+1);
-  const rank=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  $("oneYear").innerHTML=rank.length
-    ?'<div class="rows">'+rank.map((r,i)=>'<div class="row" style="animation-delay:'+(i*50)+'ms"><div><div class="row-name clickable" data-artist="'+esc(r[0])+'">'+esc(r[0])+'</div><div class="row-sub">nesta época do ano passado</div></div><div class="row-n">'+r[1]+"</div></div>").join("")+"</div>"
-    :'<div class="empty"><strong>nada guardado deste período.</strong>Talvez seja aí que mora a lacuna.</div>';
-
-  const sess=await sessions();
-  $("timeline").innerHTML=sess.length?sess.map(x=>'<div class="tl"><div class="tl-date">'+new Date(x.start*1000).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})+"<br>"+new Date(x.start*1000).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+'</div><div><div class="tl-artists">'+[...x.artists].slice(0,9).map(a=>"<b>"+esc(a)+"</b>").join(" · ")+'</div><div class="dim" style="font-size:12.5px;margin-top:5px">'+x.tracks.length+" faixas · "+Math.round((x.last-x.start)/60)+" min</div></div></div>").join(""):'<div class="empty"><strong>sem sessões.</strong>Seu arquivo ainda está vazio.</div>';
-
-  const round=lastRound.headline?[lastRound.headline,...(lastRound.list||[]).slice(0,2)]:[];
-  $("homeRadar").innerHTML=round.length?round.map((x,i)=>discCard(x,i)).join(""):'<div class="empty"><strong>nenhuma rodada ainda.</strong>Abra o Radar para gerar a leva de hoje.</div>';
+  $("heatmap").innerHTML=weeks.map(v=>`<span class="heat-cell ${v>max*.7?"hot":v>max*.35?"mid":""}" style="height:${Math.max(7,Math.round((v/max)*64))}px" title="${v} scrobbles"></span>`).join("");
 }
-async function renderRescue(){
-  const a=await all("artists");
-  const list=a.filter(x=>x.plays>=1&&x.plays<=4).sort((x,y)=>x.lastPlayed-y.lastPlayed);
-  $("rescueCount").textContent=fmt(list.length)+" artistas nessa condição";
-  $("rescueList").innerHTML=list.length?'<div class="rows">'+list.slice(0,250).map((x,i)=>'<div class="row" style="animation-delay:'+Math.min(i*22,600)+'ms"><div><div class="row-name clickable" data-artist="'+esc(x.name)+'">'+esc(x.name)+'</div><div class="row-sub">'+x.plays+(x.plays===1?" play":" plays")+" · sumiu faz "+fmt(days(x.lastPlayed))+' dias</div></div><div class="row-n">'+fmt(days(x.lastPlayed))+"d</div></div>").join("")+"</div>":'<div class="empty"><strong>nenhuma ponta solta.</strong>Seu arquivo não deixou ninguém pra trás.</div>';
-  const tr=(await all("tracks")).filter(x=>x.plays===1).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,40);
-  $("onePlayTracks").innerHTML=tr.length?'<div class="rows">'+tr.map(x=>'<div class="row"><div><div class="row-name">'+esc(x.track)+'</div><div class="row-sub">'+esc(x.artist)+(x.album?" · "+esc(x.album):"")+'</div></div><div class="row-n">1</div></div>').join("")+"</div>":'<div class="empty"><strong>nada aqui.</strong></div>';
+async function renderTimeline(){
+  const sess=await sessions(),box=$("timeline");
+  box.innerHTML=sess.map(x=>`<div class="timeline-row"><div class="timeline-date">${new Date(x.start*1000).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})}<br>${new Date(x.start*1000).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</div><div><div class="timeline-artists">${[...x.artists].slice(0,10).map(a=>`<span>${esc(a)}</span>`).join(" · ")}</div><div class="muted" style="margin-top:6px">${x.tracks.length} faixas · ${Math.round((x.last-x.start)/60)} min</div></div></div>`).join("")||`<div class="empty"><strong>Sem sessões.</strong>Seu arquivo ainda está vazio.</div>`;
 }
-async function renderArchive(){
-  const q=norm($("archiveSearch").value);let rows=[],html="";
-  const R=(name,sub,n,artist)=>'<div class="row"><div><div class="row-name'+(artist?" clickable":"")+'"'+(artist?' data-artist="'+esc(artist)+'"':"")+">"+esc(name)+'</div><div class="row-sub">'+esc(sub)+'</div></div><div class="row-n">'+n+"</div></div>";
-  if(state.archiveMode==="artists"){
-    rows=(await all("artists")).filter(x=>!q||norm(x.name).includes(q)).sort((a,b)=>b.plays-a.plays);
-    html=rows.slice(0,600).map(x=>R(x.name,"última vez "+new Date(x.lastPlayed*1000).toLocaleDateString("pt-BR"),fmt(x.plays),x.name)).join("");
-  }else if(state.archiveMode==="albums"){
-    rows=(await all("albums")).filter(x=>!q||norm(x.album).includes(q)||norm(x.artist).includes(q)).sort((a,b)=>b.plays-a.plays);
-    html=rows.slice(0,600).map(x=>R(x.album,x.artist,fmt(x.plays),x.artist)).join("");
-  }else if(state.archiveMode==="tracks"){
-    rows=(await all("tracks")).filter(x=>!q||norm(x.track).includes(q)||norm(x.artist).includes(q)).sort((a,b)=>b.plays-a.plays);
-    html=rows.slice(0,600).map(x=>R(x.track,x.artist+(x.album?" · "+x.album:""),fmt(x.plays),x.artist)).join("");
-  }else{
-    rows=(await all("artists")).filter(x=>!q||norm(x.name).includes(q)).sort((a,b)=>b.firstPlayed-a.firstPlayed);
-    html=rows.slice(0,600).map(x=>R(x.name,"entrou em "+new Date(x.firstPlayed*1000).toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"}),fmt(x.plays),x.name)).join("");
-  }
-  $("archiveContent").innerHTML=html?'<div class="rows">'+html+"</div>":'<div class="empty"><strong>nada encontrado.</strong></div>';
-  $("archiveNotice").textContent=rows.length>600?"mostrando 600 de "+fmt(rows.length)+". use a busca para chegar no resto.":"";
+async function renderOneYear(){
+  const arr=await oneYearAgo();
+  $("oneYear").innerHTML=arr.length?`<div class="story"><div class="story-grid"><div class="story-index">−1 ANO</div><div><div class="story-name">${esc(arr[0].artist)}</div><div class="story-copy">${esc(arr[0].track)} e mais ${Math.max(0,arr.length-1)} escutas no entorno desta data.</div></div><div class="story-meta">${arr.length} scrobbles</div></div></div>`:`<div class="empty"><strong>Nada preservado deste período.</strong>Talvez seja aí que mora a lacuna.</div>`;
 }
 
-/* =========================================================
-   FICHA DO ARTISTA (Last.fm + Spotify opcional + prévia Deezer)
-   ========================================================= */
-function deezerJSONP(query){
-  return new Promise(resolve=>{
-    const cb="dz_"+Math.random().toString(36).slice(2);
-    const s=document.createElement("script");
-    const done=v=>{try{delete window[cb]}catch{}s.remove();clearTimeout(timer);resolve(v)};
-    const timer=setTimeout(()=>done(null),4500);
-    window[cb]=d=>done(d);
-    s.src="https://api.deezer.com/search?q="+encodeURIComponent(query)+"&limit=1&output=jsonp&callback="+cb;
-    s.onerror=()=>done(null);
-    document.head.appendChild(s);
-  });
-}
-async function renderPreview(name){
-  const box=$("artistPreview");box.innerHTML="";
-  const d=await deezerJSONP('artist:"'+name+'"');
-  const track=d?.data?.[0];
-  if(!track?.preview)return;
-  box.innerHTML='<div class="dim" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:8px">prévia · '+esc(track.title||"")+'</div><audio controls preload="none" style="width:100%" src="'+esc(track.preview)+'"></audio>';
-}
-async function openArtist(name){
-  $("artistModal").classList.add("show");
-  $("artistName").textContent=name;
-  $("artistHeroArt").innerHTML="";$("artistTags").innerHTML="";$("artistPreview").innerHTML="";
-  $("artistBio").textContent="buscando contexto...";
-  $("artistTracks").innerHTML='<div class="shimmer"></div>';
-  $("artistSpotify").href="https://open.spotify.com/search/"+encodeURIComponent(name);
 
-  const [info,tracks,sugg]=await Promise.all([infoOf(name),all("tracks"),all("suggestions")]);
-  $("artistBio").textContent=info.bio||"sem biografia curta disponível.";
-  $("artistTags").innerHTML=info.tags.map(t=>'<span class="tg">'+esc(t)+"</span>").join("");
-  const mine=tracks.filter(x=>norm(x.artist)===norm(name)).sort((a,b)=>b.plays-a.plays).slice(0,12);
-  $("artistTracks").innerHTML=mine.length?'<div class="rows">'+mine.map(t=>'<div class="row"><div><div class="row-name">'+esc(t.track)+'</div><div class="row-sub">'+esc(t.album||"")+'</div></div><div class="row-n">'+fmt(t.plays)+"</div></div>").join("")+"</div>":'<p class="dim">você ainda não ouviu esse artista.</p>';
-  const s=sugg.find(x=>norm(x.name)===norm(name))||lastRound.list?.find(x=>norm(x.name)===norm(name))||(lastRound.headline&&norm(lastRound.headline.name)===norm(name)?lastRound.headline:null);
-  $("artistBridge").textContent=s?.seeds?.length?"Chegou até você pelo cruzamento de "+s.seeds.slice(0,3).join(", ")+".":"Nenhuma ponte registrada para este artista.";
-  renderPreview(name);
-  if(state.spotify?.accessToken){
+/* ----- DISCOVERY LAB ----- */
+const radarConfig={mode:"discover",match:82,risk:28,nostalgia:24,diversity:55,seedMode:"blend"};
+
+async function populateRadarSeeds(){
+  const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays);
+  const options=artists.slice(0,500).map(x=>`<option value="${esc(x.name)}">${esc(x.name)}</option>`).join("");
+  $("seedArtist").innerHTML='<option value="">Escolha um artista...</option>'+options;
+  ["mixA","mixB","mixC"].forEach((id,i)=>$(id).innerHTML=`<option value="">artista ${i+1}</option>`+options);
+  const tracks=(await all("tracks")).sort((a,b)=>b.plays-a.plays).slice(0,500);
+  $("seedTrack").innerHTML='<option value="">Escolha uma faixa...</option>'+tracks.map(x=>`<option value="${esc(x.key)}">${esc(x.track)} — ${esc(x.artist)}</option>`).join("");
+}
+
+function setRadarControlLabels(){
+  $("matchValue").textContent=radarConfig.match;$("riskValue").textContent=radarConfig.risk;$("nostalgiaValue").textContent=radarConfig.nostalgia;$("diversityValue").textContent=radarConfig.diversity;
+  const d={discover:"match alto, descoberta equilibrada",rescue:"prioriza o seu passado e suas pontas soltas",detour:"pontes mais estranhas sem perder o fio",cross:"interseções entre regiões diferentes"};
+  $("radarControlSummary").textContent=d[radarConfig.mode];
+}
+
+async function computeDiscoveryLab(){
+  const artists=await all("artists"),tracks=await all("tracks"),suggestions=await all("suggestions");
+  const map=new Map(artists.map(x=>[x.key,x])),recentCut=now()-14*86400;
+  const recent=artists.filter(x=>x.lastPlayed>=recentCut).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,8);
+  const pillars=[...artists].sort((a,b)=>b.plays-a.plays).slice(0,8);
+  let seeds=[...recent,...pillars];
+  if(radarConfig.seedMode==="recent")seeds=recent;
+  if(radarConfig.seedMode==="pillars")seeds=pillars;
+  if(radarConfig.seedMode==="past")seeds=[...artists].sort((a,b)=>a.lastPlayed-b.lastPlayed).slice(0,8);
+  if(radarConfig.seedMode==="artist"&&$("seedArtist").value)seeds=[artists.find(x=>norm(x.name)===norm($("seedArtist").value))].filter(Boolean);
+  if(radarConfig.seedMode==="track"&&$("seedTrack").value){const tr=tracks.find(x=>x.key===$("seedTrack").value);if(tr)seeds=[map.get(norm(tr.artist))||{name:tr.artist,key:norm(tr.artist),plays:tr.plays,lastPlayed:tr.lastPlayed}]}
+  seeds=[...new Map(seeds.filter(Boolean).map(x=>[x.key,x])).values()];
+  if(!seeds.length)return[];
+
+  const candidates=new Map();
+  for(const seed of seeds.slice(0,10)){
     try{
-      const sp=await spotifyApi("/search?type=artist&limit=1&q="+encodeURIComponent(name));
-      const img=sp?.artists?.items?.[0]?.images?.[0]?.url;
-      if(img)$("artistHeroArt").innerHTML='<img class="hero-art" src="'+esc(img)+'" alt="">';
+      const arr=await similarCached(seed.name,20);
+      for(const item of arr){
+        const k=norm(item.name);if(k===norm(seed.name))continue;
+        const c=candidates.get(k)||{name:item.name,sims:[],seeds:[]};
+        c.sims.push(item.match);if(!c.seeds.includes(seed.name))c.seeds.push(seed.name);candidates.set(k,c);
+      }
     }catch{}
   }
+
+  const results=[];
+  for(const c of candidates.values()){
+    const h=map.get(norm(c.name)),plays=h?.plays||0;
+    const category=h?(plays>=1&&plays<=4?"loose":null):"new";if(!category)continue;
+    const sim=Math.max(...c.sims),avg=c.sims.reduce((a,b)=>a+b,0)/c.sims.length,diversity=Math.min(1,c.seeds.length/4);
+    const absence=h?.lastPlayed?Math.min(1,(now()-h.lastPlayed)/(365*86400)):1;
+    const novelty=h?Math.min(1,(5-plays)/5):1;
+    const mode=radarConfig.mode;
+    let score;
+    if(mode==="detour")score=sim*.35+diversity*.25+(1-sim)*.3+(radarConfig.risk/100)*.1;
+    else if(mode==="cross")score=avg*.40+diversity*.40+(radarConfig.diversity/100)*.20;
+    else if(mode==="rescue")score=sim*.45+absence*.35+novelty*.20;
+    else score=sim*.65+diversity*.20+(radarConfig.risk/100)*.05+((radarConfig.nostalgia/100)*absence*.10);
+    const risk=Math.min(100,Math.round((1-sim)*55+novelty*25+diversity*20));
+    const potential=Math.min(1,sim*.45+novelty*.25+diversity*.2+absence*.1);
+    results.push({key:c.name.toLowerCase(),name:c.name,category,plays,h,similarity:sim,average:avg,diversity,seeds:c.seeds,score,potential,risk,absence});
+  }
+
+  const blocked=new Set(suggestions.filter(x=>["known","rejected"].includes(x.status)).map(x=>norm(x.name)));
+  const cooldown=new Set(suggestions.filter(x=>x.cooldownUntil>Date.now()).map(x=>norm(x.name)));
+  return results.filter(x=>!blocked.has(norm(x.name))&&!cooldown.has(norm(x.name))).sort((a,b)=>b.score-a.score);
 }
 
-/* =========================================================
-   ROTA ENTRE DOIS ARTISTAS (busca em largura no grafo)
-   ========================================================= */
-async function findRoute(startName,endName,maxSteps=5){
-  if(!startName||!endName)throw new Error("escolha partida e chegada.");
-  if(norm(startName)===norm(endName))return{nodes:[startName]};
-  const target=norm(endName),visited=new Set([norm(startName)]);
-  let frontier=[{name:startName,path:[startName]}];
-  for(let depth=0;depth<maxSteps;depth++){
-    const next=[];
-    for(const node of frontier.slice(0,6)){
-      const sims=await similarOf(node.name,14);
-      for(const s of sims){
-        const k=norm(s.name);
-        if(k===target)return{nodes:[...node.path,s.name]};
-        if(visited.has(k))continue;
-        visited.add(k);next.push({name:s.name,path:[...node.path,s.name]});
+function labCard(x,i,label){
+  const why=x.seeds.length>=3?`apareceu por ${x.seeds.length} caminhos: ${x.seeds.slice(0,4).map(esc).join(", ")}.`:`apareceu pela ponte com ${x.seeds.slice(0,3).map(esc).join(", ")}.`;
+  const absent=x.h?.lastPlayed?`última escuta há ${Math.max(1,Math.floor((now()-x.h.lastPlayed)/86400))} dias.`:"zero plays no arquivo.";
+  return `<article class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="badge ${x.category==="loose"?"loose":"new"}" style="margin-top:5px">${esc(label)}</div><div class="lab-copy">${why} ${x.plays?`Você já ouviu ${x.plays} vezes; ${absent}`:absent}</div><div class="metric-line"><span>match</span><div class="bar"><i style="width:${Math.round(x.similarity*100)}%"></i></div><span>${Math.round(x.similarity*100)}</span></div><div class="story-actions"><button class="link-btn lab-action primary" data-name="${esc(x.name)}" data-action="waiting">quero ouvir</button><button class="link-btn lab-action" data-name="${esc(x.name)}" data-action="rejected">não é pra mim</button><button class="link-btn artist-open" data-artist="${esc(x.name)}">abrir ficha</button></div></div><div class="lab-metrics">${Math.round(x.potential*100)} potencial<br>${x.risk} risco<br>${x.seeds.length} pontes</div></div></article>`;
+}
+
+async function renderDiscoveryLab(){
+  const data=await computeDiscoveryLab();
+  const should=data.filter(x=>x.category==="new").sort((a,b)=>b.potential-a.potential).slice(0,4);
+  const near=data.filter(x=>x.category==="loose").sort((a,b)=>(b.similarity*.7+b.absence*.3)-(a.similarity*.7+a.absence*.3)).slice(0,4);
+  const risk=data.filter(x=>x.category==="new").sort((a,b)=>b.risk-a.risk).slice(0,4);
+  $("shouldKnow").innerHTML=should.length?should.map((x,i)=>labCard(x,i,"você deveria já ter ouvido")).join(""):`<div class="empty"><strong>nenhum buraco evidente.</strong>O Radar não vai inventar uma dívida.</div>`;
+  $("nearFavorite").innerHTML=near.length?near.map((x,i)=>labCard(x,i,"quase favorito")).join(""):`<div class="empty"><strong>nenhum quase favorito.</strong>Talvez seja hora de resgatar alguém.</div>`;
+  $("riskPicks").innerHTML=risk.length?risk.map((x,i)=>labCard(x,i,"risco")).join(""):`<div class="empty"><strong>risco demais.</strong>O mapa não encontrou uma boa aposta.</div>`;
+
+  const allS=await all("suggestions"),heard=allS.filter(x=>x.status==="heard").length,rejected=allS.filter(x=>x.status==="rejected").length,waiting=allS.filter(x=>x.status==="waiting").length,dec=heard+rejected;
+  $("radarStats").innerHTML=[[dec?Math.round(heard/dec*100)+"%":"—","taxa de acerto"],[fmt(heard),"descobertas ouvidas"],[fmt(waiting),"na fila"],[fmt(rejected),"rejeitadas"]].map(x=>`<div class="dash-item"><div class="dash-value">${x[0]}</div><div class="dash-label">${x[1]}</div></div>`).join("");
+  await bindLabActions();await renderWaitingRail();
+}
+
+async function bindLabActions(){
+  document.querySelectorAll(".lab-action").forEach(btn=>btn.onclick=async()=>{
+    const key=norm(btn.dataset.name),list=await all("suggestions");let s=list.find(x=>norm(x.name)===key);
+    if(!s)s={key,name:btn.dataset.name,status:"alive",createdAt:Date.now(),seeds:[]};
+    s.status=btn.dataset.action;s.decisionAt=Date.now();if(s.status==="waiting")s.waitingAt=Date.now();if(s.status==="rejected")s.rejectedAt=Date.now();
+    await put("suggestions",s);toast(s.status==="waiting"?"guardado na fila.":"marcado.");await renderDiscoveryLab();await buildDiscoveryChains();
+  });
+  document.querySelectorAll(".artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+
+async function renderWaitingRail(){
+  const waiting=(await all("suggestions")).filter(x=>x.status==="waiting").sort((a,b)=>(b.waitingAt||0)-(a.waitingAt||0));
+  $("waitingRail").innerHTML=waiting.length?waiting.map((x,i)=>`<div class="wait-row"><div><div class="wait-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="wait-meta">entrou na fila ${new Date(x.waitingAt||Date.now()).toLocaleDateString("pt-BR")}</div></div><div class="plays">${String(i+1).padStart(2,"0")}</div></div>`).join(""):`<div class="empty"><strong>fila vazia.</strong>Escolha “quero ouvir” para alimentar sua próxima descoberta.</div>`;
+  document.querySelectorAll("#waitingRail .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+
+async function runMix(){
+  const names=[$("mixA").value,$("mixB").value,$("mixC").value].filter(Boolean);if(names.length<2){toast("Escolha pelo menos dois artistas.");return}
+  const artists=new Map((await all("artists")).map(x=>[x.key,x])),candidates=new Map();
+  for(const seed of names){
+    try{
+      const arr=await similarCached(seed,24);
+      for(const item of arr){
+        const k=norm(item.name);if(names.some(n=>norm(n)===k))continue;
+        const c=candidates.get(k)||{name:item.name,matches:[],from:[]};c.matches.push(item.match);if(!c.from.includes(seed))c.from.push(seed);candidates.set(k,c);
+      }
+    }catch{}
+  }
+  const results=[...candidates.values()].map(x=>{const avg=x.matches.reduce((a,b)=>a+b,0)/x.matches.length,intersection=x.from.length/names.length,personal=artists.get(norm(x.name))?.plays||0;return{...x,avg,intersection,personal,score:avg*.65+intersection*.35}}).sort((a,b)=>b.score-a.score).slice(0,5);
+  $("mixResult").innerHTML=results.length?results.map((x,i)=>`<div class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.name)}">${esc(x.name)}</div><div class="lab-copy">vive entre ${x.from.map(esc).join(" + ")} · match médio ${Math.round(x.avg*100)} · aparece em ${x.from.length}/${names.length} vizinhanças</div></div><div class="lab-metrics">${Math.round(x.score*100)} ponte</div></div></div>`).join(""):`<div class="empty"><strong>nenhuma interseção.</strong>Tente artistas menos distantes.</div>`;
+  document.querySelectorAll("#mixResult .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+
+async function discoverHiddenBridges(){
+  const artists=(await all("artists")).sort((a,b)=>b.plays-a.plays).slice(0,10),direct=new Set(artists.map(x=>x.key)),bridges=new Map();
+  for(const a of artists){
+    let one=[];try{one=await similarCached(a.name,12)}catch{}
+    for(const b of one){
+      if(direct.has(norm(b.name)))continue;
+      let two=[];try{two=await similarCached(b.name,12)}catch{}
+      for(const c of two){
+        if(!direct.has(norm(c.name)))continue;
+        const k=norm(b.name),score=(b.match+c.match)/2,old=bridges.get(k);
+        if(!old||score>old.score)bridges.set(k,{middle:b.name,from:a.name,to:c.name,score});
       }
     }
-    if(!next.length)break;
-    frontier=next;
   }
-  return null;
-}
-function renderRoute(r){
-  if(!r){$("routeResult").innerHTML='<div class="empty"><strong>sem caminho.</strong>Esses dois vivem longe demais. Tente um ponto intermediário.</div>';return}
-  $("routeResult").innerHTML='<div class="route">'+r.nodes.map((n,i)=>(i?'<span class="arrow">→</span>':"")+'<span class="node'+(i===0||i===r.nodes.length-1?" end":"")+'" data-artist="'+esc(n)+'" style="animation-delay:'+(i*90)+'ms">'+esc(n)+"</span>").join("")+"</div>";
+  const list=[...bridges.values()].sort((a,b)=>b.score-a.score).slice(0,8);
+  $("bridgeResult").innerHTML=list.length?list.map((x,i)=>`<div class="lab-card"><div class="lab-grid"><div class="lab-index">${String(i+1).padStart(2,"0")}</div><div><div class="lab-name artist-open" data-artist="${esc(x.middle)}">${esc(x.middle)}</div><div class="lab-copy">${esc(x.from)} → este artista → ${esc(x.to)}</div></div><div class="lab-metrics">${Math.round(x.score*100)} ponte</div></div></div>`).join(""):`<div class="empty"><strong>nenhuma ponte escondida.</strong></div>`;
+  document.querySelectorAll("#bridgeResult .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
 }
 
-/* =========================================================
-   SPOTIFY (opcional) — PKCE com renovação de token
-   ========================================================= */
-const rnd=(n=64)=>{const c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~",a=new Uint8Array(n);crypto.getRandomValues(a);return[...a].map(v=>c[v%c.length]).join("")};
-const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+async function buildDiscoveryChains(){
+  const rows=(await all("suggestions")).filter(x=>x.status==="heard"||x.status==="waiting").filter(x=>x.seeds?.length).slice(-8).reverse();
+  $("discoveryChains").innerHTML=rows.length?rows.map(x=>`<div class="chain"><span class="chain-node">${esc(x.seeds[0])}</span>${x.seeds.slice(1,3).map(v=>`<span class="chain-arrow">→</span><span class="chain-node">${esc(v)}</span>`).join("")}<span class="chain-arrow">→</span><span class="chain-node" style="color:var(--accent)">${esc(x.name)}</span></div>`).join(""):`<div class="empty"><strong>nenhuma cadeia ainda.</strong>Quando você ouvir uma descoberta, ela começa a aparecer aqui.</div>`;
+}
+
+/* ----- UI rendering ----- */
+async function recentItems(shuffle=false){
+  const s=(await all("scrobbles")).sort((a,b)=>b.timestamp-a.timestamp),items=s.slice(0,10);
+  if(shuffle)for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]]}
+  return items;
+}
+function recentCard(x){
+  const href="https://open.spotify.com/search/"+encodeURIComponent(x.artist+" "+x.track),time=new Date(x.timestamp*1000);
+  return `<a class="recent-card" href="${href}" target="_blank" rel="noopener">
+    ${x.image?`<img src="${esc(x.image)}" alt="" loading="lazy">`:`<div class="recent-card-fallback">♪</div>`}
+    <div class="recent-card-shade"></div>
+    <div class="recent-card-info"><div class="recent-card-track">${esc(x.track)}</div><div class="recent-card-artist">${esc(x.artist)}</div><div class="recent-card-time">${time.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})} · ${time.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</div></div>
+  </a>`;
+}
+async function renderRecentCarousel(shuffle=false){
+  const items=await recentItems(shuffle);
+  if(!items.length){$("recentCarouselTrack").innerHTML="";$("recentCarouselStatus").textContent="seu diário ainda não tem escutas recentes.";return}
+  $("recentCarouselTrack").innerHTML=items.map(recentCard).join("")+items.map(recentCard).join("");
+  $("recentCarouselTrack").style.animationDuration=Math.max(24,Math.min(38,items.length*3.2))+"s";
+  $("recentCarouselStatus").textContent=`${items.length} escutas recentes · clique em uma capa para abrir no Spotify`;
+}
+function storyHTML(s,i){
+  const loose=s.category==="loose";
+  const why=s.seeds.length>1?`apareceu porque conversa com <b>${s.seeds.slice(0,3).map(esc).join("</b>, <b>")}</b>.`:`apareceu porque conversa com <b>${esc(s.seeds[0]||"sua escuta")}</b>.`;
+  return `<article class="story" style="animation:rise .34s ease ${i*60}ms both"><div class="story-grid"><div class="story-index">${String(i+1).padStart(2,"0")}</div><div><div class="story-name artist-open" data-artist="${esc(s.name)}">${esc(s.name)}</div><div style="display:flex;gap:12px;align-items:center;margin-top:5px"><span class="badge ${loose?"loose":"new"}">${loose?"ponta solta":"território novo"}</span><span class="story-meta">${s.plays?fmt(s.plays)+" plays":"0 plays"}</span></div><div class="story-copy">${why}</div><div class="score-row"><span>conexão</span><div class="score-bar"><div class="score-fill" style="width:${Math.round(s.score)}%"></div></div><span>${Math.round(s.score)}</span></div><div class="story-actions"><button class="link-btn action" data-key="${esc(s.key)}" data-action="known">já conheço</button><button class="link-btn action" data-key="${esc(s.key)}" data-action="rejected">não é pra mim</button><button class="link-btn action primary" data-key="${esc(s.key)}" data-action="waiting">quero ouvir</button><a class="link-btn" target="_blank" rel="noopener" href="https://open.spotify.com/search/${encodeURIComponent(s.name)}">spotify ↗</a></div></div></div></article>`;
+}
+async function bindStories(){
+  document.querySelectorAll(".action").forEach(b=>b.onclick=async()=>{
+    const s=await get("suggestions",b.dataset.key);if(!s)return;
+    s.status=b.dataset.action;s.decisionAt=Date.now();if(s.status==="waiting")s.waitingAt=Date.now();
+    await put("suggestions",s);await renderRadar();toast("decisão registrada.");
+  });
+  document.querySelectorAll(".artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+async function renderRadar(){
+  const allS=await all("suggestions"),live=allS.filter(x=>x.status==="alive"),waiting=allS.filter(x=>x.status==="waiting");
+  let list=state.radarFilter==="waiting"?waiting:state.radarFilter==="all"?live:live.filter(x=>x.category===state.radarFilter);
+  $("radarList").innerHTML=list.length?list.map(storyHTML).join(""):`<div class="empty"><strong>nada forte o bastante.</strong>o radar prefere silêncio a afinidade fraca.</div>`;
+  await bindStories();
+  $("homeRadar").innerHTML=live.length?live.slice(0,6).map(storyHTML).join(""):`<div class="empty"><strong>nenhuma rodada ainda.</strong>conecte o Last.fm para começar.</div>`;
+  await bindStories();
+  $("radarDate").textContent=await meta("radarDate")||"nenhuma rodada";
+}
+async function renderHome(){
+  const sc=(await all("scrobbles")).sort((a,b)=>b.timestamp-a.timestamp),artists=await all("artists");
+  animateSafe($("totalPlays"),sc.length);$("totalArtists").textContent=fmt(artists.length)+" artistas";
+  $("homeState").textContent=state.user?`last.fm / ${state.user}`:"aguardando Last.fm";
+  await renderNowPlaying();
+  await renderRecentCarousel();
+  const p=await monthlyPortrait();animatedNumber($("monthNew"),p.newArtists);animatedNumber($("monthScrobbles"),p.scrobbles);$("monthTop").textContent=p.top;$("monthTopPlays").textContent=p.top==="—"?"maior presença do mês":`${fmt(p.topPlays)} plays no mês`;
+  await renderOneYear();await renderProfile();await renderHeatmap();await renderTimeline();
+}
+function animateSafe(el,n){animatedNumber(el,n)}
+async function renderRescue(){
+  const a=await all("artists"),t=now(),list=a.filter(x=>x.plays>=1&&x.plays<=4).sort((x,y)=>x.lastPlayed-y.lastPlayed);
+  $("rescueCount").textContent=`${fmt(list.length)} artistas na categoria`;
+  $("rescueList").innerHTML=list.length?list.slice(0,300).map((x,i)=>{const d=Math.max(1,Math.floor((t-x.lastPlayed)/86400));return `<div class="archive-row"><div><div class="archive-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="archive-sub">${x.plays} ${x.plays===1?"play":"plays"} · há ${fmt(d)} dias</div></div><div class="plays">${d}d</div></div>`}).join(""):`<div class="empty"><strong>nenhuma ponta solta.</strong>seu arquivo não deixou nada para trás.</div>`;
+  const tracks=(await all("tracks")).filter(x=>x.plays===1).sort((a,b)=>b.lastPlayed-a.lastPlayed).slice(0,50);
+  $("onePlayTracks").innerHTML=tracks.length?tracks.map(x=>`<div class="archive-row"><div><div class="archive-name">${esc(x.track)}</div><div class="archive-sub">${esc(x.artist)}${x.album?" · "+esc(x.album):""}</div></div><div class="plays">1</div></div>`).join(""):`<div class="empty"><strong>nada aqui.</strong></div>`;
+  document.querySelectorAll("#rescueList .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+async function renderArchive(){
+  const q=norm($("archiveSearch").value);let rows=[];
+  if(state.archiveMode==="artists"){
+    rows=(await all("artists")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.name).includes(q));
+    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,1000).map(x=>`<div class="archive-row"><div><div class="archive-name artist-open" data-artist="${esc(x.name)}" style="cursor:pointer">${esc(x.name)}</div><div class="archive-sub">última vez ${new Date(x.lastPlayed*1000).toLocaleDateString("pt-BR")}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;
+    $("archiveNotice").textContent=rows.length>1000?"Mostrando 1.000. Use a busca para encontrar o restante.":"";
+  }else if(state.archiveMode==="albums"){
+    rows=(await all("albums")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.album).includes(q)||norm(x.artist).includes(q));
+    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,1000).map(x=>`<div class="archive-row"><div><div class="archive-name">${esc(x.album)}</div><div class="archive-sub">${esc(x.artist)}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;$("archiveNotice").textContent=rows.length>1000?"Mostrando 1.000. Use a busca para encontrar o restante.":"";
+  }else if(state.archiveMode==="tracks"){
+    rows=(await all("tracks")).sort((a,b)=>b.plays-a.plays).filter(x=>!q||norm(x.track).includes(q)||norm(x.artist).includes(q)||norm(x.album).includes(q));
+    $("archiveContent").innerHTML=`<div class="archive">${rows.slice(0,1000).map(x=>`<div class="archive-row"><div><div class="archive-name">${esc(x.track)}</div><div class="archive-sub">${esc(x.artist)}${x.album?" · "+esc(x.album):""}</div></div><div class="plays">${fmt(x.plays)}</div></div>`).join("")||`<div class="empty"><strong>nada encontrado.</strong></div>`}</div>`;$("archiveNotice").textContent=rows.length>1000?"Mostrando 1.000. Use a busca para encontrar o restante.":"";
+  }else{
+    const sess=await sessions();
+    $("archiveContent").innerHTML=sess.map(x=>`<div class="timeline-row"><div class="timeline-date">${new Date(x.start*1000).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})}</div><div><div class="timeline-artists">${[...x.artists].slice(0,12).map(a=>`<span>${esc(a)}</span>`).join(" · ")}</div><div class="muted" style="margin-top:6px">${x.tracks.length} faixas · ${Math.round((x.last-x.start)/60)} min</div></div></div>`).join("")||`<div class="empty"><strong>sem sessões.</strong></div>`;
+    $("archiveNotice").textContent="";
+  }
+  document.querySelectorAll("#archiveContent .artist-open").forEach(el=>el.onclick=()=>openArtist(el.dataset.artist));
+}
+function renderChallenges(){
+  const challenges=[
+    ["fora da bolha","ouça um artista de território novo esta semana.","Abra o Radar e leve alguém para a fila de espera."],
+    ["ressurreição","volte para 3 pontas soltas.","O Resgate já sabe quem está esperando."],
+    ["distância","encontre um caminho de pelo menos 4 passos.","Rota → dois artistas → aumente o desafio."],
+    ["álbum inacabado","complete um disco que você parou no meio.","O Arquivo mostra os álbuns; a segunda metade é sua."]
+  ];
+  $("challenges").innerHTML=challenges.map((c,i)=>`<div class="challenge"><div><strong>${c[0]}</strong><p>${c[1]}</p><p>${c[2]}</p></div><div class="plays">${String(i+1).padStart(2,"0")}</div></div>`).join("");
+}
+
+/* ----- artist sheet + Spotify visual enrichment ----- */
+function artistImageURL(){return null}
+let nowPlayingState={item:null,progressMs:0,durationMs:0,isPlaying:false,lastPoll:0};
+async function refreshSpotifyToken(){
+  if(!state.spotify?.refreshToken)return false;
+  const clientId=state.spotify.clientId||SPOTIFY_CLIENT_ID;
+  const body=new URLSearchParams({grant_type:'refresh_token',refresh_token:state.spotify.refreshToken,client_id:clientId});
+  const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+  const d=await r.json();
+  if(!r.ok){state.spotify=null;await meta('spotify',null);if(document.getElementById('spotifyStatus'))document.getElementById('spotifyStatus').textContent='sessão expirada. reconecte o Spotify.';return false;}
+  state.spotify.accessToken=d.access_token;state.spotify.expiresAt=Date.now()+Number(d.expires_in||3600)*1000;
+  if(d.refresh_token)state.spotify.refreshToken=d.refresh_token;
+  await meta('spotify',state.spotify);return true;
+}
+async function ensureSpotifyToken(){
+  if(!state.spotify?.accessToken)return false;
+  if(Date.now()<Number(state.spotify.expiresAt||0)-60000)return true;
+  return refreshSpotifyToken();
+}
+async function spotifyApi(path,options={}){
+  if(!await ensureSpotifyToken())return null;
+  const call=()=>fetch('https://api.spotify.com/v1'+path,{...options,headers:{...(options.headers||{}),Authorization:'Bearer '+state.spotify.accessToken}});
+  let r=await call();if(r.status===401&&await refreshSpotifyToken())r=await call();
+  if(r.status===204)return null;if(!r.ok)throw new Error('Spotify HTTP '+r.status);return r.json();
+}
+function fmtMs(ms){const t=Math.max(0,Math.floor(ms/1000));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
+function clearNowPlaying(message){
+  $('nowPlayingHeroEmpty').hidden=false;$('nowPlayingHeroLive').hidden=true;
+  $('nowPlayingHeroEmpty').querySelector('.stat-number').textContent='—';$('nowPlayingHeroEmpty').querySelector('.stat-label').textContent=message;
+}
+function updateNowPlayingProgress(){
+  if(!nowPlayingState.item)return;
+  let p=nowPlayingState.progressMs;if(nowPlayingState.isPlaying)p=Math.min(nowPlayingState.durationMs,p+Date.now()-nowPlayingState.lastPoll);
+  $('nowPlayingElapsed').textContent=fmtMs(p);$('nowPlayingDuration').textContent=fmtMs(nowPlayingState.durationMs);$('nowPlayingState').textContent=nowPlayingState.isPlaying?'tocando':'pausado';
+  $('nowPlayingProgressFill').style.width=(nowPlayingState.durationMs?Math.min(100,p/nowPlayingState.durationMs*100):0)+'%';
+}
+async function renderNowPlaying(){
+  if(!state.spotify?.accessToken){clearNowPlaying('conecte o Spotify para ver a escuta ao vivo.');return;}
+  try{
+    const d=await spotifyApi('/me/player/currently-playing');
+    if(!d?.item||d.currently_playing_type!=='track'){nowPlayingState={item:null};clearNowPlaying('nada tocando agora.');return;}
+    const t=d.item,a=t.artists?.[0]||{},trackUrl=t.external_urls?.spotify||'https://open.spotify.com/track/'+t.id,artistUrl=a.external_urls?.spotify||'https://open.spotify.com/artist/'+a.id,albumUrl=t.album?.external_urls?.spotify||'https://open.spotify.com/album/'+t.album?.id;
+    nowPlayingState={item:t,progressMs:Number(d.progress_ms||0),durationMs:Number(t.duration_ms||0),isPlaying:Boolean(d.is_playing),lastPoll:Date.now()};
+    $('nowPlayingHeroEmpty').hidden=true;$('nowPlayingHeroLive').hidden=false;
+    $('nowPlayingCover').src=t.album?.images?.[0]?.url||'';$('nowPlayingCover').alt='Capa de '+(t.album?.name||'');$('nowPlayingCoverLink').href=trackUrl;$('nowPlayingTrackLink').href=trackUrl;$('nowPlayingArtistLink').href=artistUrl;$('nowPlayingAlbumLink').href=albumUrl;
+    $('nowPlayingTrackLink').textContent=t.name||'—';$('nowPlayingArtistLink').textContent=a.name||'—';$('nowPlayingAlbumLink').textContent=t.album?.name||'—';updateNowPlayingProgress();
+  }catch(e){console.warn('Spotify currently-playing',e)}
+}
 async function connectSpotify(){
-  if(location.protocol==="file:"){toast("o Spotify precisa de HTTPS. o Radar funciona completo sem ele.");return}
-  const clientId=$("spotifyClientId").value.trim()||SPOTIFY_CLIENT_ID;
-  const verifier=rnd(),challenge=b64u(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(verifier))),st=rnd(24);
-  await meta("spotifyClientId",clientId);
-  sessionStorage.setItem("sp_v",verifier);sessionStorage.setItem("sp_s",st);
-  const u=new URL("https://accounts.spotify.com/authorize");
-  u.search=new URLSearchParams({response_type:"code",client_id:clientId,
-    scope:"user-read-currently-playing user-read-playback-state",
-    code_challenge_method:"S256",code_challenge:challenge,
-    redirect_uri:location.origin+location.pathname,state:st});
-  location.href=u.toString();
+  if(location.protocol==='file:'){toast('Spotify precisa de HTTPS/localhost. O resto do Radar continua funcionando.');return;}
+  const clientId=$('spotifyClientId').value.trim()||SPOTIFY_CLIENT_ID;await meta('spotifyClientId',clientId);
+  const verifier=randomString(),challenge=base64url(await sha256(verifier)),stateToken=randomString(24),redirect=location.origin+location.pathname;
+  sessionStorage.setItem('sp_verifier',verifier);sessionStorage.setItem('sp_state',stateToken);
+  const url=new URL('https://accounts.spotify.com/authorize');url.search=new URLSearchParams({response_type:'code',client_id:clientId,scope:'user-read-currently-playing user-read-playback-state user-read-private',code_challenge_method:'S256',code_challenge:challenge,redirect_uri:redirect,state:stateToken});location.href=url.toString();
 }
 async function spotifyCallback(){
-  const p=new URLSearchParams(location.search),code=p.get("code");
-  if(!code)return;
-  const st=p.get("state"),saved=sessionStorage.getItem("sp_s"),verifier=sessionStorage.getItem("sp_v");
-  history.replaceState({},"",location.pathname);
-  if(!verifier||st!==saved)return;
-  const clientId=await meta("spotifyClientId")||SPOTIFY_CLIENT_ID;
-  const body=new URLSearchParams({client_id:clientId,grant_type:"authorization_code",code,
-    redirect_uri:location.origin+location.pathname,code_verifier:verifier});
-  const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
-  if(!r.ok)throw new Error("não consegui autorizar no Spotify.");
-  const d=await r.json();
-  state.spotify={clientId,accessToken:d.access_token,refreshToken:d.refresh_token||null,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};
-  await meta("spotify",state.spotify);toast("spotify conectado.");
-}
-async function refreshSpotify(){
-  const s=state.spotify;if(!s?.refreshToken||!s?.clientId)return false;
-  try{
-    const r=await fetch("https://accounts.spotify.com/api/token",{method:"POST",
-      headers:{"Content-Type":"application/x-www-form-urlencoded"},
-      body:new URLSearchParams({client_id:s.clientId,grant_type:"refresh_token",refresh_token:s.refreshToken})});
-    if(!r.ok)return false;
-    const d=await r.json();
-    state.spotify={...s,accessToken:d.access_token,refreshToken:d.refresh_token||s.refreshToken,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};
-    await meta("spotify",state.spotify);return true;
-  }catch{return false}
-}
-async function spotifyApi(path){
-  if(!state.spotify?.accessToken)return null;
-  if(Date.now()>state.spotify.expiresAt-60000&&!await refreshSpotify())return null;
-  const r=await fetch("https://api.spotify.com/v1"+path,{headers:{Authorization:"Bearer "+state.spotify.accessToken}});
-  if(r.status===204)return null;
-  if(!r.ok)throw new Error("Spotify HTTP "+r.status);
-  return r.json();
+  const p=new URLSearchParams(location.search),code=p.get('code');if(!code)return;
+  const clientId=await meta('spotifyClientId')||SPOTIFY_CLIENT_ID,verifier=sessionStorage.getItem('sp_verifier'),saved=sessionStorage.getItem('sp_state');if(!verifier||saved!==p.get('state'))throw new Error('Autorização Spotify inválida.');
+  const redirect=location.origin+location.pathname,body=new URLSearchParams({client_id:clientId,grant_type:'authorization_code',code,redirect_uri:redirect,code_verifier:verifier});
+  const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body}),d=await r.json();if(!r.ok)throw new Error(d.error_description||'Spotify recusou a autorização.');
+  state.spotify={clientId,accessToken:d.access_token,refreshToken:d.refresh_token||null,expiresAt:Date.now()+Number(d.expires_in||3600)*1000};await meta('spotify',state.spotify);history.replaceState({},document.title,location.pathname);sessionStorage.removeItem('sp_verifier');sessionStorage.removeItem('sp_state');
 }
 async function renderSpotify(){
-  if(!state.spotify?.accessToken){$("spotifyStatus").textContent="desligado.";$("nowPlaying").textContent="";return}
-  $("spotifyStatus").textContent="conectado.";
-  try{
-    const d=await spotifyApi("/me/player/currently-playing");
-    const it=d?.item;
-    $("nowPlaying").textContent=it?"ouvindo agora: "+it.name+" — "+(it.artists||[]).map(a=>a.name).join(", "):"nada tocando agora.";
-  }catch{$("nowPlaying").textContent=""}
+  $('spotifyRedirect').textContent='Redirect URI: '+location.origin+location.pathname;$('spotifyStatus').textContent=state.spotify?.accessToken?'conectado. histórico continua no Last.fm.':'desligado.';await renderNowPlaying();
 }
 
-/* =========================================================
-   BACKUP
-   ========================================================= */
+
+/* ----- backup ----- */
 async function exportBackup(){
-  const data={version:2,exportedAt:new Date().toISOString(),user:await meta("username"),
-    scrobbles:await all("scrobbles"),artists:await all("artists"),albums:await all("albums"),
-    tracks:await all("tracks"),suggestions:await all("suggestions"),meta:await all("meta")};
-  const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:"application/json"}));
-  const a=document.createElement("a");a.href=url;a.download="radar-backup-"+today()+".json";a.click();
-  URL.revokeObjectURL(url);toast("backup exportado.");
+  const data={version:1,exportedAt:new Date().toISOString(),user:await meta("username"),scrobbles:await all("scrobbles"),artists:await all("artists"),albums:await all("albums"),tracks:await all("tracks"),suggestions:await all("suggestions"),meta:await all("meta")};
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="radar-backup.json";a.click();URL.revokeObjectURL(url);toast("backup exportado.");
 }
 async function importBackup(file){
-  const d=JSON.parse(await file.text());
-  if(!d?.scrobbles)throw new Error("arquivo de backup inválido.");
-  await bulkPut("scrobbles",d.scrobbles);await bulkPut("artists",d.artists||[]);
-  await bulkPut("albums",d.albums||[]);await bulkPut("tracks",d.tracks||[]);
-  await bulkPut("suggestions",d.suggestions||[]);
-  if(Array.isArray(d.meta))await bulkPut("meta",d.meta);
+  const data=JSON.parse(await file.text());if(!data?.scrobbles)throw new Error("backup inválido.");
+  await bulkPut("scrobbles",data.scrobbles);await bulkPut("artists",data.artists||[]);await bulkPut("albums",data.albums||[]);await bulkPut("tracks",data.tracks||[]);await bulkPut("suggestions",data.suggestions||[]);
+  if(Array.isArray(data.meta))await bulkPut("meta",data.meta);
   toast("backup importado.");await renderAll();
 }
 
-/* =========================================================
-   EVENTOS — delegação global.
-   Nada de religar handler depois de cada render: um clique em
-   qualquer [data-artist] ou [data-act] é capturado no documento,
-   então elemento novo já nasce funcionando.
-   ========================================================= */
-document.addEventListener("click",async e=>{
-  const nav=e.target.closest("[data-nav]");
-  if(nav){e.preventDefault();await showView(nav.dataset.nav);return}
 
-  const act=e.target.closest("[data-act]");
-  if(act){
-    const name=act.dataset.name,key=norm(name);
-    const found=[lastRound.headline,...(lastRound.list||[])].find(x=>x&&norm(x.name)===key);
-    const rec={key,name,status:act.dataset.act,decisionAt:Date.now(),
-      seeds:found?.seeds||[],createdAt:Date.now()};
-    if(rec.status==="waiting")rec.waitingAt=Date.now();
-    if(rec.status==="rejected")rec.cooldownUntil=Date.now()+COOLDOWN_DAYS*86400000;
-    await put("suggestions",rec);
-    toast(rec.status==="waiting"?"guardado na fila.":rec.status==="known"?"marcado como conhecido.":"anotado, não repito.");
-    lastRound.list=(lastRound.list||[]).filter(x=>norm(x.name)!==key);
-    if(lastRound.headline&&norm(lastRound.headline.name)===key)lastRound.headline=lastRound.list.shift()||null;
-    await meta("radarStamp",{sig:state.radius+"|"+state.seedMode+"|"+today(),round:lastRound,at:Date.now()});
-    await renderRadarView();await renderHome();
-    return;
-  }
-
-  const art=e.target.closest("[data-artist]");
-  if(art){await openArtist(art.dataset.artist);return}
-
-  const rad=e.target.closest("[data-radius]");
-  if(rad){
-    state.radius=rad.dataset.radius;
-    document.querySelectorAll("[data-radius]").forEach(b=>b.classList.toggle("active",b===rad));
-    $("radiusDesc").textContent=RADIUS[state.radius].desc;
-    await meta("radius",state.radius);
-    await calcRadar(true);await renderRadarView();
-    return;
-  }
-  const seed=e.target.closest("[data-seed]");
-  if(seed){
-    state.seedMode=seed.dataset.seed;
-    document.querySelectorAll("[data-seed]").forEach(b=>b.classList.toggle("active",b===seed));
-    const needsPicker=["artist","cross"].includes(state.seedMode);
-    $("seedPicker").style.display=needsPicker?"block":"none";
-    $("seedBWrap").style.display=state.seedMode==="cross"?"block":"none";
-    if(needsPicker){await fillSeedSelects();toast("escolha o artista e clique em nova rodada.")}
-    else{await calcRadar(true);await renderRadarView()}
-    return;
-  }
-  const rf=e.target.closest("[data-rfilter]");
-  if(rf){
-    state.radarFilter=rf.dataset.rfilter;
-    document.querySelectorAll("[data-rfilter]").forEach(b=>b.classList.toggle("active",b===rf));
-    await renderRadarView();return;
-  }
-  const am=e.target.closest("[data-amode]");
-  if(am){
-    state.archiveMode=am.dataset.amode;
-    document.querySelectorAll("[data-amode]").forEach(b=>b.classList.toggle("active",b===am));
-    await renderArchive();return;
-  }
+document.querySelectorAll(".radar-mode").forEach(btn=>btn.onclick=async()=>{
+  radarConfig.mode=btn.dataset.mode;
+  document.querySelectorAll(".radar-mode").forEach(x=>x.classList.toggle("active",x===btn));
+  setRadarControlLabels();await renderDiscoveryLab();
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".mbg.show").forEach(m=>m.classList.remove("show"))});
-document.querySelectorAll(".mbg").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("show")}));
+[
+  ["matchRange","matchValue","match"],["riskRange","riskValue","risk"],["nostalgiaRange","nostalgiaValue","nostalgia"],["diversityRange","diversityValue","diversity"]
+].forEach(([a,b,c])=>$(a).oninput=()=>{radarConfig[c]=Number($(a).value);$(b).textContent=radarConfig[c]});
+document.querySelectorAll(".seed-chip").forEach(btn=>btn.onclick=()=>{radarConfig.seedMode=btn.dataset.seedMode;document.querySelectorAll(".seed-chip").forEach(x=>x.classList.toggle("active",x===btn))});
+$("recalculateRadar").onclick=async()=>{await renderDiscoveryLab();await buildDiscoveryChains();toast("laboratório recalculado.")};
+$("runMix").onclick=runMix;
+$("discoverBridges").onclick=async()=>{$("bridgeResult").innerHTML='<div class="shimmer"></div>';await discoverHiddenBridges()};
 
-async function fillSeedSelects(){
-  const a=(await all("artists")).sort((x,y)=>y.plays-x.plays).slice(0,400);
-  const opts='<option value="">escolha...</option>'+a.map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+" · "+x.plays+"</option>").join("");
-  $("seedArtist").innerHTML=opts;$("seedB").innerHTML=opts;
-}
-async function showView(name){
+/* ----- nav / event binding ----- */
+function showView(name){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   $("view-"+name).classList.add("active");
   document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===name));
-  window.scrollTo({top:0,behavior:"instant"});
-  if(name==="radar"){if(!lastRound.headline&&state.user)await calcRadar(false);await renderRadarView()}
-  if(name==="archive")await renderArchive();
-  if(name==="rescue")await renderRescue();
-  if(name==="route"){
-    const a=await all("artists");
-    $("artistOptions").innerHTML=a.sort((x,y)=>x.name.localeCompare(y.name,"pt-BR")).map(x=>'<option value="'+esc(x.name)+'"></option>').join("");
-  }
 }
-
-$("recalc").onclick=async()=>{
+document.querySelectorAll("[data-nav]").forEach(btn=>btn.onclick=async()=>{
+  showView(btn.dataset.nav);
+  if(btn.dataset.nav==="route")await populateArtistOptions();
+  if(btn.dataset.nav==="map"&&mapArtists.length)renderMap();
+  if(btn.dataset.nav==="radar"){await populateRadarSeeds();await renderDiscoveryLab();await buildDiscoveryChains();}
+  if(btn.dataset.nav==="archive")await renderArchive();
+  if(btn.dataset.nav==="rescue")await renderRescue();
+});
+$("newRadar").onclick=async()=>{
   if(!state.user)return $("connectLastfm").click();
-  try{await calcRadar(true);await renderRadarView();await renderHome();toast("nova rodada pronta.")}
-  catch(e){toast(e.message)}
+  try{await calculateRadar(true);await renderRadar();toast("nova rodada pronta.")}catch(e){toast(e.message)}
 };
-$("applyTag").onclick=async()=>{state.tag=$("tagFilter").value.trim();$("tagStatus").textContent=state.tag?"filtrando por "+state.tag:"";await meta("tag",state.tag);await renderRadarView()};
-$("clearTag").onclick=async()=>{state.tag="";$("tagFilter").value="";$("tagStatus").textContent="";await meta("tag","");await renderRadarView()};
-$("rescueShuffle").onclick=async()=>{
-  const loose=(await all("artists")).filter(x=>x.plays>=1&&x.plays<=4);
-  if(!loose.length)return toast("não há ponta solta ainda.");
-  await openArtist(loose[Math.floor(Math.random()*loose.length)].name);
-};
-$("findRoute").onclick=async()=>{
-  const a=$("routeStart").value.trim(),b=$("routeEnd").value.trim();
-  $("routeStatus").textContent="procurando pontes...";$("routeResult").innerHTML='<div class="shimmer"></div>';
-  try{const r=await findRoute(a,b,5);renderRoute(r);$("routeStatus").textContent=r?(r.nodes.length-1)+" passos":""}
-  catch(e){toast(e.message);$("routeStatus").textContent="";$("routeResult").innerHTML=""}
-};
-$("randomRoute").onclick=async()=>{
-  const a=await all("artists");if(a.length<2)return toast("arquivo pequeno demais.");
-  let x=a[Math.floor(Math.random()*a.length)],y=a[Math.floor(Math.random()*a.length)];
-  while(y.key===x.key)y=a[Math.floor(Math.random()*a.length)];
-  $("routeStart").value=x.name;$("routeEnd").value=y.name;$("findRoute").click();
-};
-let searchTimer;
-$("archiveSearch").oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(renderArchive,240)};
-$("connectLastfm").onclick=()=>{$("loginModal").classList.add("show");$("usernameInput").focus()};
+document.querySelectorAll("[data-rfilter]").forEach(btn=>btn.onclick=async()=>{state.radarFilter=btn.dataset.rfilter;document.querySelectorAll("[data-rfilter]").forEach(x=>x.classList.toggle("active",x===btn));await renderRadar()});
+document.querySelectorAll("[data-depth]").forEach(btn=>btn.onclick=()=>{state.routeDepth=Number(btn.dataset.depth);document.querySelectorAll("[data-depth]").forEach(x=>x.classList.toggle("active",x===btn))});
+$("findRoute").onclick=async()=>{const a=$("routeStart").value.trim(),b=$("routeEnd").value.trim();$("routeStatus").textContent="procurando pontes...";$("routeResult").innerHTML='<div class="shimmer"></div>';try{const r=await findRoute(a,b,state.routeDepth);renderRoute(r);$("routeStatus").textContent=r?`${r.nodes.length-1} passos encontrados.`:""}catch(e){toast(e.message);$("routeStatus").textContent=""}};
+$("randomRoute").onclick=async()=>{const a=await all("artists");if(a.length<2)return;let x=a[Math.floor(Math.random()*a.length)],y=a[Math.floor(Math.random()*a.length)];while(y.key===x.key)y=a[Math.floor(Math.random()*a.length)];$("routeStart").value=x.name;$("routeEnd").value=y.name;$("findRoute").click()};
+$("buildMap").onclick=buildMap;
+$("shuffleRecent").onclick=()=>renderRecentCarousel(true);
+$("rescueShuffle").onclick=async()=>{const a=await all("artists"),loose=a.filter(x=>x.plays>=1&&x.plays<=4);if(!loose.length)return;const x=loose[Math.floor(Math.random()*loose.length)];await openArtist(x.name)};
+let archiveTimer;
+document.querySelectorAll("[data-amode]").forEach(btn=>btn.onclick=async()=>{state.archiveMode=btn.dataset.amode;document.querySelectorAll("[data-amode]").forEach(x=>x.classList.toggle("active",x===btn));await renderArchive()});
+$("archiveSearch").oninput=()=>{clearTimeout(archiveTimer);archiveTimer=setTimeout(renderArchive,220)};
+$("connectLastfm").onclick=async()=>{$("loginModal").classList.add("show");$("usernameInput").focus()};
 $("cancelLogin").onclick=()=>$("loginModal").classList.remove("show");
-$("usernameInput").onkeydown=e=>{if(e.key==="Enter")$("startLogin").click()};
 $("startLogin").onclick=async()=>{
-  const u=$("usernameInput").value.trim();if(!u)return;
-  $("loginError").innerHTML="";
+  const username=$("usernameInput").value.trim();if(!username)return;
   try{
-    const user=await validateUser(u);
-    const switched=await switchUser(user.name);
-    state.user=user.name;
-    $("userLabel").textContent=user.name;$("lastfmStatus").textContent="conectado como "+user.name;
-    const existing=await keys("scrobbles");
-    const initial=switched||!existing.length;
-    $("loginModal").classList.remove("show");
-    await syncHistory(user.name,initial,Number(user.playcount||0),initial);
-    /* o diário aparece na hora; o radar (que faz dezenas de chamadas) vem depois */
-    await renderHome();await health();
-    await calcRadar(true);await renderRadarView();await renderHome();
-  }catch(e){$("loginError").innerHTML='<p style="color:var(--danger)">'+esc(e.message)+"</p>"}
+    const user=await validateUser(username),switched=await switchUser(user.name);state.user=user.name;$("userLabel").textContent=user.name;$("lastfmStatus").textContent="conectado como "+user.name;
+    const existing=await all("scrobbles");await syncHistory(user.name,switched||!existing.length,Number(user.playcount||0),switched||!existing.length);
+    await calculateRadar(false);await renderAll();$("loginModal").classList.remove("show");
+  }catch(e){$("loginError").innerHTML=`<p style="color:var(--danger)">${esc(e.message)}</p>`}
 };
-$("syncNow").onclick=async()=>{
-  if(!state.user)return $("connectLastfm").click();
-  try{await syncHistory(state.user,false,0,false);await renderAll()}catch(e){}
-};
-$("connectSpotify").onclick=()=>connectSpotify().catch(e=>toast(e.message));
-$("exportData").onclick=()=>exportBackup().catch(e=>toast(e.message));
+$("usernameInput").onkeydown=e=>{if(e.key==="Enter")$("startLogin").click()};
+$("syncNow").onclick=async()=>{if(!state.user)return $("connectLastfm").click();try{await syncHistory(state.user,false,0,false);await calculateRadar(false);await renderAll()}catch(e){}};
+$("connectSpotify").onclick=async()=>{try{await connectSpotify()}catch(e){toast(e.message)}};
+$("connectSpotifyHero").onclick=async()=>{try{await connectSpotify()}catch(e){toast(e.message)}};
+$("exportData").onclick=exportBackup;
 $("importData").onclick=()=>$("importFile").click();
-$("importFile").onchange=e=>{const f=e.target.files?.[0];if(f)importBackup(f).catch(x=>toast(x.message))};
-$("clearData").onclick=async()=>{
-  if(!confirm("Apagar o diário deste navegador? Seu Last.fm não é alterado, mas suas decisões (fila, rejeições) só existem aqui."))return;
-  for(const s of["meta","scrobbles","artists","albums","tracks","suggestions","similar","info"])await clearStore(s);
-  location.reload();
-};
+$("importFile").onchange=async e=>{try{await importBackup(e.target.files[0])}catch(err){toast("backup inválido.")}};
+$("clearData").onclick=async()=>{if(!confirm("Apagar todo o diário local deste navegador?"))return;for(const s of ["meta","scrobbles","artists","albums","tracks","suggestions","similar","tags"])await clearStore(s);location.reload()};
 
 async function health(){
-  try{
-    const [s,a,t,i]=await Promise.all([keys("scrobbles"),keys("artists"),keys("tracks"),keys("similar")]);
-    $("healthStats").textContent=fmt(s.length)+" scrobbles · "+fmt(a.length)+" artistas · "+fmt(t.length)+" faixas · "+fmt(i.length)+" vizinhanças em cache.";
-  }catch{$("healthStats").textContent="não consegui ler o banco local agora."}
+  const [s,a,t]=await Promise.all([all("scrobbles"),all("artists"),all("tracks")]);
+  $("healthStats").textContent=`${fmt(s.length)} scrobbles · ${fmt(a.length)} artistas · ${fmt(t.length)} faixas · IndexedDB local.`;
 }
-async function renderAll(){await renderHome();await health();await renderRadarView()}
-
-window.addEventListener("error",e=>{console.error("[radar]",e.error||e.message)});
-window.addEventListener("unhandledrejection",e=>{console.error("[radar] promessa rejeitada:",e.reason)});
-
+async function renderAll(){
+  await renderHome();await renderRadar();await renderRescue();await renderArchive();renderChallenges();await health();
+}
 (async()=>{
   try{
     await openDB();
-    state.spotify=await meta("spotify");
-    state.radius=await meta("radius")||"near";
-    state.tag=await meta("tag")||"";
-    document.querySelectorAll("[data-radius]").forEach(b=>b.classList.toggle("active",b.dataset.radius===state.radius));
-    $("radiusDesc").textContent=RADIUS[state.radius].desc;
-    $("tagFilter").value=state.tag;
-    if(state.tag)$("tagStatus").textContent="filtrando por "+state.tag;
-    $("spotifyClientId").value=await meta("spotifyClientId")||SPOTIFY_CLIENT_ID;
-    $("spotifyRedirect").textContent="Redirect URI: "+location.origin+location.pathname;
+    const saved=await meta("spotify");if(saved)state.spotify=saved;
+    const savedRadius=await meta("radarRadius");if(savedRadius&&RADIUS[savedRadius])state.radius=savedRadius;
+    const savedTag=await meta("radarTag");if(savedTag)state.tag=savedTag;
+    $("spotifyClientId").value=SPOTIFY_CLIENT_ID;
     try{await spotifyCallback()}catch(e){toast(e.message)}
-
-    const stamp=await meta("radarStamp");
-    if(stamp?.round)lastRound=stamp.round;
-
     state.user=await meta("username");
     if(state.user){
-      $("userLabel").textContent=state.user;
-      $("lastfmStatus").textContent="conectado como "+state.user;
-      const ls=await meta("lastSync");
-      if(ls)$("syncStatus").textContent="última vez "+new Date(ls).toLocaleString("pt-BR");
-      /* pinta o cache primeiro, sincroniza calado depois */
+      $("userLabel").textContent=state.user;$("lastfmStatus").textContent="conectado como "+state.user;
+      /* cache-first: pinta agora e sincroniza silenciosamente depois */
       await renderAll();
-      try{
-        await syncHistory(state.user,false,0,false);
-        await calcRadar(false);
-        await renderAll();
-      }catch(e){console.warn(e)}
-    }else{
-      await renderAll();
-      $("loginModal").classList.add("show");
-    }
+      try{await syncHistory(state.user,false,0,false);await calculateRadar(false);await renderAll()}catch(e){}
+    }else await renderAll();
+    $("spotifyRedirect").textContent="Redirect URI: "+location.origin+location.pathname;
     await renderSpotify();
-    if(state.spotify?.accessToken)setInterval(renderSpotify,30000);
-  }catch(e){console.error(e);toast("não foi possível iniciar o Radar.")}
+    if(state.spotify?.accessToken){setInterval(renderNowPlaying,5000);setInterval(updateNowPlayingProgress,1000);}
+  }catch(e){console.error(e);toast("Não foi possível iniciar o Radar.")}
 })();
 </script>
 </body>
